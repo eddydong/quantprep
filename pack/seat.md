@@ -48,7 +48,7 @@ Prepare **one 90-second STAR** per line.
 - **ML** — still the core “technical excellence” exam. Forecasting + recommenders + decision-under-uncertainty are **on the syllabus**. RL is listed; treat it as **offline / simulated** unless they push.
 - **DL / GenAI** — **agentic** is a mandate word, not a side quest. The desk assistant is the live example. You need **fundamentals**, not every topic.
 - **Coding** — **competence**, not a software-engineer screen. Python, information sets, a leaky backtest. Skip kdb/Java/latency-system design unless they ask.
-- **Project** — you are the APAC **technical authority of a centralised Markets Quant AI team**. Two rails: FX PoC + GenAI/agentic. You do not replace HK Equities Java or Singapore matching engines.
+- **Project** — fourth **technical**: a messy live scenario (leakage, metrics, serving, conduct, GenAI as a constraint). Not a 90-day org plan. How you would start the job lives on **90 days**.
 
 Memorise this sentence:
 

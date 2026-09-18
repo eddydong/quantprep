@@ -17,12 +17,13 @@ SECTIONS = [
     ("jargon", "1 · Words", PACK / "jargon.md", "Learn the dialect"),
     ("seat", "2 · The seat", PACK / "seat.md", "What the job is"),
     ("briefing", "3 · Briefing", PACK / "briefing.md", "Industry, desks, rails"),
+    ("landing", "90 days", PACK / "landing.md", "How you'd start — not a mock"),
     ("plan", "4 · Study plan", PACK / "study-plan.md", "14 days"),
     ("drills", "Drills", None, "Closed-book 5+5, then walk-in"),
     ("ml", "5 · ML mock", PACK / "mocks" / "01-ml.md", "90 minutes"),
     ("dl", "6 · DL mock", PACK / "mocks" / "02-dl.md", "90 minutes"),
     ("coding", "7 · Coding", PACK / "mocks" / "03-coding.md", "90–120 minutes"),
-    ("project", "8 · Project", PACK / "mocks" / "04-project.md", "90 minutes"),
+    ("project", "8 · Project", PACK / "mocks" / "04-project.md", "Scenario, 90 min"),
     ("morning", "Morning of", PACK / "one-pager.md", "Interview day only"),
 ]
 
@@ -188,8 +189,8 @@ HOME = """
 <h2>How to use this page</h2>
 <ol>
 <li>Open <strong>1 · Words</strong> if you are not from markets. Read the opening trade story, then search terms as you go.</li>
-<li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud.</li>
-<li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Do not peek at model answers first.</li>
+<li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud. <strong>90 days</strong> is how you would start the job — not a technical mock.</li>
+<li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Mock 8 is a live desk <em>scenario</em>. Do not peek at model answers first.</li>
 <li>Coding lives in this page <em>and</em> as Python under <code>pack/mocks/coding/</code>. Run pytest there. Do not look at <code>solutions.py</code> until you have tried.</li>
 <li><strong>Morning of</strong> is for interview day only.</li>
 </ol>
@@ -303,16 +304,16 @@ DRILLS = """
 </ol>
 <p class="why">Ship a Hawkes + inventory policy; keep RL in simulator until logging exists. Do not PPO live.</p>
 </details>
-<h2>Walk-in ticks (project round)</h2>
-<p>Eight coverage checks. Tick while you rehearse the case.</p>
-<label class="walk"><input type="checkbox" data-tick="w1"> Named one FX PoC (pair + session + markout vs fill-rate trade-off)</label>
-<label class="walk"><input type="checkbox" data-tick="w2"> Named a GenAI/agentic rail (tools, HITL, never invents a mid)</label>
-<label class="walk"><input type="checkbox" data-tick="w3"> You specify models; engineering serves the engine — not an SE identity</label>
-<label class="walk"><input type="checkbox" data-tick="w4"> RACI: London AI, SG eFX, HK QR/Prime, MRM, eSales, you</label>
-<label class="walk"><input type="checkbox" data-tick="w5"> Tiering: desk-assistant workflow ≠ auto-skew pricing</label>
-<label class="walk"><input type="checkbox" data-tick="w6"> Kill switch, dual-run, CNH residency if required</label>
-<label class="walk"><input type="checkbox" data-tick="w7"> Team: AI/ML people who can code; hire less than 6 until a user exists</label>
-<label class="walk"><input type="checkbox" data-tick="w8"> 18-month clone onto Equities/Prime without restarting the platform</label>
+<h2>Walk-in ticks (project scenario)</h2>
+<p>Coverage checks for the live toxicity case — not the 90-day landing page.</p>
+<label class="walk"><input type="checkbox" data-tick="w1"> Named the decision (last-look / widen) and both metrics in conflict (markout vs fill)</label>
+<label class="walk"><input type="checkbox" data-tick="w2"> Diagnosed random-split AUC, fill-only labels, and nightly retrain as a feedback loop</label>
+<label class="walk"><input type="checkbox" data-tick="w3"> Information set: decision time vs label window; purge / embargo</label>
+<label class="walk"><input type="checkbox" data-tick="w4"> Costed threshold; corporate CNH overlap as a franchise segment</label>
+<label class="walk"><input type="checkbox" data-tick="w5"> SageMaker trains; engine budget is ~80µs — distil or rules, not cloud GBDT live</label>
+<label class="walk"><input type="checkbox" data-tick="w6"> Last-look conduct / client-class reject rates</label>
+<label class="walk"><input type="checkbox" data-tick="w7"> Desk assistant: tools + reason-code; never invents a mid; different model tier</label>
+<label class="walk"><input type="checkbox" data-tick="w8"> Kill: fallback quote, dual-run, signed off-criteria, CNH residency if required</label>
 """
 
 
@@ -846,6 +847,7 @@ def rewrite_pack_links(html_body: str) -> str:
         "jargon.md": "#jargon",
         "seat.md": "#seat",
         "briefing.md": "#briefing",
+        "landing.md": "#landing",
         "study-plan.md": "#plan",
         "01-ml.md": "#ml",
         "02-dl.md": "#dl",

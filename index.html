@@ -211,7 +211,7 @@ summary { cursor: pointer; font-weight: 600; }
   <h1>QUANTPREP</h1>
   <p>AI for Quant. Tick each ticket. Search filters Words. Dotted words explain themselves.</p>
   <input class="search" id="find" type="search" placeholder="Search Words: fill rate, NDF…" aria-label="Search Words">
-  <nav><div class="ticket" data-go="home"><input type="checkbox" data-tick="home"><a href="#home" data-go="home">Start<small>Desk blotter</small></a></div><div class="ticket" data-go="jargon"><input type="checkbox" data-tick="jargon"><a href="#jargon" data-go="jargon">1 · Words<small>Learn the dialect</small></a></div><div class="ticket" data-go="seat"><input type="checkbox" data-tick="seat"><a href="#seat" data-go="seat">2 · The seat<small>What the job is</small></a></div><div class="ticket" data-go="briefing"><input type="checkbox" data-tick="briefing"><a href="#briefing" data-go="briefing">3 · Briefing<small>Industry, desks, rails</small></a></div><div class="ticket" data-go="plan"><input type="checkbox" data-tick="plan"><a href="#plan" data-go="plan">4 · Study plan<small>14 days</small></a></div><div class="ticket" data-go="drills"><input type="checkbox" data-tick="drills"><a href="#drills" data-go="drills">Drills<small>Closed-book 5+5, then walk-in</small></a></div><div class="ticket" data-go="ml"><input type="checkbox" data-tick="ml"><a href="#ml" data-go="ml">5 · ML mock<small>90 minutes</small></a></div><div class="ticket" data-go="dl"><input type="checkbox" data-tick="dl"><a href="#dl" data-go="dl">6 · DL mock<small>90 minutes</small></a></div><div class="ticket" data-go="coding"><input type="checkbox" data-tick="coding"><a href="#coding" data-go="coding">7 · Coding<small>90–120 minutes</small></a></div><div class="ticket" data-go="project"><input type="checkbox" data-tick="project"><a href="#project" data-go="project">8 · Project<small>90 minutes</small></a></div><div class="ticket" data-go="morning"><input type="checkbox" data-tick="morning"><a href="#morning" data-go="morning">Morning of<small>Interview day only</small></a></div></nav>
+  <nav><div class="ticket" data-go="home"><input type="checkbox" data-tick="home"><a href="#home" data-go="home">Start<small>Desk blotter</small></a></div><div class="ticket" data-go="jargon"><input type="checkbox" data-tick="jargon"><a href="#jargon" data-go="jargon">1 · Words<small>Learn the dialect</small></a></div><div class="ticket" data-go="seat"><input type="checkbox" data-tick="seat"><a href="#seat" data-go="seat">2 · The seat<small>What the job is</small></a></div><div class="ticket" data-go="briefing"><input type="checkbox" data-tick="briefing"><a href="#briefing" data-go="briefing">3 · Briefing<small>Industry, desks, rails</small></a></div><div class="ticket" data-go="landing"><input type="checkbox" data-tick="landing"><a href="#landing" data-go="landing">90 days<small>How you&#x27;d start — not a mock</small></a></div><div class="ticket" data-go="plan"><input type="checkbox" data-tick="plan"><a href="#plan" data-go="plan">4 · Study plan<small>14 days</small></a></div><div class="ticket" data-go="drills"><input type="checkbox" data-tick="drills"><a href="#drills" data-go="drills">Drills<small>Closed-book 5+5, then walk-in</small></a></div><div class="ticket" data-go="ml"><input type="checkbox" data-tick="ml"><a href="#ml" data-go="ml">5 · ML mock<small>90 minutes</small></a></div><div class="ticket" data-go="dl"><input type="checkbox" data-tick="dl"><a href="#dl" data-go="dl">6 · DL mock<small>90 minutes</small></a></div><div class="ticket" data-go="coding"><input type="checkbox" data-tick="coding"><a href="#coding" data-go="coding">7 · Coding<small>90–120 minutes</small></a></div><div class="ticket" data-go="project"><input type="checkbox" data-tick="project"><a href="#project" data-go="project">8 · Project<small>Scenario, 90 min</small></a></div><div class="ticket" data-go="morning"><input type="checkbox" data-tick="morning"><a href="#morning" data-go="morning">Morning of<small>Interview day only</small></a></div></nav>
 </aside>
 <main>
 <article>
@@ -231,8 +231,8 @@ summary { cursor: pointer; font-weight: 600; }
 <h2>How to use this page</h2>
 <ol>
 <li>Open <strong>1 · Words</strong> if you are not from markets. Read the opening trade story, then search terms as you go.</li>
-<li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud.</li>
-<li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Do not peek at model answers first.</li>
+<li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud. <strong>90 days</strong> is how you would start the job — not a technical mock.</li>
+<li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Mock 8 is a live desk <em>scenario</em>. Do not peek at model answers first.</li>
 <li>Coding lives in this page <em>and</em> as Python under <code>pack/mocks/coding/</code>. Run pytest there. Do not look at <code>solutions.py</code> until you have tried.</li>
 <li><strong>Morning of</strong> is for interview day only.</li>
 </ol>
@@ -318,7 +318,7 @@ summary { cursor: pointer; font-weight: 600; }
 <li><strong>ML</strong> — still the core “technical excellence” exam. Forecasting + recommenders + decision-under-uncertainty are <strong>on the syllabus</strong>. RL is listed; treat it as <strong>offline / simulated</strong> unless they push.</li>
 <li><strong>DL / GenAI</strong> — <strong>agentic</strong> is a mandate word, not a side quest. The desk assistant is the live example. You need <strong>fundamentals</strong>, not every topic.</li>
 <li><strong>Coding</strong> — <strong>competence</strong>, not a software-engineer screen. Python, information sets, a leaky backtest. Skip kdb/Java/latency-system design unless they ask.</li>
-<li><strong>Project</strong> — you are the APAC <strong>technical authority of a centralised Markets Quant AI team</strong>. Two rails: FX PoC + GenAI/agentic. You do not replace HK Equities Java or Singapore matching engines.</li>
+<li><strong>Project</strong> — fourth <strong>technical</strong>: a messy live scenario (leakage, metrics, serving, conduct, GenAI as a constraint). Not a 90-day org plan. How you would start the job lives on <strong>90 days</strong>.</li>
 </ul>
 <p>Memorise this sentence:</p>
 <blockquote><p>I will be the senior AI/ML authority for APAC Markets Quant: hands-on on the first models, competent in coding and modern GenAI, working <strong>with</strong> engineering — not as a software-engineering hire, and not as a latency specialist unless the desk needs one later.</p></blockquote></section><section class="panel" id="briefing"><h1>Industry briefing: AI for Global Markets</h1>
@@ -387,7 +387,7 @@ summary { cursor: pointer; font-weight: 600; }
 <li>People-leader craft: listen, energise, align across the enterprise, develop others.</li>
 </ul>
 <h2>5. Industry: what “AI for Markets” means in 2026</h2>
-<p>Sell-side Markets AI has split into four stacks. A Director who conflates them fails the project round.</p>
+<p>Sell-side Markets AI has split into four stacks. A Director who conflates them fails the technical case.</p>
 <div class='table-wrap'><table><thead><tr><th>Stack</th><th>Job</th><th>Failure mode</th></tr></thead><tbody><tr><td><strong>Pricing / internalization / eFX</strong></td><td>Fair value, skew, toxicity, last-look policy, inventory, hedge, RFQ win-rate</td><td>Look-ahead, regime break, toxic flow, overfit microstructure</td></tr><tr><td><strong>Execution / algos</strong></td><td>Arrival, POV, IS, NDF algos, SOR, child-order placement</td><td>Ignoring market impact, venue fees, information leakage</td></tr><tr><td><strong>Distribution / sales</strong></td><td>Next-best product, client propensity, RFQ routing, research-to-sales, desk assistant</td><td>Recommending products the desk cannot risk; fairness/conduct</td></tr><tr><td><strong>Workflow / GenAI</strong></td><td>Trade initiation, TCA narrative, research search, code assist</td><td>Hallucinated prices, uncontrolled tool use, data leakage</td></tr></tbody></table></div>
 <p>Peer pattern (JPM, GS, Citi, MS, BBVA, flow specialists): <strong>tree models and online linear still dominate alpha and pricing</strong>; <strong>DL</strong> wins on limit-order-book images, options surfaces, and hedging policies; <strong>LLMs / agents</strong> win on <strong>interface and workflow</strong>, not on mid. Several banks have already <strong>productised an FX GenAI interface</strong>. The seat wants someone who can run <strong>both</strong> rails: quantitative modelling <strong>and</strong> GenAI/agentic.</p>
 <p>APAC-specific market facts the desk will assume you know:</p>
@@ -477,10 +477,109 @@ summary { cursor: pointer; font-weight: 600; }
 <li>Public FX platform pages: streaming, RFQ, own-book vs mixed-venue, desk assistants.</li>
 <li>APAC electronic footprint: Singapore FX engines (MAS hub), HK/Japan equities co-lo.</li>
 <li>PRA SS1/23; HKMA 2019 AI principles and 2024 GenAI consumer-protection circular.</li>
-</ul></section><section class="panel" id="plan"><h1>Study plan and round design</h1>
+</ul></section><section class="panel" id="landing"><h1>First 90 days — how you would start</h1>
+<p><strong>Not one of the four technical rounds.</strong> Previous: <a href="#briefing">briefing.md</a>. Next: <a href="#plan">study-plan.md</a>. The technical project mock is <a href="#project">mocks/04-project.md</a>.</p>
+<p>Use this when they ask <em>how you would land</em>, in a fit conversation, or in the opening two minutes. Do <strong>not</strong> walk this into the project-based technical as if it were the case.</p>
+<hr>
+<h2>What “started well” means</h2>
+<p>The bank is building <strong>GM AI/ML as a greenfield</strong> inside <strong>centralised Markets Quant</strong>. The HK Director is the APAC <strong>senior technical authority</strong>: FX <strong>PoC</strong> first, then scale, with a mandate that is <strong>quant modelling + GenAI/agentic</strong>. You translate desk pain into <strong>tiered</strong> models existing QR/QD/traders will <strong>use</strong>. You work <strong>with</strong> engineering. You do not replace the pricing engine or HK Equities Java, and you do not staff an SE org.</p>
+<p>In 90 days the Global Head of GM AI/ML and the APAC Head of Markets will ask: <strong>what did we turn on, who uses it, and what did it do to PnL and risk?</strong></p>
+<p>Two rails: (A) FX quantitative PoC (B) GenAI/agentic.</p>
+<hr>
+<h2>Funnel</h2>
+<p><strong>Kill now</strong></p>
+<ul>
+<li>Transformer on raw mid returns.</li>
+<li>Live RL on the pricing engine.</li>
+<li>Unconstrained LLM prices.</li>
+<li>Firm-wide “AI platform” with no user.</li>
+</ul>
+<p><strong>Spike (4 weeks, two people)</strong></p>
+<ol>
+<li><strong>FX statistical PoC:</strong> toxicity / markout or RFQ win-rate for USDCNH + USDJPY Asia sessions.</li>
+<li><strong>GenAI/agentic PoC:</strong> desk-assistant tools for APAC hours (<code>get_mid</code>, <code>get_skew</code>, draft ticket) — never invented numbers; HKMA HITL.</li>
+<li>Logging: if RFQ propensities are missing, the spike <strong>is</strong> the log.</li>
+</ol>
+<p><strong>Production (one statistical + one workflow, different tiers)</strong></p>
+<ul>
+<li><strong>Skew assistant</strong> (trader or rules commit). Metric: 1s/10s markout <strong>and</strong> fill ratio.</li>
+<li><strong>Agentic ticket draft</strong> that can only <strong>call</strong> the pricer. Separate, lower model tier.</li>
+</ul>
+<p><strong>Platform (must ship with it)</strong></p>
+<ul>
+<li>Point-in-time feature spec + golden ticks + MLflow registry + shadow harness that Equities can clone.</li>
+</ul>
+<hr>
+<h2>Architecture</h2>
+<pre><code>Desks (HK) ── pain, override, colour
+   │
+Research (HK Python, SageMaker) ── train, CPCV, notebooks
+   │  feature spec + golden tests
+Feature / model registry (London MLOps patterns)
+   │
+Shadow book ── dual run
+   │
+Hot path (SG pricing engine / HK algo box) ── distilled model or rules
+   │
+Desk assistant (workflow) ── tools to mid/skew; HITL</code></pre>
+<hr>
+<h2>Team (first 90 days)</h2>
+<ul>
+<li>You — senior technical authority, hands-on on FX model #1.</li>
+<li>1 applied scientist (forecasting / recommenders / uncertainty).</li>
+<li>1 applied scientist (GenAI/agentic fundamentals) <strong>once</strong> Compliance has scoped tools — can be week 3, not day 90.</li>
+<li>1 production-minded quant working <strong>with</strong> London/SG engineering.</li>
+<li>0.5 London MLOps (matrix), 0.5 HK QR design partner.</li>
+</ul>
+<p>Do not hire a software-engineering org. The seat forbade that identity.</p>
+<hr>
+<h2>Controls</h2>
+<ul>
+<li>Inventory all artefacts on day 30.</li>
+<li><strong>Tier 0</strong> workflow (assistant) vs <strong>Tier 1+</strong> if auto-skew.</li>
+<li>Dual run, kill switch, session-level fallback.</li>
+<li>CNH: train <strong>in-region</strong> if required; no raw ticks in an unconstrained London notebook.</li>
+<li>GenAI: scope written; no RAG over other clients.</li>
+</ul>
+<hr>
+<h2>90-day calendar</h2>
+<div class='table-wrap'><table><thead><tr><th>Week</th><th>Outcome</th></tr></thead><tbody><tr><td>1–2</td><td>Stakeholder map; data access; model inventory; pick pair/session</td></tr><tr><td>3–4</td><td>PIT audit; leakage tests; baseline linear/GBDT</td></tr><tr><td>5–6</td><td>Shadow book live; trader override UX with eSales/eFX</td></tr><tr><td>7–8</td><td>CPCV + costed metrics; MRM pre-read; desk-assistant tool spec</td></tr><tr><td>9–10</td><td>Canary one pair/session; kill criteria signed</td></tr><tr><td>11–12</td><td>Review with London + APAC Markets: <strong>on/off</strong>, Equities clone plan</td></tr></tbody></table></div>
+<h3>18 months</h3>
+<p>Same <strong>feature + shadow + registry</strong> pattern for <strong>HKEX algo fill probability</strong> and a <strong>Prime client-flow / utilisation</strong> tool. Do not start those until FX canary is boring.</p>
+<h3>Asks</h3>
+<ul>
+<li>Tick + RFQ + markout access with a <strong>named data owner</strong>.</li>
+<li>Intro to SG pricing-engine engineering and HK Equities quant.</li>
+<li>MRM fast-track for <strong>Tier 1 skew assistant</strong>.</li>
+<li>Air cover to say no to a firm-wide LLM demo week 3.</li>
+</ul>
+<hr>
+<h2>Fit questions that belong here, not in the technical case</h2>
+<p>Practise these out loud <strong>after</strong> you can walk the 90-day page. They are programme / identity questions.</p>
+<ol>
+<li>London already has a USDJPY model. Why do we need you?</li>
+<li>Why not hire six PhDs and publish?</li>
+<li>How do you staff India (offshore tech centre) vs HK?</li>
+<li>Equities already has kdb and Java algos. Do you replace them?</li>
+<li>We are <strong>not looking for software engineers</strong>. Why did you talk about gRPC and 50µs?</li>
+<li>HFT is not essential. Can you still be the technical authority?</li>
+<li>You have been Director 2–3 years. What is <strong>broader</strong> about this remit?</li>
+<li>Give me a <strong>RACI</strong> for a production incident at 02:00 London / 09:00 HK.</li>
+</ol>
+<hr>
+<h2>Behavioural extras</h2>
+<p>Prepare STAR stories mapped to <strong>challenge, drive, align, develop, stewardship</strong>:</p>
+<ul>
+<li><strong>Challenge:</strong> you stopped a launch; the number looked good.</li>
+<li><strong>Drive:</strong> you landed a model through MRM.</li>
+<li><strong>Align:</strong> you sat between two desks who wanted opposite loss functions.</li>
+<li><strong>Develop:</strong> someone you hired or grew.</li>
+<li><strong>Stewardship:</strong> client confidentiality or a conduct near-miss.</li>
+</ul>
+<p>Keep each story <strong>90 seconds</strong>, with a <strong>metric</strong> and a <strong>control</strong>.</p></section><section class="panel" id="plan"><h1>Study plan and round design</h1>
 <p>Assume <strong>10–14 days</strong>. If you have less, do the <strong>bold</strong> items only.</p>
 <h2>What the four rounds are testing (Director edition)</h2>
-<div class='table-wrap'><table><thead><tr><th>Round</th><th>Surface</th><th>What a GM panel is actually buying</th></tr></thead><tbody><tr><td><strong>ML</strong></td><td>Forecasting, recommenders, uncertainty, leakage, trees vs linear, calibration, bandits</td><td>Can you be the <strong>senior technical authority</strong> the typical seat asked for?</td></tr><tr><td><strong>DL / GenAI</strong></td><td>When DL loses; <strong>agentic</strong> tools; RAG; hallucination; RL only in sim</td><td><strong>Fundamentals</strong> of modern GenAI. Not an expert at all topics.</td></tr><tr><td><strong>Coding</strong></td><td>Python, information set, leaky backtest</td><td><strong>Competent</strong> coding. They are <strong>not</strong> hiring a software engineer.</td></tr><tr><td><strong>Project</strong></td><td>FX PoC + GenAI rail, 4–6, Quant-central, governance</td><td>Broader Director remit: APAC, team, strategy, PnL.</td></tr></tbody></table></div>
+<div class='table-wrap'><table><thead><tr><th>Round</th><th>Surface</th><th>What a GM panel is actually buying</th></tr></thead><tbody><tr><td><strong>ML</strong></td><td>Forecasting, recommenders, uncertainty, leakage, trees vs linear, calibration, bandits</td><td>Can you be the <strong>senior technical authority</strong> the typical seat asked for?</td></tr><tr><td><strong>DL / GenAI</strong></td><td>When DL loses; <strong>agentic</strong> tools; RAG; hallucination; RL only in sim</td><td><strong>Fundamentals</strong> of modern GenAI. Not an expert at all topics.</td></tr><tr><td><strong>Coding</strong></td><td>Python, information set, leaky backtest</td><td><strong>Competent</strong> coding. They are <strong>not</strong> hiring a software engineer.</td></tr><tr><td><strong>Project</strong></td><td>Live desk <strong>scenario</strong>: diagnose a broken production model (leakage, metrics, serving, conduct, GenAI as a constraint)</td><td>Fourth <strong>technical</strong>. Not a 90-day org plan.</td></tr></tbody></table></div>
 <p>They will also sample <strong>risk and controls</strong> and <strong>APAC stakeholder craft</strong> (HK desks vs Singapore eFX vs London AI/ML).</p>
 <h2>14-day plan</h2>
 <h3>Days 1–2 — franchise and story</h3>
@@ -488,6 +587,7 @@ summary { cursor: pointer; font-weight: 600; }
 <li>If you are not from markets or quant research, read <code>jargon.md</code> <strong>once end-to-end</strong>.</li>
 <li>Read <code>seat.md</code> and map <strong>seven STAR stories</strong> to the requirement list.</li>
 <li>Read <code>briefing.md</code> twice. Write your <strong>2-minute opening</strong> from the typical seat (centralised Quant, not SE, FX PoC, GenAI + modelling).</li>
+<li>Read <code>landing.md</code>. Say the <strong>90-day</strong> page out loud. That is how you would start — it is <strong>not</strong> technical round 4.</li>
 <li>Map three named internal clients: eFX trader / eSales, Equities algo quant (equities-algo-quant), Prime quant (prime-quant). For each, one pain, one model, one metric, one control.</li>
 <li>Prepare <strong>two war stories</strong>: (1) a model you killed, (2) a model you productionised through governance. Use numbers.</li>
 </ul>
@@ -517,12 +617,12 @@ summary { cursor: pointer; font-weight: 600; }
 <li>Extra: write a 20-line critique of a messy pandas backtest (the debug problem).</li>
 <li>Do <strong>not</strong> grind leetcode system design, kdb, or Java unless a later interviewer asks.</li>
 </ul>
-<h3>Days 12–13 — project and leadership</h3>
+<h3>Days 12–13 — project scenario (technical)</h3>
 <ul>
-<li>Sit <code>mocks/04-project.md</code> with a timer. Record yourself.</li>
-<li>Two rails on the slide: <strong>FX PoC</strong> and <strong>GenAI/agentic</strong>. The typical seat called the mandate extremely broad.</li>
-<li>Hiring: first three <strong>AI/ML</strong> roles; what you will <strong>not</strong> hire (a SE shop, an HFT team).</li>
-<li>Tough questions: “We’re not looking for software engineers”; “HFT isn’t essential — why 50µs?”; “Why not just use London models?”</li>
+<li>Sit <code>mocks/04-project.md</code> with a timer. Record yourself. It is a <strong>live toxicity/last-look case</strong>, not a strategy deck.</li>
+<li>Whiteboard: decision, information set, why AUC-on-fills is a trap, costed markout vs fill, what actually runs at 80µs, desk assistant as tools not a pricer.</li>
+<li>If they pivot, the mini-cases (notebook in prod, Prime LLM, vendor TCA, Tokyo-open incident) are still technical.</li>
+<li>Fit / hiring / “why you vs London” stay on <code>landing.md</code>. Do not mix them into this mock.</li>
 </ul>
 <h3>Day 14 — integration</h3>
 <ul>
@@ -655,16 +755,16 @@ summary { cursor: pointer; font-weight: 600; }
 </ol>
 <p class="why">Ship a Hawkes + inventory policy; keep RL in simulator until logging exists. Do not PPO live.</p>
 </details>
-<h2>Walk-in ticks (project round)</h2>
-<p>Eight coverage checks. Tick while you rehearse the case.</p>
-<label class="walk"><input type="checkbox" data-tick="w1"> Named one FX PoC (pair + session + markout vs fill-rate trade-off)</label>
-<label class="walk"><input type="checkbox" data-tick="w2"> Named a GenAI/agentic rail (tools, HITL, never invents a mid)</label>
-<label class="walk"><input type="checkbox" data-tick="w3"> You specify models; engineering serves the engine — not an SE identity</label>
-<label class="walk"><input type="checkbox" data-tick="w4"> RACI: London AI, SG eFX, HK QR/Prime, MRM, eSales, you</label>
-<label class="walk"><input type="checkbox" data-tick="w5"> Tiering: desk-assistant workflow ≠ auto-skew pricing</label>
-<label class="walk"><input type="checkbox" data-tick="w6"> Kill switch, dual-run, CNH residency if required</label>
-<label class="walk"><input type="checkbox" data-tick="w7"> Team: AI/ML people who can code; hire less than 6 until a user exists</label>
-<label class="walk"><input type="checkbox" data-tick="w8"> 18-month clone onto Equities/Prime without restarting the platform</label>
+<h2>Walk-in ticks (project scenario)</h2>
+<p>Coverage checks for the live toxicity case — not the 90-day landing page.</p>
+<label class="walk"><input type="checkbox" data-tick="w1"> Named the decision (last-look / widen) and both metrics in conflict (markout vs fill)</label>
+<label class="walk"><input type="checkbox" data-tick="w2"> Diagnosed random-split AUC, fill-only labels, and nightly retrain as a feedback loop</label>
+<label class="walk"><input type="checkbox" data-tick="w3"> Information set: decision time vs label window; purge / embargo</label>
+<label class="walk"><input type="checkbox" data-tick="w4"> Costed threshold; corporate CNH overlap as a franchise segment</label>
+<label class="walk"><input type="checkbox" data-tick="w5"> SageMaker trains; engine budget is ~80µs — distil or rules, not cloud GBDT live</label>
+<label class="walk"><input type="checkbox" data-tick="w6"> Last-look conduct / client-class reject rates</label>
+<label class="walk"><input type="checkbox" data-tick="w7"> Desk assistant: tools + reason-code; never invents a mid; different model tier</label>
+<label class="walk"><input type="checkbox" data-tick="w8"> Kill: fallback quote, dual-run, signed off-criteria, CNH residency if required</label>
 </section><section class="panel" id="ml"><h1>Round 1 — Machine Learning (Director mock)</h1>
 <p><strong>Time:</strong> 90 minutes <strong>Format:</strong> 20 min rapid-fire, 40 min deep dives, 30 min mini-case <strong>Rules:</strong> No laptop except for a blank sheet. Say assumptions. Tie every method to a desk consumer.</p>
 <p>Grade yourself 0–2 per item (0 miss, 1 partial, 2 production-grade). <strong>Pass ≥ 28/40</strong>. Director bar is not “I have heard of XGBoost”.</p>
@@ -958,136 +1058,89 @@ pytest -q</code></pre>
 <li>You specify the model; Singapore/HK <strong>engineering</strong> owns the hot path.</li>
 <li>Registry, canary, kill switch, information set.</li>
 <li>You do not need to design exactly-once fill streams unless asked.</li>
-</ul></section><section class="panel" id="project"><h1>Round 4 — Project / case (Director mock)</h1>
-<p><strong>Time:</strong> 90 minutes (45 min working + 45 min interrogation) <strong>Deliverable:</strong> a structure you could put on one slide pack: problem, options, recommendation, 90-day plan, risks, ask.</p>
-<p>This is the round that <strong>hires or kills</strong> a Director. Technical rounds proved you can think. This round proves APAC GM can <strong>give you a team</strong>.</p>
+</ul></section><section class="panel" id="project"><h1>Round 4 — Project / scenario (technical)</h1>
+<p><strong>Time:</strong> 90 minutes (45 min working + 45 min interrogation) <strong>Deliverable:</strong> a diagnosis and a technical recommendation you could defend at a whiteboard: decision, information set, metrics, model, serving, what you would not do, kill criteria.</p>
+<p>This is still a <strong>technical</strong> round. It is not a 90-day org plan, a hiring deck, or “how I would start as Director.” That material lives in <a href="#landing">Landing</a>. Here they put a <strong>messy live problem</strong> in front of you and listen for whether you can think like the senior technical authority.</p>
 <hr>
-<h2>Case: “FX PoC, then the broad mandate”</h2>
+<h2>Case: the toxicity score that “worked”</h2>
 <p><strong>Prompt (read slowly, then start the clock).</strong></p>
-<blockquote><p>You are the new <strong>Director – Global Markets AI</strong>, Hong Kong. You sit in a <strong>centralised Quant</strong> unit of the Investment Bank that exists <strong>for Markets</strong>. Headcount: <strong>4–6 hybrid</strong>. You are the <strong>senior technical authority</strong>, hands-on where required. The recruiter was explicit: <strong>this is not a software-engineer hire</strong>; coding competence and <strong>GenAI fundamentals</strong> are enough. HFT is <strong>optional</strong>. The team mandate is <strong>extremely broad</strong>: quantitative modelling, <strong>GenAI and agentic</strong> applications. You must <strong>deliver initial use cases in FX as a proof of concept</strong>, then scale across asset classes. London already has a desk assistant in production and SageMaker/MLflow patterns. Singapore hosts the pricing engine. HK/Tokyo host Equities algos. APAC Markets is pushing Equities and Prime.<br><br>In 90 days the Global Head of GM AI/ML and the APAC Head of Markets will ask: <strong>what did we turn on, who uses it, and what did it do to PnL and risk?</strong><br><br>Design the programme. You must show <strong>two rails</strong>: (A) FX quantitative PoC (B) GenAI/agentic.</p></blockquote>
+<blockquote><p>APAC eFX streams <strong>USDCNH</strong> on the e-trading platform during the Asia session. Six weeks ago a <strong>GBDT toxicity score</strong> went live: if <code>P(toxic) &gt; 0.6</code> the engine <strong>last-looks or widens</strong>. A researcher reported <strong>AUC 0.71</strong> on a <strong>random 70/30 split</strong>. The model <strong>retrains every night on yesterday’s fills</strong>. The score is fit in Python on <strong>SageMaker</strong> and pushed toward the <strong>pricing engine</strong>; eFX says the engine budget is about <strong>80µs</strong>.<br><br>Since go-live:<br>- 1-second <strong>markout improved 0.2 bp</strong><br>- <strong>fill rate fell 8%</strong><br>- CNH <strong>corporate</strong> flow in the London/Asia overlap <strong>collapsed</strong><br>- a salesperson: “the model hates our franchise clients”<br>- Compliance asks whether <strong>last-look is now worse for one client class</strong><br><br>eSales also wants the <strong>desk assistant to tell the client why we widened</strong>, live.<br><br>Diagnose. Then propose what you would <strong>measure</strong>, what you would <strong>change</strong> (label, split, model, threshold, serving), what you would <strong>not</strong> do, and how you would <strong>know to kill it</strong>. Do not design a 90-day programme or a 4–6 person org chart.</p></blockquote>
 <h3>Suggested structure (use it)</h3>
 <ol>
-<li><strong>Problem framing</strong> (5 min) — whose pain, why now, why this bank.</li>
-<li><strong>Use-case funnel</strong> (10 min) — 8 ideas, kill 5, spike 3, pick 1 production + 1 platform.</li>
-<li><strong>Architecture</strong> (10 min) — data, research, shadow, hot path, GenAI vs statistical.</li>
-<li><strong>Operating model</strong> (10 min) — team, London/SG/HK RACI, on-call.</li>
-<li><strong>Controls</strong> (10 min) — SS1/23, HKMA, conduct, model tiering.</li>
-<li><strong>90-day plan</strong> (10 min) — weeks, milestones, metrics.</li>
-<li><strong>18-month scaling</strong> (5 min) — Equities/Prime without losing the FX win.</li>
-<li><strong>Asks</strong> (5 min) — data, access, air cover.</li>
+<li><strong>Restate the decision</strong> (5 min) — what the model is allowed to change (last-look / widen / skew), whose PnL, what “good” cannot be.</li>
+<li><strong>Diagnose</strong> (15 min) — why the reported AUC can be real and the desk still be losing; leakage; label construction; feedback loops; client mix.</li>
+<li><strong>Technical design</strong> (15 min) — information set, validation, metric, model class, calibration, threshold, where inference actually runs.</li>
+<li><strong>The desk-assistant ask</strong> (5 min) — tools vs invented prices; tiering; what must not go in the prompt.</li>
+<li><strong>Ship / kill</strong> (5 min) — shadow vs canary, fallback quote, signed kill criteria, CNH residency if it bites this pair.</li>
 </ol>
-<p>Interrogation will try to <strong>break</strong> your plan. Invite it.</p>
+<p>Interrogation will try to <strong>break the diagnosis</strong>. Invite it.</p>
 <hr>
 <h2>Interrogation bank (practise out loud)</h2>
 <ol>
-<li>London already has a USDJPY model. Why do we need you?</li>
-<li>Why not hire six PhDs and publish?</li>
-<li>Trader says ML is a religion. How do you get a <strong>kill-switch culture</strong>, not a science club?</li>
-<li>Compliance: your recommender used client chat. What did you ingest?</li>
-<li>Last-look is in the press again. Does your toxicity model make it <strong>worse</strong>?</li>
-<li>SageMaker cannot hit our latency. So why did the posting mention it?</li>
-<li>CNH data cannot leave HK. How do you train?</li>
-<li>Your markout improved 0.2 bp and fill rate fell 8%. Did you succeed?</li>
-<li>GPU spend is 4× the PnL. What do you cut?</li>
-<li>A VP wants to put GPT-4 on the quote stream. You say?</li>
-<li>Equities quant team already has kdb and Java algos. Do you replace them?</li>
-<li>How do you staff India (offshore tech centre) vs HK?</li>
-<li>What is <strong>not</strong> a model under SS1/23 in your estate?</li>
-<li>Give me a <strong>RACI</strong> for a production incident at 02:00 London / 09:00 HK.</li>
-<li>We are <strong>not looking for software engineers</strong>. Why did you talk about gRPC and 50µs?</li>
-<li>HFT is not essential. Can you still be the technical authority?</li>
-<li>The mandate is <strong>quant modelling and agentic</strong>. You only listed an FX skew model. Where is GenAI?</li>
-<li>You have been Director 2–3 years. What is <strong>broader</strong> about this remit?</li>
+<li>AUC 0.71 — why is that the wrong headline?</li>
+<li>What is wrong with training only on <strong>fills</strong>?</li>
+<li>Walk the <strong>information set</strong> at quote time vs the label window.</li>
+<li>How does <strong>last-look</strong> poison the next day’s labels?</li>
+<li>Markout +0.2 bp, fill −8%. Did you succeed?</li>
+<li>How would you test “we are disadvantaging a client class”?</li>
+<li>SageMaker cannot hit 80µs. So what actually ships, and what is SageMaker for?</li>
+<li>How do you <strong>distil</strong>, and what drift would make you roll back the small model?</li>
+<li>CNH ticks cannot leave HK. How do you train and validate?</li>
+<li>The desk assistant explains the widen without inventing a mid or RAG-ing other clients. How?</li>
+<li>Would you turn <strong>last-look off</strong> and only widen? Why?</li>
+<li>London has a USDJPY toxicity model. What transfers, and what breaks on USDCNH?</li>
+<li>A VP wants GPT-4 on the quote stream. You say?</li>
+<li>What is the <strong>fallback quote</strong> when the kill switch fires?</li>
+<li>Is the toxicity score a “model” under SS1/23? Is the assistant sentence?</li>
+<li>How do you A/B when the policy <strong>changes who fills</strong>?</li>
+<li>Inventory was ignored. How does it enter the decision without turning this into a second pricer you do not own?</li>
+<li>The desk wants it “fixed this week.” What is the one-week patch vs the real fix?</li>
 </ol>
 <hr>
 <h2>Scoring rubric (grade yourself honestly)</h2>
-<div class='table-wrap'><table><thead><tr><th>Dimension</th><th>1</th><th>3</th><th>5</th></tr></thead><tbody><tr><td><strong>PnL literacy</strong></td><td>Metrics are AUC/accuracy</td><td>Mix of ML and desk metrics</td><td>Optimises a <strong>costed franchise metric</strong> and names the trade-off</td></tr><tr><td><strong>Sequencing</strong></td><td>Boils the ocean</td><td>FX listed first</td><td>FX <strong>PoC</strong> plus a <strong>GenAI/agentic</strong> rail; then Equities/Prime</td></tr><tr><td><strong>Stakeholder map</strong></td><td>“Work with traders”</td><td>Names desks</td><td>RACI across <strong>London AI, SG eFX, HK QR/Prime, MRM, eSales</strong></td></tr><tr><td><strong>Architecture</strong></td><td>Cloud slogan</td><td>SageMaker mentioned</td><td>Research vs engine, <strong>and</strong> a GenAI tool path with HITL — you specify, engineering serves</td></tr><tr><td><strong>Controls</strong></td><td>“We will be responsible”</td><td>Inventory, validation</td><td><strong>Tiering</strong>, HITL for GenAI, kill switch, dual-run, data residency</td></tr><tr><td><strong>Team</strong></td><td>Generic org chart</td><td>4–6 roles</td><td>AI/ML people who can code; <strong>not</strong> an SE shop; hire less until a user exists</td></tr><tr><td><strong>No</strong></td><td>Never kill ideas</td><td>Kills DL theatre</td><td>Kills <strong>specific</strong> ideas with a reason the desk respects</td></tr><tr><td><strong>Voice</strong></td><td>IC who wants headcount</td><td>Manager</td><td><strong>Director</strong>: air cover, trade-offs, names what you will not do</td></tr></tbody></table></div>
-<p><strong>Pass:</strong> average ≥ 4 and no 1s on PnL, controls, or sequencing.</p>
+<div class='table-wrap'><table><thead><tr><th>Dimension</th><th>1</th><th>3</th><th>5</th></tr></thead><tbody><tr><td><strong>Diagnosis</strong></td><td>“Retrain a bigger model”</td><td>Names one bug</td><td>Separates <strong>leakage, selection, metric, policy feedback, client mix</strong></td></tr><tr><td><strong>Information set</strong></td><td>Features listed</td><td>Mentions time</td><td>Decision time vs label window; no future; embargo</td></tr><tr><td><strong>Metric</strong></td><td>AUC / accuracy</td><td>Adds markout</td><td><strong>Costed markout and fill / franchise</strong>; threshold as a policy, not a default 0.6</td></tr><tr><td><strong>Model / serving</strong></td><td>Cloud slogan</td><td>GBDT mentioned</td><td>Offline fit vs <strong>engine budget</strong>; distil or rules; SageMaker is not the hot path</td></tr><tr><td><strong>Conduct</strong></td><td>“Be fair”</td><td>Mentions last-look</td><td><strong>Client-class rates</strong>, last-look optics, no protected-class proxies</td></tr><tr><td><strong>GenAI</strong></td><td>Chatbot on prices</td><td>“Don’t hallucinate”</td><td><strong>Tools</strong> to mid/skew/reason-code; HITL; <strong>different tier</strong> from the toxicity model</td></tr><tr><td><strong>Kill</strong></td><td>Hope</td><td>Kill switch named</td><td>Fallback quote, dual-run, signed off-criteria, residency</td></tr><tr><td><strong>Voice</strong></td><td>Strategy deck</td><td>Mix of org and tech</td><td><strong>Technical case</strong>: you would change <em>this</em>, not hire a team</td></tr></tbody></table></div>
+<p><strong>Pass:</strong> average ≥ 4 and no 1s on diagnosis, metric, or information set.</p>
 <hr>
-<h2>A strong reference plan (do not memorise; internalise)</h2>
-<h3>Framing</h3>
-<p>The bank is building <strong>GM AI/ML as a greenfield</strong> inside <strong>centralised Markets Quant</strong>. The HK Director is the APAC <strong>senior technical authority</strong>: FX <strong>PoC</strong> first, then scale, with a mandate that is <strong>quant modelling + GenAI/agentic</strong>. You translate desk pain into <strong>tiered</strong> models existing QR/QD/traders will <strong>use</strong>. You work <strong>with</strong> engineering. You do not replace the pricing engine or HK Equities Java, and you do not staff an SE org.</p>
-<h3>Funnel (example)</h3>
-<p><strong>Kill now</strong></p>
+<h2>A strong reference (do not memorise; internalise)</h2>
+<h3>Restate</h3>
+<p>The model is not “predicting toxicity.” It is a <strong>policy</strong>: last-look or widen on USDCNH streaming. Success is <strong>franchise PnL</strong> — markout <strong>and</strong> fill, by client segment and session — not AUC. Last-look is a conduct surface, not a free option.</p>
+<h3>Diagnose (the actual bugs)</h3>
 <ul>
-<li>Transformer on raw mid returns.</li>
-<li>Live RL on the pricing engine.</li>
-<li>Unconstrained LLM prices.</li>
-<li>Firm-wide “AI platform” with no user.</li>
+<li><strong>Random 70/30</strong> on tick data with a forward markout label <strong>leaks</strong>. Overlapping windows, no purge, no embargo.</li>
+<li><strong>Train on fills only.</strong> Rejects, last-look declines, and “widened so they left” never enter the label. The model is scored on the survivors of yesterday’s policy. Nightly retrain <strong>locks that in</strong>.</li>
+<li><strong>AUC 0.71</strong> can be true and useless. The desk uses a <strong>threshold</strong>. They need <strong>calibration</strong> (reliability by session/size) and a <strong>costed</strong> threshold: expected markout saved vs franchise fill lost.</li>
+<li><strong>+0.2 bp / −8% fill</strong> is not a win by default. Corporate CNH in overlap is exactly the franchise they cannot scare. Segment the metric: HF vs corporate, overlap vs Tokyo morning, size buckets.</li>
+<li><strong>Last-look as a function of a score</strong> changes who gets filled, which changes tomorrow’s training mix — a <strong>feedback loop</strong>. It can also look like systematically worse treatment of a client class.</li>
+<li><strong>SageMaker → 80µs</strong> is a category error. The engine cannot wait on a Python GBDT in the cloud. Offline research vs distilled linear / small net / rules <strong>on the pricing engine</strong>.</li>
 </ul>
-<p><strong>Spike (4 weeks, two people)</strong></p>
-<ol>
-<li><strong>FX statistical PoC:</strong> toxicity / markout or RFQ win-rate for USDCNH + USDJPY Asia sessions.</li>
-<li><strong>GenAI/agentic PoC:</strong> desk-assistant tools for APAC hours (<code>get_mid</code>, <code>get_skew</code>, draft ticket) — never invented numbers; HKMA HITL.</li>
-<li>Logging: if RFQ propensities are missing, the spike <strong>is</strong> the log.</li>
-</ol>
-<p><strong>Production (one statistical + one workflow, different tiers)</strong></p>
+<h3>Technical design</h3>
 <ul>
-<li><strong>Skew assistant</strong> (trader or rules commit). Metric: 1s/10s markout <strong>and</strong> fill ratio.</li>
-<li><strong>Agentic ticket draft</strong> that can only <strong>call</strong> the pricer. Separate, lower model tier.</li>
+<li><strong>Label:</strong> 1s and 10s markout <strong>and</strong> fill, with size; not a binary “toxic” cooked to maximise AUC. If you keep a toxic flag, define it from <strong>post-trade markout given fill</strong>, not from “the last-look fired.”</li>
+<li><strong>Split:</strong> walk-forward, purge by horizon, embargo. Report a <strong>CPCV distribution</strong>, not one lucky week.</li>
+<li><strong>Features:</strong> lagged OFI, spread vs session, inventory, time-to-fix, CNH-CNY basis, own last-N markouts, venue mix — all <strong>as-of decision time</strong>. No same-window realised vol of the mid you are defending.</li>
+<li><strong>Model:</strong> GBDT or penalised linear <strong>offline</strong>. Distil to whatever the engine will take. No transformer on mids. No live RL. No LLM mid.</li>
+<li><strong>Threshold:</strong> chosen on <strong>costed</strong> shadow PnL, by session, with a cap on fill-rate damage. Override stays with the trader.</li>
+<li><strong>Serving:</strong> feature contract + golden ticks; inference next to the pricing engine or a pre-computed skew table; SageMaker for fit and batch eval only.</li>
 </ul>
-<p><strong>Platform (must ship with it)</strong></p>
+<h3>Desk assistant</h3>
+<p>Different artefact, <strong>lower tier</strong>. The bot <strong>calls</strong> <code>get_mid</code>, <code>get_skew</code>, <code>get_reason_code</code> (approved vocabulary: “wider because inventory / session / last-look policy”). It does not compute the score, does not RAG other clients, does not invent a number. HITL while client-facing. SS1/23: a drafted sentence is not a pricing model <strong>unless</strong> you let it commit risk.</p>
+<h3>Ship / kill</h3>
 <ul>
-<li>Point-in-time feature spec + golden ticks + MLflow registry + shadow harness that Equities can clone.</li>
+<li>Shadow the new label/threshold against the live policy <strong>before</strong> touching last-look.</li>
+<li>Canary one session (not all CNH corporates first).</li>
+<li>Kill switch: revert to pre-model widen rules / last-look policy. Fallback must be a <strong>quote</strong>, not “error.”</li>
+<li>Off-criteria signed: fill-rate drop vs a named client segment, or markout worse than baseline, or a client-class reject gap.</li>
+<li>CNH: train in-region if required.</li>
 </ul>
-<h3>Architecture</h3>
-<pre><code>Desks (HK) ── pain, override, colour
-   │
-Research (HK Python, SageMaker) ── train, CPCV, notebooks
-   │  feature spec + golden tests
-Feature / model registry (London MLOps patterns)
-   │
-Shadow book ── dual run
-   │
-Hot path (SG pricing engine / HK algo box) ── distilled model or rules
-   │
-Desk assistant (workflow) ── tools to mid/skew; HITL</code></pre>
-<h3>Team (first 90 days)</h3>
-<ul>
-<li>You — senior technical authority, hands-on on FX model #1.</li>
-<li>1 applied scientist (forecasting / recommenders / uncertainty).</li>
-<li>1 applied scientist (GenAI/agentic fundamentals) <strong>once</strong> Compliance has scoped tools — can be week 3, not day 90.</li>
-<li>1 production-minded quant working <strong>with</strong> London/SG engineering.</li>
-<li>0.5 London MLOps (matrix), 0.5 HK QR design partner.</li>
-</ul>
-<p>Do not hire a software-engineering org. The seat forbade that identity.</p>
-<h3>Controls</h3>
-<ul>
-<li>Inventory all artefacts on day 30.</li>
-<li><strong>Tier 0</strong> workflow (assistant) vs <strong>Tier 1+</strong> if auto-skew.</li>
-<li>Dual run, kill switch, session-level fallback.</li>
-<li>CNH: train <strong>in-region</strong> if required; no raw ticks in an unconstrained London notebook.</li>
-<li>GenAI: scope written; no RAG over other clients.</li>
-</ul>
-<h3>90-day calendar</h3>
-<div class='table-wrap'><table><thead><tr><th>Week</th><th>Outcome</th></tr></thead><tbody><tr><td>1–2</td><td>Stakeholder map; data access; model inventory; pick pair/session</td></tr><tr><td>3–4</td><td>PIT audit; leakage tests; baseline linear/GBDT</td></tr><tr><td>5–6</td><td>Shadow book live; trader override UX with eSales/eFX</td></tr><tr><td>7–8</td><td>CPCV + costed metrics; MRM pre-read; desk-assistant tool spec</td></tr><tr><td>9–10</td><td>Canary one pair/session; kill criteria signed</td></tr><tr><td>11–12</td><td>Review with London + APAC Markets: <strong>on/off</strong>, Equities clone plan</td></tr></tbody></table></div>
-<h3>18 months</h3>
-<p>Same <strong>feature + shadow + registry</strong> pattern for <strong>HKEX algo fill probability</strong> and a <strong>Prime client-flow / utilisation</strong> tool. Do not start those until FX canary is boring.</p>
-<h3>Asks</h3>
-<ul>
-<li>Tick + RFQ + markout access with a <strong>named data owner</strong>.</li>
-<li>Intro to SG pricing-engine engineering and HK Equities quant.</li>
-<li>MRM fast-track for <strong>Tier 1 skew assistant</strong>.</li>
-<li>Air cover to say no to a firm-wide LLM demo week 3.</li>
-</ul>
+<h3>What you say no to this week</h3>
+<p>Bigger net. Lower the 0.6 because AUC looked good. GPT on the stream. Replacing the pricing engine. A firm-wide AI platform. Hiring a team to “own the problem” instead of changing the label.</p>
 <hr>
 <h2>Mini-cases (if they pivot)</h2>
-<p>Sit these in 20 minutes each after the main case.</p>
+<p>Still technical scenarios. Sit these in 20 minutes each after the main case.</p>
 <p><strong>M1. The researcher’s notebook is in production.</strong> Overnight job on a desktop, no tests, making money. What do you do in week 1 vs week 8? (Do not kill PnL on day one; wrap, test, dual-run, then retire the desktop.)</p>
 <p><strong>M2. Prime wants an LLM over client inventory.</strong> Conduct, information barriers, who the user is, why a <strong>constrained tool</strong> beats a chatbot.</p>
 <p><strong>M3. Build vs buy.</strong> Vendor claims 20 bp TCA improvement. How you trial (A/B, capacity, last-look policy alignment, data egress, kill).</p>
-<p><strong>M4. Incident.</strong> Model widened everyone at Tokyo open, franchise volume collapsed. Walk the <strong>bridge</strong>: detect, kill, fallback, client comms, post-mortem, who speaks.</p>
-<hr>
-<h2>Behavioural extras</h2>
-<p>Prepare STAR stories mapped to <strong>challenge, drive, align, develop, stewardship</strong>:</p>
-<ul>
-<li><strong>Challenge:</strong> you stopped a launch; the number looked good.</li>
-<li><strong>Drive:</strong> you landed a model through MRM.</li>
-<li><strong>Align:</strong> you sat between two desks who wanted opposite loss functions.</li>
-<li><strong>Develop:</strong> someone you hired or grew.</li>
-<li><strong>Stewardship:</strong> client confidentiality or a conduct near-miss.</li>
-</ul>
-<p>Keep each story <strong>90 seconds</strong>, with a <strong>metric</strong> and a <strong>control</strong>.</p></section><section class="panel" id="morning"><h1>Morning-of one-pager</h1>
+<p><strong>M4. Incident.</strong> Model widened everyone at Tokyo open, franchise volume collapsed. Walk the <strong>bridge</strong>: detect, kill, fallback, client comms, post-mortem — technically, who inspects which log.</p></section><section class="panel" id="morning"><h1>Morning-of one-pager</h1>
 <p>If a word here is still opaque, look it up in <a href="#jargon">Words</a> — do not walk in hoping the panel will translate.</p>
 <h2>Opening (≈90 seconds)</h2>
 <p>Centralised <strong>Markets Quant</strong> AI in APAC. I am the HK <strong>Director and senior technical authority</strong>: hybrid <strong>4–6</strong>, hands-on, <strong>not a software engineer</strong>, HFT optional. Mandate is <strong>broad</strong> — quantitative modelling <strong>and</strong> GenAI/agentic. Sequence: <strong>FX PoC</strong>, then scale. 90 days: one FX slice the desk can kill <strong>and</strong> a desk-assistant tool that never invents a mid. Then Equities/Prime on the same rails.</p>
@@ -1103,11 +1156,12 @@ Desk assistant (workflow) ── tools to mid/skew; HITL</code></pre>
 <li><strong>ML:</strong> purged walk-forward + embargo; costed markouts not AUC; trees first; recommenders are multi-stakeholder (forecasting, recommenders, uncertainty).</li>
 <li><strong>DL:</strong> DL only for tensors/policies; desk assistant <strong>tools</strong> for prices; <strong>agentic</strong> is on the mandate — fundamentals, not every topic; no live RL.</li>
 <li><strong>Coding:</strong> competent Python and information sets. They are <strong>not</strong> hiring a software engineer.</li>
-<li><strong>Project:</strong> FX PoC + GenAI/agentic rail; hire modellers not an SE shop; kill switch; desk assistant ≠ pricing tier.</li>
+<li><strong>Project:</strong> live toxicity scenario — diagnose leakage / fill-only labels / AUC trap; costed markout vs fill; distil to the engine; desk assistant tools ≠ pricing tier. Not a 90-day org plan.</li>
 </ul>
 <h2>Kill list</h2>
 <p>Transformer on mids · PPO live · LLM-invented mid · RAG over other clients · firm-wide platform with no user · replacing HK Equities Java algos on day one.</p>
 <h2>First team</h2>
+<p><em>(This is the landing crib, not the project-round answer.)</em></p>
 <p>You (hands-on authority) + applied scientist (forecast/recommender) + GenAI/agentic scientist + production-minded quant working <strong>with</strong> engineering. Matrix London MLOps. Do not hire six SEs.</p>
 <h2>Controls</h2>
 <p>SS1/23 inventory and tiering. HKMA HITL on customer-facing GenAI. CNH residency. Dual-run. Signed kill criteria.</p></section>

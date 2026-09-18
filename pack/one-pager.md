@@ -27,13 +27,15 @@ SG = eFX engine (you partner, you do not own it). HK/Tokyo = Equities algos/SOR.
 - **ML:** purged walk-forward + embargo; costed markouts not AUC; trees first; recommenders are multi-stakeholder (forecasting, recommenders, uncertainty).
 - **DL:** DL only for tensors/policies; desk assistant **tools** for prices; **agentic** is on the mandate — fundamentals, not every topic; no live RL.
 - **Coding:** competent Python and information sets. They are **not** hiring a software engineer.
-- **Project:** FX PoC + GenAI/agentic rail; hire modellers not an SE shop; kill switch; desk assistant ≠ pricing tier.
+- **Project:** live toxicity scenario — diagnose leakage / fill-only labels / AUC trap; costed markout vs fill; distil to the engine; desk assistant tools ≠ pricing tier. Not a 90-day org plan.
 
 ## Kill list
 
 Transformer on mids · PPO live · LLM-invented mid · RAG over other clients · firm-wide platform with no user · replacing HK Equities Java algos on day one.
 
 ## First team
+
+*(This is the landing crib, not the project-round answer.)*
 
 You (hands-on authority) + applied scientist (forecast/recommender) + GenAI/agentic scientist + production-minded quant working **with** engineering. Matrix London MLOps. Do not hire six SEs.
 

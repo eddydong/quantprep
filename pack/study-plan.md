@@ -1,6 +1,6 @@
 # Study plan and round design
 
-**4 of 8** in the pack. Previous: [briefing.md](briefing.md). Next: [mocks/01-ml.md](mocks/01-ml.md). 
+**4 of 8** in the pack. Previous: [landing.md](landing.md). Next: [mocks/01-ml.md](mocks/01-ml.md). 
 
 Assume **10–14 days**. If you have less, do the **bold** items only.
 
@@ -11,7 +11,7 @@ Assume **10–14 days**. If you have less, do the **bold** items only.
 | **ML** | Forecasting, recommenders, uncertainty, leakage, trees vs linear, calibration, bandits | Can you be the **senior technical authority** the typical seat asked for? |
 | **DL / GenAI** | When DL loses; **agentic** tools; RAG; hallucination; RL only in sim | **Fundamentals** of modern GenAI. Not an expert at all topics. |
 | **Coding** | Python, information set, leaky backtest | **Competent** coding. They are **not** hiring a software engineer. |
-| **Project** | FX PoC + GenAI rail, 4–6, Quant-central, governance | Broader Director remit: APAC, team, strategy, PnL. |
+| **Project** | Live desk **scenario**: diagnose a broken production model (leakage, metrics, serving, conduct, GenAI as a constraint) | Fourth **technical**. Not a 90-day org plan. |
 
 They will also sample **risk and controls** and **APAC stakeholder craft** (HK desks vs Singapore eFX vs London AI/ML).
 
@@ -22,6 +22,7 @@ They will also sample **risk and controls** and **APAC stakeholder craft** (HK d
 - If you are not from markets or quant research, read `jargon.md` **once end-to-end**.
 - Read `seat.md` and map **seven STAR stories** to the requirement list.
 - Read `briefing.md` twice. Write your **2-minute opening** from the typical seat (centralised Quant, not SE, FX PoC, GenAI + modelling).
+- Read `landing.md`. Say the **90-day** page out loud. That is how you would start — it is **not** technical round 4.
 - Map three named internal clients: eFX trader / eSales, Equities algo quant (equities-algo-quant), Prime quant (prime-quant). For each, one pain, one model, one metric, one control.
 - Prepare **two war stories**: (1) a model you killed, (2) a model you productionised through governance. Use numbers.
 
@@ -52,12 +53,12 @@ The typical seat: competent at coding, **not** a software-engineer interview.
 - Extra: write a 20-line critique of a messy pandas backtest (the debug problem).
 - Do **not** grind leetcode system design, kdb, or Java unless a later interviewer asks.
 
-### Days 12–13 — project and leadership
+### Days 12–13 — project scenario (technical)
 
-- Sit `mocks/04-project.md` with a timer. Record yourself.
-- Two rails on the slide: **FX PoC** and **GenAI/agentic**. The typical seat called the mandate extremely broad.
-- Hiring: first three **AI/ML** roles; what you will **not** hire (a SE shop, an HFT team).
-- Tough questions: “We’re not looking for software engineers”; “HFT isn’t essential — why 50µs?”; “Why not just use London models?”
+- Sit `mocks/04-project.md` with a timer. Record yourself. It is a **live toxicity/last-look case**, not a strategy deck.
+- Whiteboard: decision, information set, why AUC-on-fills is a trap, costed markout vs fill, what actually runs at 80µs, desk assistant as tools not a pricer.
+- If they pivot, the mini-cases (notebook in prod, Prime LLM, vendor TCA, Tokyo-open incident) are still technical.
+- Fit / hiring / “why you vs London” stay on `landing.md`. Do not mix them into this mock.
 
 ### Day 14 — integration
 

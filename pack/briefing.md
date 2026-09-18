@@ -1,6 +1,6 @@
 # Industry briefing: AI for Global Markets
 
-**3 of 8** in the pack. Previous: [seat.md](seat.md). Next: [study-plan.md](study-plan.md).
+**3 of 8** in the pack. Previous: [seat.md](seat.md). Next: [landing.md](landing.md).
 
 Research snapshot for a generic APAC GM AI/ML Director seat. Map every mock answer back to [The seat](seat.md).
 
@@ -92,7 +92,7 @@ Behavioural language that plays at a UK IB without sounding like a poster:
 
 ## 5. Industry: what “AI for Markets” means in 2026
 
-Sell-side Markets AI has split into four stacks. A Director who conflates them fails the project round.
+Sell-side Markets AI has split into four stacks. A Director who conflates them fails the technical case.
 
 | Stack | Job | Failure mode |
 | --- | --- | --- |
