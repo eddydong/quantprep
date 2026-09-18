@@ -1,4 +1,4 @@
-"""Answer key for the coding mock. Do not import this from candidate.py."""
+"""Answer key for the coding mock."""
 
 from __future__ import annotations
 

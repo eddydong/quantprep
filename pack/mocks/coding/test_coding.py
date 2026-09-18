@@ -1,8 +1,4 @@
-"""Tests bind to candidate.py. Sit the mock until these are green.
-
-pytest still collects this unittest module. The website lab runs the same file
-in the browser (no local venv).
-"""
+"""Tests for the coding lab. Stubs skip until you implement each function."""
 
 from __future__ import annotations
 
@@ -20,7 +16,7 @@ class TestCandidate(unittest.TestCase):
         try:
             return fn(*args, **kwargs)
         except NotImplementedError:
-            self.skipTest("implement this function in candidate.py")
+            self.skipTest("not implemented yet")
 
     def test_ewma_matches_reference(self):
         rng = np.random.default_rng(0)

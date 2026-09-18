@@ -5,7 +5,7 @@
 **Time:** 90 minutes (45 min working + 45 min interrogation)  
 **Deliverable:** a diagnosis and a technical recommendation you could defend at a whiteboard: decision, information set, metrics, model, serving, what you would not do, kill criteria.
 
-This is still a **technical** round. It is not a 90-day org plan, a hiring deck, or “how I would start as Director.” That material lives in [Landing](../landing.md). Here they put a **messy live problem** in front of you and listen for whether you can think like the senior technical authority.
+This is still a **technical** round. It is not a 90-day org plan, a hiring deck, or “how I would start as Director.” That material lives on [90 days](../landing.md). Here they put a **messy live problem** in front of you and listen for whether you can think like the senior technical authority.
 
 ---
 

@@ -1,7 +1,6 @@
 """Deliberately leaky strategy simulator — find at least five bugs.
 
 Used as the prompt for Problem 4. Do not copy this into production.
-The numbered bug list is in solutions.py, not here.
 """
 
 from __future__ import annotations

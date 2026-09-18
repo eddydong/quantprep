@@ -1,6 +1,6 @@
 # First 90 days — how you would start
 
-**Not one of the four technical rounds.** Previous: [briefing.md](briefing.md). Next: [study-plan.md](study-plan.md). The technical project mock is [mocks/04-project.md](mocks/04-project.md).
+**Not one of the four technical rounds.** This is how you would start the job. The fourth technical is [Project](mocks/04-project.md).
 
 Use this when they ask *how you would land*, in a fit conversation, or in the opening two minutes. Do **not** walk this into the project-based technical as if it were the case.
 

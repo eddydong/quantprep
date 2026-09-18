@@ -1,9 +1,4 @@
-"""Director coding mock — implement these APIs.
-
-Sit this in the page lab (Run tests). Optional local: pytest -q
-
-Do not import solutions.py from this module.
-"""
+"""Implement these APIs. Run tests in the lab on this page."""
 
 from __future__ import annotations
 
@@ -23,7 +18,7 @@ def purged_walk_forward_splits(
 
     Sample i's label uses (t[i], t[i] + horizon]. Train must not contain
     samples whose information interval overlaps the embargo-expanded test
-    window. See mocks/03-coding.md.
+    window.
     """
     raise NotImplementedError
 

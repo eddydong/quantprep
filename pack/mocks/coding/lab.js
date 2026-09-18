@@ -55,7 +55,7 @@
     btn.addEventListener("click", () => {
       const next = btn.dataset.labTab;
       if (next === "solutions" && !revealed) {
-        if (!confirm("Show the answer key? Sit the mock in candidate.py first.")) return;
+        if (!confirm("Show the answer key? Sit the mock in the editor first.")) return;
         revealed = true;
       }
       if (tab === "candidate") persist();

@@ -19,10 +19,10 @@ They will also sample **risk and controls** and **APAC stakeholder craft** (HK d
 
 ### Days 1–2 — franchise and story
 
-- If you are not from markets or quant research, read `jargon.md` **once end-to-end**.
-- Read `seat.md` and map **seven STAR stories** to the requirement list.
-- Read `briefing.md` twice. Write your **2-minute opening** from the typical seat (centralised Quant, not SE, FX PoC, GenAI + modelling).
-- Read `landing.md`. Say the **90-day** page out loud. That is how you would start — it is **not** technical round 4.
+- If you are not from markets or quant research, read [Words](jargon.md) **once end-to-end**.
+- Read [The seat](seat.md) and map **seven STAR stories** to the requirement list.
+- Read [Briefing](briefing.md) twice. Write your **2-minute opening** from the typical seat (centralised Quant, not SE, FX PoC, GenAI + modelling).
+- Read [90 days](landing.md). Say the **90-day** page out loud. That is how you would start — it is **not** technical round 4.
 - Map three named internal clients: eFX trader / eSales, Equities algo quant (equities-algo-quant), Prime quant (prime-quant). For each, one pain, one model, one metric, one control.
 - Prepare **two war stories**: (1) a model you killed, (2) a model you productionised through governance. Use numbers.
 
@@ -33,7 +33,7 @@ They will also sample **risk and controls** and **APAC stakeholder craft** (HK d
 - Trees vs linear for tabular tick features; SHAP **without** pretending it is causal.
 - Recommenders: implicit feedback, two-tower vs FM/kernel FM, multi-objective (client utility vs desk risk).
 - Bandits: UCB, Thompson, contextual; exploration on a priced stream is **real money**.
-- Sit mock `mocks/01-ml.md` timed. Redo any miss as a whiteboard.
+- Sit the [ML mock](mocks/01-ml.md) timed. Redo any miss as a whiteboard.
 
 ### Days 6–8 — DL
 
@@ -42,23 +42,23 @@ They will also sample **risk and controls** and **APAC stakeholder craft** (HK d
 - Deep hedging: convex risk measures, friction, CVaR; what “Greek-free” means and what Risk will still ask for.
 - RL: offline / batch-constrained, sim-to-real gap, conservative Q; never “PPO on live FX”.
 - LLM: RAG vs fine-tune vs **tools**; agentic loop; hallucination of **prices**; HITL. The typical seat wants **fundamentals**, not every paper.
-- Sit mock `mocks/02-dl.md`.
+- Sit the [DL mock](mocks/02-dl.md).
 
 ### Days 9–11 — coding
 
 The typical seat: competent at coding, **not** a software-engineer interview.
 
-- Sit the lab on the Coding ticket in the portal until the tests are green. Stubs skip; implemented functions are scored against the answer key.
+- Sit the lab on **7 · Coding** until the tests are green. Stubs skip; implemented functions are scored against the answer key.
 - Then **delete your solutions from working memory** and re-implement from the problem statements in 90 minutes.
 - Extra: write a 20-line critique of a messy pandas backtest (the debug problem).
 - Do **not** grind leetcode system design, kdb, or Java unless a later interviewer asks.
 
 ### Days 12–13 — project scenario (technical)
 
-- Sit `mocks/04-project.md` with a timer. Record yourself. It is a **live toxicity/last-look case**, not a strategy deck.
+- Sit the [project scenario](mocks/04-project.md) with a timer. Record yourself. It is a **live toxicity/last-look case**, not a strategy deck.
 - Whiteboard: decision, information set, why AUC-on-fills is a trap, costed markout vs fill, what actually runs at 80µs, desk assistant as tools not a pricer.
 - If they pivot, the mini-cases (notebook in prod, Prime LLM, vendor TCA, Tokyo-open incident) are still technical.
-- Fit / hiring / “why you vs London” stay on `landing.md`. Do not mix them into this mock.
+- Fit / hiring / “why you vs London” stay on [90 days](landing.md). Do not mix them into this mock.
 
 ### Day 14 — integration
 
