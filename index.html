@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>quantprep · AI for Quant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blotter: #10231c;
+  --blotter-ink: #d7e3d4;
+  --mute: #8aa090;
+  --ticket: #f4efe4;
+  --rule: #d8d0bf;
+  --ink: #1b1712;
+  --soft: #5c564c;
+  --stamp: #8f2d3c;
+  --gold: #a67c2d;
+  --focus: #2f6f5e;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: "IBM Plex Sans", "Source Sans 3", sans-serif;
+  color: var(--ink);
+  background: var(--ticket);
+  display: grid;
+  grid-template-columns: 272px 1fr;
+  min-height: 100%;
+}
+.blotter {
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  padding: 28px 18px 40px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  border-right: 1px solid #0a1612;
+}
+.blotter h1 {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  color: var(--gold);
+}
+.blotter p { margin: 0 0 22px; font-size: 12px; color: var(--mute); line-height: 1.45; }
+.blotter nav { display: flex; flex-direction: column; gap: 2px; }
+.ticket {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  align-items: start;
+  padding: 6px 8px;
+  border-left: 2px solid transparent;
+}
+.ticket:hover, .ticket.on { border-left-color: var(--gold); background: rgba(255,255,255,0.04); }
+.blotter a {
+  color: inherit;
+  text-decoration: none;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+.blotter a small { display: block; color: var(--mute); font-size: 11px; margin-top: 2px; }
+.blotter input[type="checkbox"] {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin: 4px 0 0;
+  border: 1px solid var(--mute);
+  background: transparent;
+  cursor: pointer;
+}
+.blotter input[type="checkbox"]:checked {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.search {
+  width: 100%;
+  margin: 0 0 16px;
+  padding: 8px 10px;
+  background: #0c1a16;
+  border: 1px solid #2a4036;
+  color: var(--blotter-ink);
+  font: inherit;
+  font-size: 13px;
+}
+.search:focus { outline: 1px solid var(--gold); }
+main { overflow: auto; height: 100vh; }
+article {
+  max-width: 820px;
+  padding: 40px 40px 80px;
+}
+.panel { display: none; }
+.panel.on { display: block; }
+.kicker {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stamp);
+  margin: 0 0 10px;
+}
+h1, h2, h3 { font-family: "IBM Plex Sans", sans-serif; font-weight: 600; }
+article > h1, .panel h1 { font-size: 2.1rem; letter-spacing: -0.03em; margin: 0 0 12px; }
+h2 { font-size: 1.25rem; margin: 2rem 0 0.7rem; }
+h3 { font-size: 1.05rem; margin: 1.4rem 0 0.5rem; }
+p, li { line-height: 1.6; font-size: 16px; }
+.lede { font-size: 1.15rem; color: var(--soft); }
+a { color: var(--focus); }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 1.6rem 0; }
+blockquote {
+  margin: 1.2rem 0;
+  padding: 12px 16px;
+  background: #ebe4d4;
+  border-left: 3px solid var(--stamp);
+}
+blockquote p { margin: 0; }
+code, pre { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.86em; }
+code { background: #ebe6da; padding: 0.1em 0.35em; }
+pre {
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  padding: 14px 16px;
+  overflow: auto;
+}
+pre code { background: none; color: inherit; }
+.table-wrap { overflow: auto; margin: 1rem 0 1.4rem; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--rule); text-align: left; padding: 8px 10px; vertical-align: top; }
+th { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); font-weight: 600; }
+.facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 1.4rem 0 1.8rem;
+}
+.facts div {
+  border: 1px solid var(--rule);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--soft);
+}
+.facts span { display: block; color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 13px; margin-bottom: 4px; }
+.hit { background: #f3d9a4; }
+#jargon.searching > h1,
+#jargon.searching > p,
+#jargon.searching > ol,
+#jargon.searching > ul,
+#jargon.searching > blockquote,
+#jargon.searching > hr { display: none; }
+#jargon.searching > #find-empty { display: block; color: var(--stamp); }
+#jargon.searching > h2[hidden],
+#jargon.searching > h3[hidden],
+#jargon.searching > .table-wrap[hidden] { display: none; }
+details { border-bottom: 1px solid var(--rule); padding: 12px 0; }
+summary { cursor: pointer; font-weight: 600; }
+.choices { margin: 0.6rem 0; padding-left: 1.2rem; }
+.why { color: var(--soft); font-size: 15px; }
+.walk { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; font-size: 15px; line-height: 1.45; }
+.walk input { margin-top: 4px; accent-color: var(--gold); }
+.jarg {
+  border-bottom: 1px dotted var(--stamp);
+  background: rgba(143, 45, 60, 0.08);
+  cursor: help;
+}
+.jarg:hover, .jarg:focus-visible {
+  background: #f3d9a4;
+  outline: none;
+}
+#gloss {
+  position: fixed;
+  z-index: 50;
+  display: none;
+  width: min(328px, calc(100vw - 24px));
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  padding: 12px 14px 14px;
+  border-top: 3px solid var(--stamp);
+  pointer-events: none;
+}
+#gloss.on { display: block; }
+#gloss .gt {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+#gloss .gm { font-size: 14px; line-height: 1.45; margin-top: 6px; }
+#gloss .gw { font-size: 12px; color: var(--mute); margin-top: 8px; line-height: 1.4; }
+@media (max-width: 820px) {
+  body { grid-template-columns: 1fr; }
+  .blotter { height: auto; position: relative; }
+  main { height: auto; }
+}
+@media print {
+  .blotter, #gloss { display: none; }
+  body { display: block; }
+  .panel { display: block !important; page-break-before: always; }
+  .panel#home { page-break-before: avoid; }
+}
+</style>
+</head>
+<body>
+<aside class="blotter">
+  <h1>QUANTPREP</h1>
+  <p>AI for Quant. Tick each ticket. Search filters Words. Dotted words explain themselves.</p>
+  <input class="search" id="find" type="search" placeholder="Search Words: fill rate, NDF…" aria-label="Search Words">
+  <nav><div class="ticket" data-go="home"><input type="checkbox" data-tick="home"><a href="#home" data-go="home">Start<small>Desk blotter</small></a></div><div class="ticket" data-go="jargon"><input type="checkbox" data-tick="jargon"><a href="#jargon" data-go="jargon">1 · Words<small>Learn the dialect</small></a></div><div class="ticket" data-go="seat"><input type="checkbox" data-tick="seat"><a href="#seat" data-go="seat">2 · The seat<small>What the job is</small></a></div><div class="ticket" data-go="briefing"><input type="checkbox" data-tick="briefing"><a href="#briefing" data-go="briefing">3 · Briefing<small>Industry, desks, rails</small></a></div><div class="ticket" data-go="plan"><input type="checkbox" data-tick="plan"><a href="#plan" data-go="plan">4 · Study plan<small>14 days</small></a></div><div class="ticket" data-go="drills"><input type="checkbox" data-tick="drills"><a href="#drills" data-go="drills">Drills<small>Closed-book 5+5, then walk-in</small></a></div><div class="ticket" data-go="ml"><input type="checkbox" data-tick="ml"><a href="#ml" data-go="ml">5 · ML mock<small>90 minutes</small></a></div><div class="ticket" data-go="dl"><input type="checkbox" data-tick="dl"><a href="#dl" data-go="dl">6 · DL mock<small>90 minutes</small></a></div><div class="ticket" data-go="coding"><input type="checkbox" data-tick="coding"><a href="#coding" data-go="coding">7 · Coding<small>90–120 minutes</small></a></div><div class="ticket" data-go="project"><input type="checkbox" data-tick="project"><a href="#project" data-go="project">8 · Project<small>90 minutes</small></a></div><div class="ticket" data-go="morning"><input type="checkbox" data-tick="morning"><a href="#morning" data-go="morning">Morning of<small>Interview day only</small></a></div></nav>
+</aside>
+<main>
+<article>
+<section class="panel" id="home">
+<p class="kicker">Director · Global Markets AI · APAC</p>
+<h1>AI for Quant. One page.</h1>
+<p class="lede">A bank-agnostic prep blotter for Markets Quant AI/ML interviews. Work the tickets on the left, in order. Tick a ticket when you finish it. Dotted words are live jargon — hover for the meaning.</p>
+<blockquote>
+<p>I will be the senior AI/ML authority for APAC Markets Quant: hands-on on the first models, competent in coding and modern GenAI, working with engineering — not as a software-engineering hire, and not as a latency specialist unless the desk needs one later.</p>
+</blockquote>
+<div class="facts">
+  <div><span>4–6</span> hybrid team</div>
+  <div><span>FX PoC</span> then scale</div>
+  <div><span>Not an SE</span> hire · HFT optional</div>
+  <div><span>Two rails</span> modelling + agentic</div>
+</div>
+<h2>How to use this page</h2>
+<ol>
+<li>Open <strong>1 · Words</strong> if you are not from markets. Read the opening trade story, then search terms as you go.</li>
+<li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud.</li>
+<li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Do not peek at model answers first.</li>
+<li>Coding lives in this page <em>and</em> as Python under <code>pack/mocks/coding/</code>. Run pytest there. Do not look at <code>solutions.py</code> until you have tried.</li>
+<li><strong>Morning of</strong> is for interview day only.</li>
+</ol>
+<p>They are not looking for software engineers. Competent coding plus fundamentals of modern GenAI is the bar.</p>
+</section><section class="panel" id="jargon"><h1>Jargon used in this pack</h1>
+<p>Read this <strong>before</strong> Briefing if you are not from markets. Every term below appears later in this page.</p>
+<p>How to use it: read <strong>section 0</strong> once (the picture). Then skim the section that matches the round you are sitting. Search the A–Z list at the end when a mock drops a word you do not know.</p>
+<hr>
+<h2>0. The picture in one trade</h2>
+<p>A <strong>Global Markets</strong> desk at a bank does two jobs at once:</p>
+<ol>
+<li><strong>Show a price</strong> so a client can buy or sell (spot dollars for offshore yuan, a stock, a bond…).</li>
+<li><strong>Manage the leftover risk</strong> after the client trades — the bank is now long or short something.</li>
+</ol>
+<p>A simplified FX example:</p>
+<ul>
+<li>The bank <strong>quotes</strong> USDCNH <strong>7.7800 bid / 7.7804 ask</strong>.</li>
+<li><strong>Bid</strong> = price at which the bank will <strong>buy</strong>. <strong>Ask</strong> = price at which it will <strong>sell</strong>. The gap is the <strong>spread</strong> (here 4 <strong>pips</strong>).</li>
+<li><strong>Mid</strong> is the midpoint, 7.7802. That is the “fair” number people argue about; it is not what the client pays.</li>
+<li>A corporate treasurer <strong>lifts the ask</strong> (buys CNH from the bank). The bank is now <strong>short CNH</strong> — that leftover is <strong>inventory</strong>.</li>
+<li>One second later, the market mid is 7.7810. The bank is short something that just got more expensive. That one-second move against the fill is a <strong>markout</strong>. Repeated markouts from the same clients are <strong>toxic flow</strong> / <strong>adverse selection</strong>.</li>
+<li>The trader <strong>widens</strong> (makes the spread larger) or <strong>skews</strong> (makes one side worse) so the next informed client is less likely to pick them off. They may also <strong>hedge</strong> (buy CNH back in another market).</li>
+<li>If this happens electronically on <strong>the e-trading platform</strong>, it is <strong>eFX</strong>. If a salesperson emails a <strong>request for quote (RFQ)</strong>, a human or a model still has to answer with a price.</li>
+</ul>
+<p>Almost every jargon word in this pack is a name for a piece of that loop: the <strong>price</strong>, the <strong>leftover risk</strong>, the <strong>client</strong>, the <strong>machine that shows the price</strong>, or the <strong>test that says the model is not cheating</strong>.</p>
+<p>Your job in the interview is not to <em>be</em> the trader. It is to build ML that this loop will <strong>turn on</strong>: a number they trust, a <strong>kill switch</strong>, and a metric in <strong>PnL</strong> (profit and loss), not in Kaggle AUC.</p>
+<hr>
+<h2>1. The bank, the franchise, the people</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>Investment Bank (IB)</strong></td><td>The part of the bank that serves companies and investors, not UK current accounts. Global Markets sits inside it.</td><td>Your customer is IB / GM, not the retail bank.</td></tr><tr><td><strong>Global Markets (GM)</strong></td><td>Sales and trading: prices, liquidity, hedging, financing for institutions.</td><td>The organisation you serve.</td></tr><tr><td><strong>Franchise</strong></td><td>The client relationships and the flow they send the bank, not a McDonald’s. “Protect the franchise” = do not chase 0.1 bp of trading profit if you lose the client.</td><td>Project round: fill rate vs markout is a franchise trade-off.</td></tr><tr><td><strong>FICC</strong></td><td><strong>F</strong>ixed <strong>I</strong>ncome, <strong>C</strong>urrencies, <strong>C</strong>ommodities — bonds, rates, FX, credit, etc.</td><td>H1 2026 still the larger GM slice.</td></tr><tr><td><strong>Equities</strong></td><td>Stocks, equity derivatives, electronic cash trading, parts of prime.</td><td>The growth story in recent UK IB prints.</td></tr><tr><td><strong>Macro</strong></td><td>Rates + FX (and sometimes commodities) as one family.</td><td>FX sits in Macro.</td></tr><tr><td><strong>Credit</strong></td><td>Corporate bonds and credit derivatives.</td><td>Part of GM; not the first 90-day use case.</td></tr><tr><td><strong>Prime / Prime Services / QPS</strong></td><td>Financing and services for hedge funds: borrow stock, leverage, clearing, low-latency access. <strong>QPS</strong> = quantitative prime services.</td><td>HK has a Prime quant bench; APAC growth is partly here.</td></tr><tr><td><strong>DMA</strong></td><td>Direct market access — the client’s order hits the exchange through the bank’s pipes.</td><td>Prime / equities electronic.</td></tr><tr><td><strong>Intermediation vs financing</strong></td><td><strong>Intermediation</strong> = trading/spreads. <strong>Financing</strong> = lending, prime, repo — more stable revenue.</td><td>the bank strategy mix; do not talk as if only spread capture exists.</td></tr><tr><td><strong>RoTE</strong></td><td>Return on tangible equity — profit versus the capital the desk consumes.</td><td>IB metric; not a model metric.</td></tr><tr><td><strong>Greenfield</strong></td><td>A new team with no legacy product to babysit (yet).</td><td>The GM AI/ML function.</td></tr><tr><td><strong>Centralised Quant</strong></td><td>A Quant group that sits in the IB and serves Markets desks, rather than reporting into a single trading desk or into CIB Tech.</td><td>Where this Director role sits.</td></tr><tr><td><strong>Senior technical authority</strong></td><td>The person in the room who can still be wrong about a model and be believed — hands-on, not a pure manager.</td><td>The typical seat’s words for you.</td></tr><tr><td><strong>Agentic</strong></td><td>A GenAI system that <strong>calls tools</strong> (get mid, draft ticket) in a loop, rather than only writing text.</td><td>On the typical seat as part of a “broad mandate.”</td></tr><tr><td><strong>PoC / proof of concept</strong></td><td>A first use case that is real enough to learn from, then scale.</td><td>“Initial use cases within FX.”</td></tr><tr><td><strong>TTC / total comp</strong></td><td>Base + bonus + anything else in the year.</td><td>Recruiter language, not a number here.</td></tr><tr><td><strong>QR / QD</strong></td><td><strong>Quant researcher</strong> (signals, models) vs <strong>quant developer</strong> (production code, data, latency).</td><td>The two tribes besides traders.</td></tr><tr><td><strong>Trader / eSales / eTrading</strong></td><td><strong>Trader</strong> owns the book. <strong>eSales</strong> covers electronic clients. <strong>eTrading</strong> is the electronic platform team.</td><td>Your users.</td></tr><tr><td><strong>Desk</strong></td><td>The team that owns a product’s risk (eFX desk, equities algo desk).</td><td>“The desk will not turn it on” is a real veto.</td></tr><tr><td><strong>VP / Director</strong></td><td>Bank titles. VP is senior IC or small-team lead. <strong>Director</strong> is people + P&amp;L/programme ownership.</td><td>You are interviewing Director.</td></tr><tr><td><strong>RACI</strong></td><td>Who is <strong>R</strong>esponsible, <strong>A</strong>ccountable, <strong>C</strong>onsulted, <strong>I</strong>nformed.</td><td>Project round.</td></tr><tr><td><strong>People-leader craft</strong></td><td>Listen, energise, align across the enterprise, develop others.</td><td>Behavioural round.</td></tr><tr><td><strong>Behavioural themes</strong></td><td>Risk and controls, change, business acumen, stewardship.</td><td>Closing interviews.</td></tr><tr><td><strong>offshore tech centre</strong></td><td>India / nearshore tech and ops bench.</td><td>“How do you staff India vs HK?”</td></tr><tr><td><strong>Hybrid team</strong></td><td>Some London, some HK, maybe SG; not all in one room.</td><td>4–6 headcount.</td></tr></tbody></table></div>
+<hr>
+<h2>2. Prices, books, and how the desk gets paid</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>PnL</strong></td><td>Profit and loss. The only scoreboard that counts on a desk.</td><td>Optimise this (after costs), not AUC.</td></tr><tr><td><strong>Quote</strong></td><td>The live bid and ask you show.</td><td>Models that “price” usually <strong>change the quote</strong>.</td></tr><tr><td><strong>Bid / ask (offer)</strong></td><td>Buy price / sell price of the <em>dealer</em>.</td><td>Coding mock quotes.</td></tr><tr><td><strong>Mid</strong></td><td>Average of bid and ask, or a model’s fair value.</td><td>Predicted “mid” is a common ML target.</td></tr><tr><td><strong>Spread / half-spread</strong></td><td>Ask minus bid. Half-spread is the cost to trade one way vs mid.</td><td>Wider = safer for the bank, worse for the client.</td></tr><tr><td><strong>Pip / pipette</strong></td><td>FX tick: in USDCNH, 0.0001 is often a pip.</td><td>“2 bp” is a size of edge.</td></tr><tr><td><strong>Basis point (bp)</strong></td><td>0.01%. 1 bp of USD 100m = $10,000.</td><td>“Markout improved 0.2 bp.”</td></tr><tr><td><strong>Inventory</strong></td><td>The bank’s leftover position after client trades.</td><td>Skew and Avellaneda quotes exist to dump inventory.</td></tr><tr><td><strong>Skew (quoting)</strong></td><td>Make bid and ask <strong>asymmetric</strong> so you attract the side you want. Not the options “skew” unless said in an options sentence.</td><td>First FX use case: skew assistant.</td></tr><tr><td><strong>Widen / tighten</strong></td><td>Increase / decrease the spread.</td><td>Toxicity model output.</td></tr><tr><td><strong>Fill / fill rate</strong></td><td>A quote that actually trades. Fill rate = how often you get hit.</td><td>Trade-off vs markout. If you never get filled you “won” on toxicity and lost the franchise.</td></tr><tr><td><strong>Hedge</strong></td><td>Offset the inventory in another instrument or venue.</td><td>Deep hedging = a learned hedge policy.</td></tr><tr><td><strong>Greeks / delta</strong></td><td>Sensitivities of an option price (delta ≈ how much the option moves when the underlying moves).</td><td>Risk still wants Greeks even if a neural net hedges.</td></tr><tr><td><strong>Markout</strong></td><td>How the mid moved <strong>after</strong> you filled, at 50ms / 1s / 10s. Positive for you = you captured spread; negative = you were picked off.</td><td>The desk metric for a toxicity model.</td></tr><tr><td><strong>Toxicity / toxic flow</strong></td><td>Flow that systematically markouts against you — often faster or better-informed clients.</td><td>Core eFX ML problem.</td></tr><tr><td><strong>Adverse selection</strong></td><td>The people who choose to trade with you know more than you.</td><td>Same idea as toxicity, older name.</td></tr><tr><td><strong>Last look</strong></td><td>On some FX streams the bank can <strong>reject</strong> a trade after the client clicks, if the market moved. Controversial.</td><td>A toxicity score used as last-look is a conduct + press problem.</td></tr><tr><td><strong>Internalization</strong></td><td>Fill the client against the bank’s own book instead of sending to the market.</td><td>Quality of internalization is a PnL + franchise metric.</td></tr><tr><td><strong>TCA</strong></td><td>Transaction cost analysis — did the client get a good deal vs a benchmark?</td><td>Vendor claims; eSales analytics.</td></tr><tr><td><strong>Slippage</strong></td><td>You wanted 100 at 10.00 and got 10.03.</td><td>Execution algos.</td></tr><tr><td><strong>Capacity</strong></td><td>How large a signal or algo can be before it eats itself.</td><td>Researchers over-claim; Directors ask this.</td></tr><tr><td><strong>Override</strong></td><td>Trader ignores the model.</td><td>If they cannot override, they will not switch it on.</td></tr><tr><td><strong>Kill switch</strong></td><td>Instantly disable the model and fall back to a dumb/safe policy.</td><td>Non-negotiable in the project round.</td></tr><tr><td><strong>Shadow book / paper book</strong></td><td>Model runs as if live but <strong>does not</strong> quote. You compare would-have PnL.</td><td>90-day milestone.</td></tr><tr><td><strong>Dual-run</strong></td><td>Old and new models run together.</td><td>SS1/23-friendly go-live.</td></tr><tr><td><strong>Canary</strong></td><td>Turn on for a tiny slice (one pair, one session, one client tier).</td><td>Weeks 9–10.</td></tr><tr><td><strong>Fallback</strong></td><td>What you do when the model is sick: last approved model, or a wide conservative quote.</td><td>Incident answer.</td></tr><tr><td><strong>Session</strong></td><td>Tokyo / HK / London / NY hours. Tokyo lunch is famously thin.</td><td>“London model fails in Asia.”</td></tr><tr><td><strong>Tick / bar</strong></td><td>A tick is one market-data update. A <strong>bar</strong> is a bucket (1-second, 1-minute OHLC).</td><td>Coding: no look-ahead across bars.</td></tr><tr><td><strong>Tick size</strong></td><td>Minimum price increment.</td><td>Microprice/OFI break if you ignore it.</td></tr><tr><td><strong>Notional</strong></td><td>Face amount of the trade (USD 10m).</td><td>Size-weights markouts.</td></tr><tr><td><strong>Book</strong></td><td>The book of positions, or the <strong>order book</strong> (see LOB).</td><td>Context decides.</td></tr></tbody></table></div>
+<hr>
+<h2>3. Products (what the client trades)</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>Spot</strong></td><td>Exchange two currencies now (in FX, “now” is T+1 or T+2).</td><td>Core eFX.</td></tr><tr><td><strong>Forward</strong></td><td>Agree a rate today, exchange later. Price mostly from <strong>interest-rate differential</strong>, not a forecast.</td><td>FX product set.</td></tr><tr><td><strong>Swap (FX)</strong></td><td>Spot + forward in opposite directions; a funding product.</td><td>the FX platform product list.</td></tr><tr><td><strong>NDF</strong></td><td><strong>Non-deliverable forward</strong> — settle the difference in USD; used when the currency does not fully deliver offshore (KRW, TWD, INR, IDR, PHP…).</td><td>APAC FX; Singapore NDF algos.</td></tr><tr><td><strong>NDS</strong></td><td>Non-deliverable swap.</td><td>FX platform product list.</td></tr><tr><td><strong>Option / vanilla / exotic</strong></td><td>Right to transact at a strike. <strong>Vanilla</strong> = call/put. <strong>Exotic</strong> = barriers, touch, etc.</td><td>Recommenders: which product to show.</td></tr><tr><td><strong>ATM</strong></td><td>At-the-money option (strike near spot).</td><td>Deep-hedging toy tenor.</td></tr><tr><td><strong>25d RR</strong></td><td>25-delta <strong>risk reversal</strong> — a quote of call vs put vol; the market’s “skew” in the <strong>options</strong> sense.</td><td>Vol-surface research; not first 90 days.</td></tr><tr><td><strong>Vol / implied vol / vol surface</strong></td><td><strong>Vol</strong> = how much it moves. <strong>Implied vol</strong> = vol baked into option prices. <strong>Surface</strong> = that number by strike and maturity.</td><td>DL on surfaces; no-arbitrage constraints.</td></tr><tr><td><strong>G10 vs EM</strong></td><td>G10 = most liquid currencies (USD, EUR, JPY, GBP, CHF, CAD, AUD, NZD, NOK, SEK — lists vary). <strong>EM</strong> = emerging-market currencies, often NDFs.</td><td>CNH/KRW ≠ EURUSD.</td></tr><tr><td><strong>Pair</strong></td><td>USDCNH, USDJPY — always <strong>base/quote</strong> convention.</td><td>Per-pair vs global model.</td></tr><tr><td><strong>Algo (execution)</strong></td><td>Software that slices a large order over time (VWAP, POV, implementation shortfall).</td><td>Equities HK; FX NDF algos.</td></tr><tr><td><strong>IS / POV / arrival</strong></td><td><strong>Implementation shortfall</strong> = vs arrival price. <strong>POV</strong> = percent of volume. <strong>Arrival</strong> = the first mid you saw.</td><td>Execution objectives.</td></tr><tr><td><strong>Child order</strong></td><td>One slice of a parent algo order.</td><td>RL vs Hawkes child-order policy.</td></tr></tbody></table></div>
+<hr>
+<h2>4. FX in Asia (the local dialect)</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>CNY vs CNH</strong></td><td><strong>CNY</strong> = onshore mainland yuan. <strong>CNH</strong> = offshore (HK) yuan, the one international banks trade more freely.</td><td>USDCNH is the first-pair example.</td></tr><tr><td><strong>USDCNH / USDJPY / USDKRW</strong></td><td>Dollar versus those currencies.</td><td>Specialists vs global backbone.</td></tr><tr><td><strong>Fixing</strong></td><td>An official or WM/Refinitiv snapshot used to settle benchmarks and some corporate orders.</td><td>Turn models <strong>off</strong> or special-case around fixes.</td></tr><tr><td><strong>WMR</strong></td><td>WM/Refinitiv 4pm London FX fix — huge fixing.</td><td>Calendar feature.</td></tr><tr><td><strong>Tokyo fix / CNY fix</strong></td><td>Local benchmark prints.</td><td>Same.</td></tr><tr><td><strong>Carry</strong></td><td>Earn the interest differential by holding a currency.</td><td>Macro colour, not a model.</td></tr><tr><td><strong>PBOC</strong></td><td>People’s Bank of China.</td><td>CNH regime shifts.</td></tr><tr><td><strong>Data residency</strong></td><td>Some data (sometimes CNH-related, always client) must stay in-region.</td><td>“CNH cannot leave HK.”</td></tr></tbody></table></div>
+<hr>
+<h2>5. Electronic trading and the e-trading platform</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>e-trading platform</strong></td><td>The bank&#x27;s cross-asset electronic trading surface.</td><td>Your production surface.</td></tr><tr><td><strong>pricing engine</strong></td><td>The local <strong>pricing engine</strong> (Singapore for APAC FX) — ultra-low-latency quotes.</td><td>Hot path. Not SageMaker.</td></tr><tr><td><strong>desk assistant</strong></td><td>GenAI assistant on the FX platform to help <strong>initiate</strong> trades. Already in production at several houses.</td><td>Workflow/LLM case; <strong>must not invent mids</strong>.</td></tr><tr><td><strong>own-book fill</strong></td><td>Execute against <strong>the bank&#x27;s own</strong> liquidity.</td><td>Principal risk.</td></tr><tr><td><strong>mixed-venue execution</strong></td><td>Mix the bank&#x27;s liquidity with <strong>external</strong> venues.</td><td>Different toxicity mix.</td></tr><tr><td><strong>Manual / benchmark orders</strong></td><td>Route to a human trader, or target a fix.</td><td>Fallback.</td></tr><tr><td><strong>Streaming vs RFQ</strong></td><td><strong>Streaming</strong> = live bid/ask always on. <strong>RFQ</strong> = client asks “price me 50m.”</td><td>Different models and logs.</td></tr><tr><td><strong>FIX</strong></td><td>A standard protocol for orders.</td><td>How machines connect.</td></tr><tr><td><strong>MDP</strong></td><td>Multi-dealer platform (Bloomberg, FXall, 360T).</td><td>Client access.</td></tr><tr><td><strong>eFX</strong></td><td>Electronic FX market making and execution.</td><td>First use-case franchise.</td></tr><tr><td><strong>SOR</strong></td><td>Smart order router — decides which exchange/venue to send an equities order to.</td><td>HK/Tokyo hosting.</td></tr><tr><td><strong>Co-lo / co-location</strong></td><td>Servers <strong>in the same building</strong> as the exchange.</td><td>HK Equities; latency.</td></tr><tr><td><strong>Latency / hot path / 50µs</strong></td><td><strong>Latency</strong> = delay. <strong>Hot path</strong> = the code that must answer in microseconds or milliseconds. 50µs = 0.00005 seconds.</td><td>Why GBDT in Python is not on the pricing engine.</td></tr><tr><td><strong>Distil</strong></td><td>Train a big model, copy its behaviour into a tiny fast one.</td><td>Research vs hot path.</td></tr><tr><td><strong>kdb+ / q</strong></td><td>Column-store time-series DB used on many trading floors. <strong>q</strong> is its language.</td><td>HK Equities quants.</td></tr><tr><td><strong>LOB / limit order book</strong></td><td>The ladder of bids and asks at the exchange.</td><td>DL-on-images temptation; usually the wrong 90-day plan.</td></tr><tr><td><strong>internal crossing book</strong></td><td>Dark / internal crossing and single-dealer equities liquidity.</td><td>e-trading Equities.</td></tr><tr><td><strong>HKEX</strong></td><td>Hong Kong stock exchange.</td><td>Equities algo case.</td></tr><tr><td><strong>Follow-the-sun</strong></td><td>Coverage handed Tokyo → HK/SG → London → NY.</td><td>eSales.</td></tr><tr><td><strong>EMS</strong></td><td>Execution management system — where tickets actually go.</td><td>desk assistant → ticket.</td></tr></tbody></table></div>
+<hr>
+<h2>6. Microstructure words the coding round uses</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>Microstructure</strong></td><td>The physics of <em>how</em> trades happen at the tick: queues, spreads, who is informed.</td><td>Coding + ML features.</td></tr><tr><td><strong>OFI</strong></td><td>Order-flow imbalance — a signed measure of whether the bid or the ask is getting stronger.</td><td>Coding problem 2.</td></tr><tr><td><strong>Microprice</strong></td><td>Mid weighted by sizes: more size on the bid pulls the “fair” price toward the ask.</td><td>Not the same as mid.</td></tr><tr><td><strong>EWMA</strong></td><td>Exponentially weighted moving average — yesterday’s value decays, today’s tick matters more. <strong>Causal</strong> = only uses the past.</td><td>Fair-value smoother.</td></tr><tr><td><strong>Avellaneda–Stoikov</strong></td><td>A classic formula: if you are long, you <strong>lower</strong> both bid and ask so you sell more. <strong>Gamma</strong> = risk aversion; <strong>kappa</strong> = how dense the book is.</td><td>Coding problem 3.</td></tr><tr><td><strong>Reservation price</strong></td><td>Inventory-adjusted “personal mid.”</td><td>Same.</td></tr><tr><td><strong>Quotes cross</strong></td><td>Bid above ask — a bug. You must clip.</td><td>Coding.</td></tr><tr><td><strong>Almgren–Chriss</strong></td><td>Classic <strong>optimal execution</strong> (how to sell a lot without crashing the price).</td><td>Bandits for execution live in this family.</td></tr><tr><td><strong>Kyle / Glosten–Milgrom</strong></td><td>Theory: the market maker loses to informed flow and survives on noise traders.</td><td>Last-look / toxicity conversation.</td></tr><tr><td><strong>Hawkes</strong></td><td>A model where events (trades) make more events more likely for a while.</td><td>Simple child-order / flow model vs RL.</td></tr><tr><td><strong>Information set</strong></td><td>Everything the decision-maker is <strong>allowed</strong> to know at time t.</td><td>If the label or a feature is not in the information set, it is cheating.</td></tr><tr><td><strong>Look-ahead / leakage</strong></td><td>Using the future (tomorrow’s close, the same-bar return) as if you had it.</td><td>The silent way ML “works” and then loses money.</td></tr><tr><td><strong>Causal (time)</strong></td><td>Feature at t uses only data ≤ t. Different from <strong>causal inference</strong> (what if we had tightened the spread?).</td><td>Both appear; do not mix them up.</td></tr></tbody></table></div>
+<hr>
+<h2>7. Machine learning as used on a desk</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>Label / horizon</strong></td><td>What you predict, and <strong>how far ahead</strong>. A 1-second mid-move label uses the next 1 second of data.</td><td>Overlap → purge.</td></tr><tr><td><strong>Feature store / PIT / as-of join</strong></td><td>A library of features computed as they would have been <strong>at that timestamp</strong>. <strong>Point-in-time (PIT)</strong> = no restated history. <strong>As-of join</strong> = “last value known at t.”</td><td>Researchers and Java must share this.</td></tr><tr><td><strong>Walk-forward</strong></td><td>Train on the past, test on the <strong>next</strong> block of time. Never shuffle rows.</td><td>ML round.</td></tr><tr><td><strong>Purge / embargo</strong></td><td>Delete train samples whose label window <strong>overlaps</strong> the test window, plus a gap (<strong>embargo</strong>) around it.</td><td>Lopez de Prado; coding problem 1.</td></tr><tr><td><strong>CPCV</strong></td><td>Combinatorial purged CV — many different holdout combinations so you get a <strong>distribution</strong> of Sharpes, not one lucky year.</td><td>Go-live gate.</td></tr><tr><td><strong>Triple-barrier</strong></td><td>Label: did price hit profit / stop / time-out first?</td><td>Lopez de Prado; embargo still needed.</td></tr><tr><td><strong>Non-stationarity / regime</strong></td><td>The world changed (Tokyo lunch, PBOC, a new matching engine). Yesterday’s model is the wrong sport.</td><td>Fallback &gt; “retrain often.”</td></tr><tr><td><strong>Covariate shift</strong></td><td>Input distribution moved.</td><td>Same family.</td></tr><tr><td><strong>Calibration</strong></td><td>When the model says 30% toxic, it <strong>is</strong> toxic 30% of the time. <strong>AUC</strong> only ranks. Policies need probabilities.</td><td>Last-look / widen.</td></tr><tr><td><strong>Reliability diagram</strong></td><td>Plot predicted probability vs actual frequency.</td><td>Calibration check.</td></tr><tr><td><strong>Platt / isotonic</strong></td><td>Two ways to map a score to a probability. Isotonic can overfit small books.</td><td>Online calibration.</td></tr><tr><td><strong>Brier / logloss</strong></td><td>Proper scores for probabilities.</td><td>Monitor these; ship on markouts.</td></tr><tr><td><strong>AUC</strong></td><td>How well you <strong>rank</strong> positives vs negatives. Silent on cost and calibration.</td><td>The metric trap.</td></tr><tr><td><strong>GBDT / LightGBM / XGBoost</strong></td><td>Gradient-boosted decision trees. Default on <strong>tabular</strong> tick features.</td><td>“Trees still win.”</td></tr><tr><td><strong>SHAP</strong></td><td>Attribution of a prediction to features. <strong>Not</strong> a causal effect.</td><td>Do not say SHAP ⇒ “if we tighten, win-rate rises.”</td></tr><tr><td><strong>Bandit / contextual bandit / UCB / Thompson</strong></td><td>Learn by <strong>trying</strong> actions (which spread, which product) and seeing reward. Exploration <strong>costs real money</strong>.</td><td>multi-stakeholder; recommenders.</td></tr><tr><td><strong>IPS / SNIPS / propensity</strong></td><td>Offline estimate of “what if we had shown a different price?” using the <strong>logged probability</strong> of the old policy. If you did not log it, you <strong>cannot</strong> evaluate.</td><td>Recommender eval.</td></tr><tr><td><strong>Two-tower / FM / CTR</strong></td><td>Recommender architectures. <strong>CTR</strong> = click-through rate — the wrong objective if it dumps risk on the desk. <strong>FM</strong> = factorisation machine.</td><td>Multi-stakeholder ranking.</td></tr><tr><td><strong>Next-best action</strong></td><td>What the salesperson or bot should do next.</td><td>eSales.</td></tr><tr><td><strong>Multiple testing / deflated Sharpe</strong></td><td>You tried 400 features; some “work” by chance. Deflated Sharpe haircuts for that.</td><td>Kill the researcher’s t&gt;2 fishing.</td></tr><tr><td><strong>Sharpe</strong></td><td>Average return / volatility. Easy to fake with leakage or selection.</td><td>Report a CPCV <strong>distribution</strong>.</td></tr><tr><td><strong>Online learning / freeze</strong></td><td>Updating a <strong>tiny</strong> parameter live vs <strong>freezing</strong> the approved model. Full retrain is often a <strong>new model</strong> for MRM.</td><td>B4 in ML mock.</td></tr><tr><td><strong>Temperature / intercept</strong></td><td>Small knobs on a frozen classifier to recalibrate.</td><td>Allowed-ish intraday update.</td></tr><tr><td><strong>VWAP</strong></td><td>Volume-weighted average price. If it includes the <strong>current</strong> bar, it leaks.</td><td>A1 in ML mock.</td></tr><tr><td><strong>Realised vol</strong></td><td>How much it actually moved. Same-window realised vol can leak the return you predict.</td><td>A1.</td></tr><tr><td><strong>Class imbalance / focal loss</strong></td><td>Toxic trades are rare. Accuracy of 98% can be a model that never flags toxic.</td><td>A9.</td></tr><tr><td><strong>Cost-sensitive threshold</strong></td><td>Choose the cut-off using <strong>money</strong>, not F1.</td><td>Same.</td></tr><tr><td><strong>Hierarchical model</strong></td><td>Shared backbone + per-pair residual.</td><td>A10.</td></tr></tbody></table></div>
+<hr>
+<h2>8. Deep learning and GenAI</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>DL / net / transformer / LSTM / TCN</strong></td><td>Deep nets. <strong>Transformer</strong> = attention. <strong>LSTM</strong> = old sequence net. <strong>TCN</strong> = causal convolutions over time.</td><td>Usually <strong>lose</strong> to trees on raw FX returns.</td></tr><tr><td><strong>Receptive field</strong></td><td>How far back a causal net can see. If it sees through an <strong>unpublished fix</strong>, that is leakage.</td><td>A2 in DL mock.</td></tr><tr><td><strong>Teacher forcing</strong></td><td>Train the net on <strong>true</strong> past labels; live it must eat <strong>its own</strong> outputs. Gap = it falls apart live.</td><td>DL MCQ.</td></tr><tr><td><strong>Batch-norm (BN)</strong></td><td>Normalise using <strong>batch</strong> statistics. A live tick is not a training batch; sessions mix.</td><td>Do not use on eFX streams.</td></tr><tr><td><strong>LayerNorm / RMSNorm</strong></td><td>Normalise within the vector; more internable online.</td><td>Replacement.</td></tr><tr><td><strong>Attention ≠ causality</strong></td><td>Weights in a fitted average, not “this tick <strong>caused</strong> CNH.”</td><td>Trader explanation trap.</td></tr><tr><td><strong>Deep hedging</strong></td><td>Train a <strong>policy</strong> (what to buy/sell each step) to a <strong>risk measure</strong> of final P&amp;L, with spreads and gaps, instead of copying Black–Scholes delta.</td><td>DL case.</td></tr><tr><td><strong>CVaR / expected shortfall</strong></td><td>Average of the <strong>worst</strong> tail of losses. A typical deep-hedge objective.</td><td>Same.</td></tr><tr><td><strong>Greeks-free</strong></td><td>The policy does not explicitly target delta. Risk will still <strong>ask</strong> for Greeks.</td><td>Say no to replacing the engine before shadow.</td></tr><tr><td><strong>RL / PPO / CQL / IQL / offline RL</strong></td><td>Reinforcement learning. <strong>PPO</strong> = a common <strong>live-interaction</strong> algorithm — <strong>not</strong> for live FX. <strong>CQL/IQL</strong> = <strong>offline</strong> (learn from logs).</td><td>Sim-to-real gap; need logged propensities.</td></tr><tr><td><strong>Sim-to-real</strong></td><td>Simulator ≠ the market.</td><td>Why RL stays in the lab.</td></tr><tr><td><strong>Policy</strong></td><td>A mapping from state → action (hedge, child order, spread).</td><td>Different from a <strong>score</strong>.</td></tr><tr><td><strong>LLM / GenAI / agentic</strong></td><td>Language models; generative AI; <strong>agentic</strong> = the model calls <strong>tools</strong> in a loop.</td><td>desk assistant.</td></tr><tr><td><strong>RAG</strong></td><td>Retrieval-augmented generation: search docs, then write. Failure = <strong>wrong or leaked</strong> docs, stale numbers.</td><td>No RAG over other clients’ tickets.</td></tr><tr><td><strong>Vector DB / Bedrock / SageMaker</strong></td><td>Vector DB stores embeddings for RAG. <strong>Bedrock</strong> = AWS hosted foundation models. <strong>SageMaker</strong> = AWS train/serve for <em>research-speed</em> ML.</td><td>Research-speed path; not the 50µs path.</td></tr><tr><td><strong>Hallucination</strong></td><td>Fluent, wrong. A <strong>made-up mid</strong> is a trading incident.</td><td>Tools for numbers.</td></tr><tr><td><strong>HITL</strong></td><td>Human-in-the-loop.</td><td>HKMA GenAI.</td></tr><tr><td><strong>Fine-tune vs prompt vs tools</strong></td><td>Change model weights vs instructions vs <strong>calling</strong> <code>get_mid()</code>.</td><td>Prefer tools for prices.</td></tr><tr><td><strong>DeepBSDE / operator net</strong></td><td>Nets that solve pricing PDEs/BSDEs.</td><td>Research, not Q3 desk widget.</td></tr><tr><td><strong>MC-dropout</strong></td><td>Dropout at <strong>predict</strong> time for uncertainty. Usually too slow / unapproved at quote time.</td><td>DL MCQ.</td></tr><tr><td><strong>No-arb / butterfly / calendar</strong></td><td>Option prices cannot allow riskless profit. A VAE on a vol surface must <strong>project</strong> back onto those constraints.</td><td>DL B3.</td></tr><tr><td><strong>Two-speed</strong></td><td>Slow cloud research vs <strong>hot</strong> engine. Same tests.</td><td>Architecture.</td></tr></tbody></table></div>
+<hr>
+<h2>9. Production, MLOps, controls</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Why it is in the pack</th></tr></thead><tbody><tr><td><strong>MLOps</strong></td><td>The plumbing: train, register, deploy, monitor, roll back.</td><td>London engineering.</td></tr><tr><td><strong>MLflow</strong></td><td>Experiment + <strong>model registry</strong> (which binary is approved).</td><td>engineering&#x27;s stack.</td></tr><tr><td><strong>Feature hash</strong></td><td>A fingerprint of the feature code the model was trained on. Pin it.</td><td>B2.</td></tr><tr><td><strong>Golden ticks / golden dataset</strong></td><td>A frozen replay file. If the engine changes, tests fail.</td><td>LOB upgrade story.</td></tr><tr><td><strong>CI</strong></td><td>Automated tests on every change.</td><td>Venue-change tests.</td></tr><tr><td><strong>On-call</strong></td><td>Who gets paged at 3am.</td><td>RACI.</td></tr><tr><td><strong>Model inventory / tiering</strong></td><td>The list of models and <strong>how dangerous</strong> each is (chatbot draft vs auto-skew).</td><td>SS1/23.</td></tr><tr><td><strong>MRM</strong></td><td>Model risk management team — independent challengers.</td><td>You partner; you do not “self-validate.”</td></tr><tr><td><strong>SS1/23</strong></td><td>UK PRA rules: model risk is its <strong>own</strong> risk. Identify, govern, develop, validate, monitor. Includes AI/ML.</td><td>Project controls.</td></tr><tr><td><strong>PRA / HKMA / PCPD / SFC</strong></td><td>UK bank supervisor; HK banking supervisor; HK privacy commissioner; HK markets regulator.</td><td>Dual-hat: UK group + HK entity.</td></tr><tr><td><strong>SMF / SMCR</strong></td><td>UK senior manager functions / conduct regime. Someone <strong>named</strong> owns model risk.</td><td>“Who is accountable?”</td></tr><tr><td><strong>Conduct</strong></td><td>Treating clients fairly; no abuse of information.</td><td>Recommenders, last-look, chat RAG.</td></tr><tr><td><strong>Information barriers / walls</strong></td><td>You must not use Client A’s confidential flow to price Client B.</td><td>Prime LLM mini-case.</td></tr><tr><td><strong>Model change vs parameter update</strong></td><td>Retraining trees = often a <strong>change</strong>. Tweaking an intercept may be a <strong>parameter</strong>. Agree this <strong>in writing</strong> with MRM.</td><td>B4.</td></tr><tr><td><strong>gRPC / REST / schema registry</strong></td><td>How services talk; how feature layouts stay compatible.</td><td>QD needs.</td></tr><tr><td><strong>Observability</strong></td><td>Logs of predictions, features, PnL.</td><td>Incident.</td></tr></tbody></table></div>
+<hr>
+<h2>10. Papers and names dropped as if everyone had read them</h2>
+<div class='table-wrap'><table><thead><tr><th>Term</th><th>Plain English</th><th>Enough to say</th></tr></thead><tbody><tr><td><strong>Lopez de Prado</strong></td><td><em>Advances in Financial Machine Learning</em> — purged CV, embargo, CPCV, triple-barrier.</td><td>“We will not shuffle financial labels.”</td></tr><tr><td><strong>Buehler et al.</strong></td><td>Deep hedging paper.</td><td>Policy + frictions + risk measure.</td></tr><tr><td><strong>Gu–Kelly–Xiu</strong></td><td>Empirical result: trees beat many fancy models on <strong>tabular</strong> return prediction.</td><td>Defend GBDT.</td></tr><tr><td><strong>Black–Scholes</strong></td><td>The textbook option formula in a frictionless world.</td><td>Deep hedge exists because that world is false.</td></tr></tbody></table></div>
+<hr>
+<h2>A–Z jump list</h2>
+<p>Adverse selection · Agentic · Algo · Almgren–Chriss · Ask · ATM · Attention · AUC · Avellaneda–Stoikov · Bandit · e-trading platform · pricing engine · desk assistant · Batch-norm · Bedrock · Bid · bp · Brier · Calibration · Canary · Centralised Quant · Child order · CNH / CNY · Co-lo · Conduct · CPCV · CQL / IQL · CTR · CVaR · Deep hedging · Desk · Distil · DMA · Dual-run · eFX · eSales · Embargo · eTrading · EWMA · Exotic · Fallback · Feature store · FICC · Fill rate · FIX · Fixing · Franchise · G10 · GBDT · Greeks · Greenfield · Hallucination · Hawkes · Hedge · HITL · Horizon · Hot path · HKEX · HKMA · Information set · Internalization · Inventory · IPS · IS · kdb+ · Kill switch · Label · Last look · Latency · Leakage · People-leader craft · LLM · LOB · Lopez de Prado · Macro · Markout · MDP · Microprice · Mid · MLflow · MLOps · MRM · NDF · Next-best action · OFI · Offline RL · Override · PIT · Platt · PnL · PoC · POV · own-book fill · PPO · PRA · Prime · Purge · QPS · QR / QD · Quote · RACI · RAG · RFQ · Regime · Receptive field · Reservation price · RL · RoTE · SageMaker · Session · SHAP · Shadow book · Sharpe · Senior technical authority · Skew · Slippage · SMCR · SOR · Spot · Spread · SS1/23 · Streaming · TCA · Teacher forcing · Tick · Tiering · Tokyo lunch · Toxicity · Transformer · Triple-barrier · TTC · Two-tower · Vanilla · Vector DB · Vol surface · VWAP · Walk-forward · WMR · Widen</p>
+<p>If a mock uses a word that is still opaque, pause and redefine it in the interview. Directors who translate for the trader outperform Directors who only perform fluency.</p></section><section class="panel" id="seat"><h1>The seat this pack trains</h1>
+<p>A typical <strong>Director – Global Markets AI</strong> seat in APAC: Hong Kong (or relocate), hybrid team of <strong>4–6</strong>, sitting in a <strong>centralised Quant</strong> group that exists <strong>for Markets</strong>. Front-office aligned. Direct influence on trading outcomes. Not a software-engineering hire parked in CIB Tech.</p>
+<p>The bar that should change how you sit every round:</p>
+<blockquote><p>Everyone needs to be competent at coding and understand the fundamentals of modern GenAI. You do not need to be an expert at all topics. They are not looking for software engineers.</p></blockquote>
+<p>Electronic / high-frequency trading exposure is <strong>advantageous, not essential</strong>. Typical profile: already <strong>Director for ~2–3 years</strong>, now taking a <strong>broader</strong> leadership remit (team + APAC + strategy), still the <strong>senior technical authority</strong>.</p>
+<hr>
+<h2>What to prove</h2>
+<div class='table-wrap'><table><thead><tr><th>Mandate</th><th>Prove it by saying</th><th>Do not</th></tr></thead><tbody><tr><td>Build and lead a 4–6 AI/ML team for GM</td><td>First hires are <strong>modellers / applied scientists who can code</strong>, not a platform-engineering org. Hire less until a desk is using something.</td><td>Six MLOps engineers and zero users.</td></tr><tr><td>End-to-end: ideation → production <strong>and governance</strong></td><td>One FX <strong>PoC</strong> that reaches <strong>shadow/canary</strong> plus a written <strong>tier</strong> and kill switch.</td><td>A strategy deck with no artefact.</td></tr><tr><td>Partner with trading desks and business leadership</td><td>Name eFX, eSales, Equities/Prime. Measurable <strong>PnL</strong> (markout <strong>and</strong> fill rate).</td><td>“I’ll align with stakeholders.”</td></tr><tr><td>Work with <strong>engineering</strong> and governance</td><td>You <strong>specify</strong> models and information sets; engineering <strong>serves</strong>. Two-speed: research vs engine.</td><td>Pretend you will rewrite the pricing engine in Python.</td></tr><tr><td>Forecasting, recommenders, RL, decision under uncertainty</td><td>Those four are the <strong>ML round syllabus</strong>. PnL is the loss, not AUC.</td><td>A tour of every architecture you have heard of.</td></tr><tr><td><strong>Initial use cases in FX</strong>, PoC, then scale</td><td>90 days = one FX slice. 18 months = Equities/Prime on the same rails.</td><td>Boil the ocean, or FX-only forever.</td></tr><tr><td>Responsible AI and model governance</td><td>SS1/23 + HKMA; desk assistant ≠ pricing tier; HITL.</td><td>“We’ll be responsible.”</td></tr><tr><td>Mandate <strong>extremely broad</strong>: quant modelling <strong>and GenAI / agentic</strong></td><td>Two workstreams: (A) statistical FX PoC (B) <strong>agentic</strong> desk-assistant tools.</td><td>Only eFX microstructure, or only chatbots.</td></tr><tr><td>Senior technical authority, hands-on where required</td><td>You can still derive purged CV and kill a leaky backtest. You review every information set.</td><td>“I used to code.”</td></tr><tr><td>Drive <strong>AI/LLM initiatives</strong></td><td>Fundamentals of tools, RAG, hallucination, HITL — not being the firm’s LLMOps expert.</td><td>Claiming you will fine-tune GPT on the quote stream.</td></tr></tbody></table></div>
+<hr>
+<h2>Story bank</h2>
+<p>Prepare <strong>one 90-second STAR</strong> per line.</p>
+<ol>
+<li>Hands-on AI/ML in a <strong>stakeholder-heavy</strong> shop (desk, risk, or product — not only a lab).</li>
+<li>A programme you owned <strong>from first meeting through deployment and MRM/governance</strong>.</li>
+<li>Markets or IB (APAC colour if you have it; if not, say how you will get it in 90 days).</li>
+<li>A time you engaged <strong>front office / MD</strong> and changed the plan.</li>
+<li>Already operating at Director: what <strong>broadens</strong> here (APAC, hybrid 4–6, Quant-central, GenAI + modelling).</li>
+<li>A team you <strong>built or scaled</strong>, including an <strong>LLM/agentic</strong> initiative even if small.</li>
+<li>If you do <strong>not</strong> have HFT: that is allowed. Show you know when latency matters and when it does not — then <strong>partner</strong> with eFX engineering. Do not fake 50µs war stories.</li>
+</ol>
+<hr>
+<h2>How this changes the four rounds</h2>
+<ul>
+<li><strong>ML</strong> — still the core “technical excellence” exam. Forecasting + recommenders + decision-under-uncertainty are <strong>on the syllabus</strong>. RL is listed; treat it as <strong>offline / simulated</strong> unless they push.</li>
+<li><strong>DL / GenAI</strong> — <strong>agentic</strong> is a mandate word, not a side quest. The desk assistant is the live example. You need <strong>fundamentals</strong>, not every topic.</li>
+<li><strong>Coding</strong> — <strong>competence</strong>, not a software-engineer screen. Python, information sets, a leaky backtest. Skip kdb/Java/latency-system design unless they ask.</li>
+<li><strong>Project</strong> — you are the APAC <strong>technical authority of a centralised Markets Quant AI team</strong>. Two rails: FX PoC + GenAI/agentic. You do not replace HK Equities Java or Singapore matching engines.</li>
+</ul>
+<p>Memorise this sentence:</p>
+<blockquote><p>I will be the senior AI/ML authority for APAC Markets Quant: hands-on on the first models, competent in coding and modern GenAI, working <strong>with</strong> engineering — not as a software-engineering hire, and not as a latency specialist unless the desk needs one later.</p></blockquote></section><section class="panel" id="briefing"><h1>Industry briefing: AI for Global Markets</h1>
+<p>Research snapshot for a generic APAC GM AI/ML Director seat. Map every mock answer back to <a href="#seat">The seat</a>.</p>
+<p>If <strong>bid/ask, markout, eFX, purged CV, pricing engine, SS1/23</strong> are not already fluent, read <a href="#jargon">Words</a> first.</p>
+<h2>1. What this job actually is</h2>
+<p>You are a <strong>Director – Global Markets AI</strong> for APAC, sitting in Hong Kong, inside a <strong>centralised Quant business</strong> of the Investment Bank that exists <strong>for Markets</strong>. Front-office aligned, <strong>direct influence on trading outcomes</strong>. You are not a lone alpha researcher, not a CIB Tech engineering lead, and not a desk HFT engineer.</p>
+<p>The mandate, in the usual words:</p>
+<ul>
+<li><strong>Build and lead</strong> a hybrid AI/ML team of <strong>4–6</strong>.</li>
+<li><strong>Own</strong> programmes <strong>ideation → production and governance</strong>.</li>
+<li><strong>Partner</strong> with trading desks and APAC business leadership on use cases with <strong>measurable PnL</strong>.</li>
+<li>Work <strong>across</strong> stakeholders, <strong>engineering teams</strong>, and governance — you do not replace engineering.</li>
+<li>Apply <strong>price forecasting, recommenders, reinforcement learning, decision-making under uncertainty</strong>.</li>
+<li><strong>Initial use cases in FX</strong>, proof of concept, then <strong>scale across asset classes</strong>.</li>
+<li><strong>Responsible AI</strong> and model governance.</li>
+<li>Mandate described as <strong>extremely broad</strong>: <strong>quantitative modelling, GenAI, and agentic applications</strong>.</li>
+<li>You are the <strong>senior technical authority</strong> and stay <strong>hands-on where required</strong>.</li>
+<li>Typical profile: already <strong>Director ~2–3 years</strong>, now a <strong>broader</strong> remit (APAC + team + strategy).</li>
+<li><strong>AI/LLM initiatives</strong> and team-building are listed requirements.</li>
+<li><strong>eTrading / HFT: advantageous, not essential.</strong></li>
+<li>Recruiter note, typical: they are <strong>not looking for software engineers</strong>. Coding competence + <strong>fundamentals of modern GenAI</strong>; you do not need to be an expert at all topics.</li>
+</ul>
+<p>A parallel IC/VP posting (<em>AI/ML Modeller – Global Markets</em>, London / SG / HK) is the <strong>bench</strong> you will hire: Python/PyTorch, SageMaker, eFX/alpha a plus, NLP/LLMs. Your interview mixes <strong>Director judgement</strong> with enough <strong>hands-on technical depth</strong> to be that authority — not a staff-engineer algorithms screen.</p>
+<p><strong>How this should change your voice:</strong> lead with <strong>Quant + GenAI/agentic + FX PoC + governance</strong>. Do not lead with “I will own the 50µs stack.” That is engineering’s job; your job is to bring models they can put on it.</p>
+<h2>2. The franchise, in one page</h2>
+<p>A typical UK-centred universal bank: UK consumer and corporate, wealth/private bank, a global Investment Bank, and sometimes a specialist US consumer bank. Group technology usually talks “pace with purpose” on GenAI: pilots with measurable outcomes, then scale, inside a control framework. A <strong>GenAI Centre of Excellence</strong> often exists at group level. Markets at several houses already has a <strong>production FX desk assistant</strong> used to help colleagues initiate trades.</p>
+<p><strong>Recent UK IB Markets mix (the pattern, not a ticker):</strong></p>
+<ul>
+<li>Global Markets is still “the house that Fixed Income built.”</li>
+<li><strong>Equities is the growth lean</strong> — often approaching ~30% of Markets revenue in a strong print, with a sharp quarterly jump when cash and prime fire.</li>
+<li>There is a <strong>regional tilt toward Asia</strong>, helping global clients access Asian markets, including through <strong>Prime</strong>. A large share of that Prime growth is usually attributed to the <strong>top 100 Markets clients</strong>.</li>
+<li>Financing vs intermediation mix is a stated strategic guardrail.</li>
+</ul>
+<p><strong>Do not</strong> walk in talking only about G10 spot eFX. The franchise that is growing APAC wallet is <strong>Equities + Prime + financing</strong>, while <strong>FX remains the most natural first AI production surface</strong>.</p>
+<h2>3. Global Markets and the e-trading platform</h2>
+<p>GM sells <strong>execution, liquidity, risk solutions, and financing</strong> to institutions and corporates. Asset-class map:</p>
+<ul>
+<li><strong>Macro</strong>: G10 and major EM rates and FX.</li>
+<li><strong>Equities</strong>: cash, electronic, equity derivatives, systematic, prime.</li>
+<li><strong>Credit</strong>, <strong>securitised products</strong>, <strong>prime services</strong>, <strong>fixed-income financing</strong>.</li>
+</ul>
+<p>The <strong>e-trading platform</strong> is the cross-asset electronic surface (Equities, FICC, futures, FX). For FX specifically:</p>
+<ul>
+<li>Products: spot, forwards, swaps, NDFs/NDS, vanilla and exotic options.</li>
+<li>Execution: streaming, RFQ, <strong>own-book fill</strong> (principal liquidity), <strong>mixed-venue execution</strong> (internal + external venues), <strong>Manual</strong> (trader / benchmarks).</li>
+<li>Access: proprietary UI, FIX API, MDPs (Bloomberg, FXall, FX Connect, 360T).</li>
+<li>Analytics: pre-trade volume, post-trade TCA.</li>
+<li>A <strong>desk assistant</strong>: client/colleague-facing GenAI on the FX platform.</li>
+<li>Follow-the-sun eSales from Asia open to NY close; FX is marketed as 24/5.</li>
+<li>Cloud-based architecture is now part of the public FX story (continuous enhancement).</li>
+</ul>
+<p><strong>APAC electronic footprint (important geographically):</strong></p>
+<ul>
+<li><strong>eFX hubs</strong>: New York, London, Tokyo, plus a <strong>Singapore pricing/trading engine</strong> at several UK IBs (MAS FX hub strategy) — often a fourth global FX hub. Local co-lo, lower latency, NDF algos.</li>
+<li><strong>Equities algos and Smart Order Router</strong>: hosted in <strong>Hong Kong and Japan</strong> private DCs; HK is co-located with the primary exchange. Direct feeds for HK and Japan; vendor feeds for other APAC exchanges.</li>
+</ul>
+<p>So a HK AI Director “starting with FX” is <strong>not</strong> sitting on top of the Singapore matching engine. You sit in <strong>centralised Markets Quant</strong> in HK: the <strong>APAC technical authority</strong> who partners with London GM AI/ML, Singapore eFX <strong>engineering</strong>, and HK/Tokyo desks. Say that — then stop short of pretending you are the engine owner. The seat is explicit: not a software-engineer hire; HFT is optional.</p>
+<h2>4. Org map (roles, not names)</h2>
+<p>Reporting lines for an HK AI seat are rarely published. Treat these as <strong>seats</strong>, not people to name-drop.</p>
+<div class='table-wrap'><table><thead><tr><th>Seat</th><th>Why it matters</th></tr></thead><tbody><tr><td>Head of Global Markets</td><td>Global P&amp;L owner of the franchise you serve</td></tr><tr><td>CEO, Asia Pacific</td><td>Regional CEO</td></tr><tr><td>Head of Markets, APAC</td><td>Likely a primary <strong>business sponsor</strong>. Often Equities-heavy. Platform + client growth brief.</td></tr><tr><td>Global Head of AI/ML, Global Markets (usually London)</td><td>Building the <strong>new GM AI/ML team</strong>. Public themes tend to be LLMs, e-trading, recommenders, <strong>deep hedging</strong>, responsible AI.</td></tr><tr><td>AI/ML &amp; Quant Engineering, Markets (London)</td><td>Engineering counterpart: LLM FX chatbot, recommenders + RAG, time-series alpha, MLflow, SageMaker/AWS.</td></tr><tr><td>Front-office AIML quants in London</td><td>Signals the global team is being staffed with <strong>research-grade</strong> people, not only engineers.</td></tr><tr><td>APAC Head of Quant &amp; Product (HK) — Equities algorithmic trading</td><td>A core <strong>internal client</strong>: algo design, microstructure, kdb+/R/Java.</td></tr><tr><td>Quant Prime Services (HK)</td><td>A core <strong>internal client</strong> on prime / low-latency equities / QPS.</td></tr></tbody></table></div>
+<p><strong>Implication:</strong> first allies are <strong>eFX + eSales</strong> (PnL, desk assistant already in production at several houses) and <strong>HK Equities/Prime quants</strong> (APAC growth). Sequence: <strong>FX proof of concept</strong>, then scale. Do not pick a fight between FX and Equities. Do not staff this as an engineering org.</p>
+<p>Behavioural language that plays at a UK IB without sounding like a poster:</p>
+<ul>
+<li>Risk and controls, change and transformation, business acumen, strategic thinking, technology.</li>
+<li>People-leader craft: listen, energise, align across the enterprise, develop others.</li>
+</ul>
+<h2>5. Industry: what “AI for Markets” means in 2026</h2>
+<p>Sell-side Markets AI has split into four stacks. A Director who conflates them fails the project round.</p>
+<div class='table-wrap'><table><thead><tr><th>Stack</th><th>Job</th><th>Failure mode</th></tr></thead><tbody><tr><td><strong>Pricing / internalization / eFX</strong></td><td>Fair value, skew, toxicity, last-look policy, inventory, hedge, RFQ win-rate</td><td>Look-ahead, regime break, toxic flow, overfit microstructure</td></tr><tr><td><strong>Execution / algos</strong></td><td>Arrival, POV, IS, NDF algos, SOR, child-order placement</td><td>Ignoring market impact, venue fees, information leakage</td></tr><tr><td><strong>Distribution / sales</strong></td><td>Next-best product, client propensity, RFQ routing, research-to-sales, desk assistant</td><td>Recommending products the desk cannot risk; fairness/conduct</td></tr><tr><td><strong>Workflow / GenAI</strong></td><td>Trade initiation, TCA narrative, research search, code assist</td><td>Hallucinated prices, uncontrolled tool use, data leakage</td></tr></tbody></table></div>
+<p>Peer pattern (JPM, GS, Citi, MS, BBVA, flow specialists): <strong>tree models and online linear still dominate alpha and pricing</strong>; <strong>DL</strong> wins on limit-order-book images, options surfaces, and hedging policies; <strong>LLMs / agents</strong> win on <strong>interface and workflow</strong>, not on mid. Several banks have already <strong>productised an FX GenAI interface</strong>. The seat wants someone who can run <strong>both</strong> rails: quantitative modelling <strong>and</strong> GenAI/agentic.</p>
+<p>APAC-specific market facts the desk will assume you know:</p>
+<ul>
+<li><strong>CNH vs CNY</strong>, USDCNH as the offshore deliverable, NDFs for KRW, TWD, INR, IDR, PHP.</li>
+<li>Fixings (WMR, local fixes) as <strong>benchmark risk</strong>, not a toy.</li>
+<li>Tokyo/HK/SG session structure; JPY and AUD as G10 in Asia hours; CNH/KRW vol around US-China and local events.</li>
+<li><strong>Last look</strong>, internalization, markouts (50ms / 1s / 10s), and the optics of those in a UK bank.</li>
+<li>HK as <strong>relationship and equities/prime hub</strong>; Singapore as <strong>eFX engine hub</strong>.</li>
+</ul>
+<h2>6. What the three quant tribes need from you</h2>
+<p>This is the job. Memorise it. Every technical answer should end with <em>who consumes it</em>.</p>
+<h3>Researchers (QR)</h3>
+<p>They need a <strong>research contract</strong>, not a science fair.</p>
+<ul>
+<li>Point-in-time data, as-of joins, corporate-action and fixing calendars.</li>
+<li>Feature store with embargo and purge (no label leakage).</li>
+<li>Experiment tracking (London engineering stories already use <strong>MLflow</strong>).</li>
+<li>Honest metrics: <strong>PnL after costs, capacity, drawdown</strong>, not only AUC.</li>
+<li>A path from notebook → library → shadow → production, with them remaining intellectually in the loop.</li>
+<li>GPU/SageMaker access <strong>without</strong> turning every idea into a six-month cloud programme.</li>
+<li>Permission to publish internally; some of the global heads come from a paper-writing culture.</li>
+</ul>
+<p>Your failure mode with researchers: <strong>over-engineering MLOps before a first signal</strong>, or <strong>killing research curiosity</strong> with governance theatre.</p>
+<h3>Developers (QD / eTrading / data engineers)</h3>
+<p>They need <strong>interfaces, SLAs, and boring reliability</strong>. You <strong>partner</strong>; you do not become them. The seat is not hiring a software engineer.</p>
+<ul>
+<li>Stable feature schemas and model contracts.</li>
+<li>Latency budgets when a model <strong>does</strong> sit near the pricing engine: a research ensemble does not belong on the hot path; a distilled linear or small net might. <strong>HFT is optional on your CV</strong> — still know when to hand the last mile to Singapore/HK engine owners.</li>
+<li>Deterministic replay, golden datasets, CI that fails on metric drift.</li>
+<li>Kill switch, canary, dual-run, rollback. Observability: prediction, feature, and PnL dashboards.</li>
+<li>Clear ownership: who gets paged at 3am HK / 3am London.</li>
+</ul>
+<p>Your failure mode with developers: <strong>shadow IT notebooks in production</strong>, or <strong>promising to rewrite their engine</strong>.</p>
+<h3>Traders (and eSales)</h3>
+<p>They need <strong>control, narrative, and money</strong>.</p>
+<ul>
+<li>A number they can argue with: mid, skew, edge, confidence, inventory implication.</li>
+<li>Override. If the model cannot be overridden, it will not be switched on.</li>
+<li>Regime flags (“Asia lunch, low volume, widen”).</li>
+<li>Hedging implication, not just a predicted return.</li>
+<li>Client-colour without leaking other clients’ flow (conduct).</li>
+<li>Speed: a 70% model this week beats a transformer next year.</li>
+</ul>
+<p>Your failure mode with traders: <strong>black-box theatre</strong>, or <strong>optimising a loss that is not their P&amp;L</strong>.</p>
+<h3>How a 4–6 person hybrid team should look (a defensible opening)</h3>
+<p>The seat wants <strong>AI/ML technical excellence</strong>, not an SE shop.</p>
+<ol>
+<li><strong>You</strong> — senior technical authority; hands-on on model #1 (FX forecast / skew).</li>
+<li><strong>Applied scientist</strong> — price forecasting / recommenders / decision under uncertainty.</li>
+<li><strong>Applied scientist (GenAI/agentic)</strong> — desk-assistant-class tools, RAG, HITL; <strong>fundamentals</strong>, not a research-LLM tourist.</li>
+<li><strong>Production-minded quant</strong> — Python, PIT features, working <strong>with</strong> London/SG engineering (registry, shadow). Not “Head of MLOps.”</li>
+<p>5–6. <strong>Rotators</strong> from existing HK QR (Equities algo, Prime) as design partners.</p>
+</ol>
+<p>Hire <strong>less</strong> than six until a desk is using an artefact. Empty seats beat a tourist team. Matrix in London MLOps rather than cloning it.</p>
+<h2>7. Controls: you will be asked</h2>
+<p>A UK IB is <strong>PRA-regulated</strong>. HK is an <strong>HKMA authorised</strong> presence. Markets models sit in <strong>model-risk</strong> even when they are “just a pricer”.</p>
+<p><strong>PRA SS1/23</strong> (model risk as a risk in its own right): identification and tiering; governance and SMF accountability; development/implementation/use; independent validation; ongoing monitoring. Explicitly includes <strong>AI/ML</strong>.</p>
+<p><strong>HKMA</strong>: 2019 high-level AI principles (governance, design/development, ongoing monitoring). 2019 BDAI consumer-protection principles (explainability: no “black-box excuse”). 2024 GenAI consumer-protection circular: human-in-the-loop at early deployment, defined scope, hallucination risk, validation. PCPD AI guidance on privacy.</p>
+<p><strong>Conduct</strong>: UK SMCR / Individual Accountability; sales-practice and best-execution for algos; information barriers; client confidentiality in recommenders.</p>
+<p>A Director phrase that plays well: <em>We will not put a model in a higher tier than the decision it influences. A desk assistant that drafts a ticket is not a pricing model. An eFX mid that auto-quotes is.</em></p>
+<h2>8. Intellectual fingerprint of a typical GM AI head</h2>
+<p>Expect questions near this published taste:</p>
+<ul>
+<li><strong>Recommenders</strong> with multiple stakeholders (client, salesperson, desk risk, inventory) — not YouTube CTR.</li>
+<li><strong>Bandits / contextual bandits</strong> for execution, pricing exploration, or next-best action.</li>
+<li><strong>Deep hedging</strong> and friction-aware hedging policies vs Greek matching.</li>
+<li><strong>Rough vol / non-Markovian</strong> kernels and when ML “lifts” a model to something computable.</li>
+<li><strong>Fairness / partial debiasing</strong> — in Markets this translates to <strong>conduct, client segmentation, and not systematically disadvantaging a client class</strong>.</li>
+<li>End-to-end: <em>what changed for the stakeholder?</em></li>
+</ul>
+<p>Do not name-drop papers unless you can discuss them. Do read at least:</p>
+<ul>
+<li>Buehler, Gonon, Teichmann, Wood — Deep Hedging.</li>
+<li>Lopez de Prado — <em>Advances in Financial Machine Learning</em> (purged CV, embargo, CPCV).</li>
+<li>Almgren–Chriss; Avellaneda–Stoikov; Glosten–Milgrom / Kyle.</li>
+<li>Gu, Kelly, Xiu — empirical asset pricing with ML (trees still win a lot of tabular prediction).</li>
+<li>Recent eFX markout / last-look / internalization literature at a conceptual level.</li>
+</ul>
+<h2>9. How to talk about the role in the opening two minutes</h2>
+<p>A tight script you can adapt:</p>
+<blockquote><p>The bank is investing in a <strong>centralised Markets Quant</strong> AI/ML function. I would be the APAC <strong>Director and senior technical authority</strong> in Hong Kong: a hybrid team of <strong>4–6</strong>, <strong>hands-on</strong> on the first models, <strong>competent at coding and modern GenAI</strong> — not a software-engineering hire, and HFT only if a desk later needs it. The sequence is <strong>FX proof of concept first</strong>, then scale, with a mandate that is deliberately <strong>broad</strong>: quantitative modelling <strong>and agentic/GenAI</strong>. I would land one FX slice the desk can kill (forecasting or skew, measured in markout <strong>and</strong> fill rate) <strong>and</strong> an APAC desk-assistant tool path that never invents a price, under PRA/HKMA tiering. Then I clone the rails for Equities/Prime so APAC Markets has a local Quant AI engine, not a London slideshow.</p></blockquote>
+<h2>10. Sources (public)</h2>
+<ul>
+<li>Typical GM AI/ML Director and modeller postings (London / SG / HK), 2025–2026.</li>
+<li>UK IB H1 / Q2 2026 results pattern (GM mix, Equities, Asia, Prime) — read the house you are sitting.</li>
+<li>Public FX platform pages: streaming, RFQ, own-book vs mixed-venue, desk assistants.</li>
+<li>APAC electronic footprint: Singapore FX engines (MAS hub), HK/Japan equities co-lo.</li>
+<li>PRA SS1/23; HKMA 2019 AI principles and 2024 GenAI consumer-protection circular.</li>
+</ul></section><section class="panel" id="plan"><h1>Study plan and round design</h1>
+<p>Assume <strong>10–14 days</strong>. If you have less, do the <strong>bold</strong> items only.</p>
+<h2>What the four rounds are testing (Director edition)</h2>
+<div class='table-wrap'><table><thead><tr><th>Round</th><th>Surface</th><th>What a GM panel is actually buying</th></tr></thead><tbody><tr><td><strong>ML</strong></td><td>Forecasting, recommenders, uncertainty, leakage, trees vs linear, calibration, bandits</td><td>Can you be the <strong>senior technical authority</strong> the typical seat asked for?</td></tr><tr><td><strong>DL / GenAI</strong></td><td>When DL loses; <strong>agentic</strong> tools; RAG; hallucination; RL only in sim</td><td><strong>Fundamentals</strong> of modern GenAI. Not an expert at all topics.</td></tr><tr><td><strong>Coding</strong></td><td>Python, information set, leaky backtest</td><td><strong>Competent</strong> coding. They are <strong>not</strong> hiring a software engineer.</td></tr><tr><td><strong>Project</strong></td><td>FX PoC + GenAI rail, 4–6, Quant-central, governance</td><td>Broader Director remit: APAC, team, strategy, PnL.</td></tr></tbody></table></div>
+<p>They will also sample <strong>risk and controls</strong> and <strong>APAC stakeholder craft</strong> (HK desks vs Singapore eFX vs London AI/ML).</p>
+<h2>14-day plan</h2>
+<h3>Days 1–2 — franchise and story</h3>
+<ul>
+<li>If you are not from markets or quant research, read <code>jargon.md</code> <strong>once end-to-end</strong>.</li>
+<li>Read <code>seat.md</code> and map <strong>seven STAR stories</strong> to the requirement list.</li>
+<li>Read <code>briefing.md</code> twice. Write your <strong>2-minute opening</strong> from the typical seat (centralised Quant, not SE, FX PoC, GenAI + modelling).</li>
+<li>Map three named internal clients: eFX trader / eSales, Equities algo quant (equities-algo-quant), Prime quant (prime-quant). For each, one pain, one model, one metric, one control.</li>
+<li>Prepare <strong>two war stories</strong>: (1) a model you killed, (2) a model you productionised through governance. Use numbers.</li>
+</ul>
+<h3>Days 3–5 — ML</h3>
+<ul>
+<li>Lopez de Prado: chapter on <strong>purged CV, embargo, CPCV</strong>, triple-barrier, fractionally differentiated features (conceptual).</li>
+<li>Calibration (reliability diagrams, Platt/isotonic — and why isotonic can overfit small books).</li>
+<li>Trees vs linear for tabular tick features; SHAP <strong>without</strong> pretending it is causal.</li>
+<li>Recommenders: implicit feedback, two-tower vs FM/kernel FM, multi-objective (client utility vs desk risk).</li>
+<li>Bandits: UCB, Thompson, contextual; exploration on a priced stream is <strong>real money</strong>.</li>
+<li>Sit mock <code>mocks/01-ml.md</code> timed. Redo any miss as a whiteboard.</li>
+</ul>
+<h3>Days 6–8 — DL</h3>
+<ul>
+<li>Why LSTMs fail on financial ticks (non-stationarity, label horizon vs receptive field, teacher forcing ≠ live).</li>
+<li>Temporal convolutions, TCN, and <strong>transformers on returns</strong> — usually lose to GBDT unless the representation is rich (LOB images, surfaces).</li>
+<li>Deep hedging: convex risk measures, friction, CVaR; what “Greek-free” means and what Risk will still ask for.</li>
+<li>RL: offline / batch-constrained, sim-to-real gap, conservative Q; never “PPO on live FX”.</li>
+<li>LLM: RAG vs fine-tune vs <strong>tools</strong>; agentic loop; hallucination of <strong>prices</strong>; HITL. The typical seat wants <strong>fundamentals</strong>, not every paper.</li>
+<li>Sit mock <code>mocks/02-dl.md</code>.</li>
+</ul>
+<h3>Days 9–11 — coding</h3>
+<p>The typical seat: competent at coding, <strong>not</strong> a software-engineer interview.</p>
+<ul>
+<li>Implement <code>mocks/coding/candidate.py</code> until <code>pytest</code> is green.</li>
+<li>Then <strong>delete your solutions from working memory</strong> and re-implement from the problem statements in 90 minutes.</li>
+<li>Extra: write a 20-line critique of a messy pandas backtest (the debug problem).</li>
+<li>Do <strong>not</strong> grind leetcode system design, kdb, or Java unless a later interviewer asks.</li>
+</ul>
+<h3>Days 12–13 — project and leadership</h3>
+<ul>
+<li>Sit <code>mocks/04-project.md</code> with a timer. Record yourself.</li>
+<li>Two rails on the slide: <strong>FX PoC</strong> and <strong>GenAI/agentic</strong>. The typical seat called the mandate extremely broad.</li>
+<li>Hiring: first three <strong>AI/ML</strong> roles; what you will <strong>not</strong> hire (a SE shop, an HFT team).</li>
+<li>Tough questions: “We’re not looking for software engineers”; “HFT isn’t essential — why 50µs?”; “Why not just use London models?”</li>
+</ul>
+<h3>Day 14 — integration</h3>
+<ul>
+<li>Full mock: 30 min ML rapid-fire, 30 min DL, 45 min coding, 45 min project.</li>
+<li>Sleep. Do not cram new papers the night before.</li>
+</ul>
+<h2>Whiteboard openers to keep on a card</h2>
+<ol>
+<li><strong>Validation:</strong> “Walk-forward, purge the embargo by the label horizon, report a <strong>Purged Combinatorial CV</strong> distribution, not a single Sharpe.”</li>
+<li><strong>Metric:</strong> “I optimise a <strong>cost-adjusted markout</strong> (or RFQ win-rate at target spread), and I <strong>monitor</strong> logloss/Brier. I do not ship on AUC.”</li>
+<li><strong>DL:</strong> “I need a representation DL uniquely provides (LOB tensor, surface, language). Otherwise GBDT + online calibration.”</li>
+<li><strong>GenAI:</strong> “No naked prices from an LLM. Tools for mid/skew; LLM for intent and workflow. Human-in-the-loop until the tier says otherwise.”</li>
+<li><strong>Team:</strong> “I am the senior AI/ML authority for APAC Markets Quant. I work <strong>with</strong> engineering. I am not staffing an SE org.”</li>
+</ol>
+<h2>Question bank you should have a 90-second answer for</h2>
+<ul>
+<li>Why the bank, why GM, why HK, why now?</li>
+<li>Why FX first if Equities is the growth story?</li>
+<li>How do you measure success in six months? In eighteen?</li>
+<li>Walk me through a pricing model you would <strong>not</strong> put on the pricing engine.</li>
+<li>How do you work with a trader who has been burned by ML?</li>
+<li>SS1/23: is a gradient-boosted mid a “model”? Who is the SMF?</li>
+<li>How do London, Singapore, and HK split data, IP, and on-call?</li>
+<li>CNH flow is not EURUSD flow. What changes in the model?</li>
+<li>How would you use the desk assistant without creating a conduct incident?</li>
+<li>Describe how you develop others and align across the enterprise.</li>
+</ul></section><section class="panel" id="drills">
+<p class="kicker">Same facts as the long mocks · shorter form</p>
+<h1>Drills</h1>
+<p class="lede">Ten closed-book questions. Pick in your head, then open the row. The long written mocks still come after this on the blotter.</p>
+<h2>ML · five closed-book</h2>
+<details>
+<summary>1. Purged CV is required in markets labelling mainly because…</summary>
+<ol class="choices">
+<li>Classes are imbalanced</li>
+<li><strong>Label windows overlap train and test</strong></li>
+<li>Trees overfit splits</li>
+<li>GPU memory is limited</li>
+</ol>
+<p class="why">If the label uses (t, t+h], a random or even a naive time split still leaks overlapping paths. Purge + embargo by h.</p>
+</details>
+<details>
+<summary>2. A toxicity model with AUC 0.71 can still lose money on the e-trading platform because…</summary>
+<ol class="choices">
+<li><strong>AUC is not a proper scoring rule for P(toxic) used in widen/last-look, and it ignores size, inventory, and markouts</strong></li>
+<li>AUC cannot be computed on FX</li>
+<li>AUC requires Gaussian returns</li>
+<li>AUC is illegal under SS1/23</li>
+</ol>
+<p class="why">Policies need calibrated probabilities and a costed threshold. Report 1s/10s markout and fill ratio, not just AUC.</p>
+</details>
+<details>
+<summary>3. Best first model class for tabular eFX (OFI, spread, inventory, tod) is usually…</summary>
+<ol class="choices">
+<li>A 12-layer Transformer on raw mids</li>
+<li>PPO against the live pricing engine</li>
+<li><strong>GBDT or penalised linear, then distil for the hot path</strong></li>
+<li>An unconstrained LLM mid</li>
+</ol>
+<p class="why">Tabular + non-stationary + latency. DL when the object is a tensor (LOB, surface, language) or a friction-aware policy.</p>
+</details>
+<details>
+<summary>4. A next-best-product ranker for eSales is not a CTR model because…</summary>
+<ol class="choices">
+<li>There is no click data</li>
+<li><strong>You must trade off client utility, desk inventory/risk, and conduct — multi-stakeholder</strong></li>
+<li>Rankers cannot use embeddings</li>
+<li>The desk assistant already solved it</li>
+</ol>
+<p class="why">Multi-stakeholder. Max CTR dumps risk into the book and can systematically disadvantage a client class.</p>
+</details>
+<details>
+<summary>5. What is allowed as an <em>intraday</em> update under typical bank MRM, vs a new model?</summary>
+<ol class="choices">
+<li>Full LightGBM retrain every hour</li>
+<li>Change of feature set at lunch</li>
+<li><strong>Slow intercept / temperature / EWMA residual on a frozen approved model, with a kill switch</strong></li>
+<li>Swap in a new architecture if loss improves</li>
+</ol>
+<p class="why">Agree with MRM what is a parameter vs a model change. Architecture and features are a new model.</p>
+</details>
+<h2>DL / GenAI · five closed-book</h2>
+<details>
+<summary>1. Batch-norm on a live eFX tick net is dangerous because…</summary>
+<ol class="choices">
+<li>It is slower than ReLU</li>
+<li><strong>Batch statistics do not exist the same way online and mix incompatible sessions</strong></li>
+<li>PRA banned it</li>
+<li>It prevents residual connections</li>
+</ol>
+<p class="why">Use frozen PIT moments, LayerNorm/RMSNorm, or a controlled EMA. Do not silently update population stats live.</p>
+</details>
+<details>
+<summary>2. Deep hedging, in one sentence, is…</summary>
+<ol class="choices">
+<li>Fitting implied vol with a CNN</li>
+<li><strong>Training a hedging policy to a risk measure of terminal P&amp;L under frictions, not matching BS delta</strong></li>
+<li>Using GPT to write hedges</li>
+<li>PCA on the vol surface</li>
+</ol>
+<p class="why">CVaR / utility + spreads + discrete time. Risk still wants Greeks and limits because the simulator is itself a model.</p>
+</details>
+<details>
+<summary>3. A desk assistant should obtain a USDCNH mid by…</summary>
+<ol class="choices">
+<li>Asking the LLM to recall the last price it saw in training</li>
+<li>RAG over all APAC chat including other clients</li>
+<li><strong>A tool call into the approved pricer; the LLM only phrases and never invents the number</strong></li>
+<li>Fine-tuning on last week’s tickets with prices in the completion</li>
+</ol>
+<p class="why">Different model tier: workflow vs pricing. HKMA HITL while customer-facing. No cross-client RAG.</p>
+</details>
+<details>
+<summary>4. A LOB CNN that dies after a matching-engine upgrade most likely…</summary>
+<ol class="choices">
+<li>Needed more dropout</li>
+<li><strong>Overfit venue artefacts / leaked the event in the snapshot</strong></li>
+<li>Needed AdamW</li>
+<li>Needed a larger batch size</li>
+</ol>
+<p class="why">Venue-change tests belong in CI. 90-day HKEX work should start classical, not an image net on the router.</p>
+</details>
+<details>
+<summary>5. Offline RL (CQL/IQL) for KRW NDF child orders is blocked first by…</summary>
+<ol class="choices">
+<li>Lack of GPUs in HK</li>
+<li><strong>Missing logged policies/propensities and a huge sim-to-real gap on a thin name</strong></li>
+<li>HKMA banning RL</li>
+<li>The need for BERT</li>
+</ol>
+<p class="why">Ship a Hawkes + inventory policy; keep RL in simulator until logging exists. Do not PPO live.</p>
+</details>
+<h2>Walk-in ticks (project round)</h2>
+<p>Eight coverage checks. Tick while you rehearse the case.</p>
+<label class="walk"><input type="checkbox" data-tick="w1"> Named one FX PoC (pair + session + markout vs fill-rate trade-off)</label>
+<label class="walk"><input type="checkbox" data-tick="w2"> Named a GenAI/agentic rail (tools, HITL, never invents a mid)</label>
+<label class="walk"><input type="checkbox" data-tick="w3"> You specify models; engineering serves the engine — not an SE identity</label>
+<label class="walk"><input type="checkbox" data-tick="w4"> RACI: London AI, SG eFX, HK QR/Prime, MRM, eSales, you</label>
+<label class="walk"><input type="checkbox" data-tick="w5"> Tiering: desk-assistant workflow ≠ auto-skew pricing</label>
+<label class="walk"><input type="checkbox" data-tick="w6"> Kill switch, dual-run, CNH residency if required</label>
+<label class="walk"><input type="checkbox" data-tick="w7"> Team: AI/ML people who can code; hire less than 6 until a user exists</label>
+<label class="walk"><input type="checkbox" data-tick="w8"> 18-month clone onto Equities/Prime without restarting the platform</label>
+</section><section class="panel" id="ml"><h1>Round 1 — Machine Learning (Director mock)</h1>
+<p><strong>Time:</strong> 90 minutes <strong>Format:</strong> 20 min rapid-fire, 40 min deep dives, 30 min mini-case <strong>Rules:</strong> No laptop except for a blank sheet. Say assumptions. Tie every method to a desk consumer.</p>
+<p>Grade yourself 0–2 per item (0 miss, 1 partial, 2 production-grade). <strong>Pass ≥ 28/40</strong>. Director bar is not “I have heard of XGBoost”.</p>
+<hr>
+<h2>A. Rapid-fire (20 min)</h2>
+<p>Answer in four sentences or fewer. Then check the key.</p>
+<h3>A1. Leakage</h3>
+<p>A researcher wants to predict 5-minute USDCNH mid returns with features that include the <strong>same-window realised volatility</strong> computed from the <strong>same mid series</strong>, plus a <strong>session VWAP that includes the current bar</strong>. What is wrong, and what do you do instead?</p>
+<h3>A2. Why trees still win</h3>
+<p>Why do gradient-boosted trees still beat deep nets on <strong>tabular eFX features</strong> (spreads, OFI, inventory, time-of-day, markout lags)? When would you override that default?</p>
+<h3>A3. The metric trap</h3>
+<p>A VP shows you AUC 0.62 on predicting “client will lift our offer in the next 50ms”. Why might this model <strong>lose money</strong>, and which metric would you put on the dashboard for the trader?</p>
+<h3>A4. Non-stationarity</h3>
+<p>Name three distinct non-stationarities in APAC FX and a practical ML response to each (not “retrain often”).</p>
+<h3>A5. Calibration vs ranking</h3>
+<p>A toxicity classifier is well-ranked (AUC 0.71) but uncalibrated. Why does that break <strong>last-look or spread-widen</strong> policies, and how do you fix it <strong>online</strong>?</p>
+<h3>A6. Regularisation as risk</h3>
+<p>L2 vs dropout vs early stopping vs feature bagging: which one is a <strong>risk control</strong> in a markets setting, and which is merely a training trick?</p>
+<h3>A7. Causal vs predictive</h3>
+<p>Sales wants a model of “what if we showed this client a tighter spread?” You have observational RFQ data. What identification problem is this, and what is an honest ML substitute if you cannot randomise?</p>
+<h3>A8. Multiple testing</h3>
+<p>A QR tests 400 features on two years of EURUSD and keeps those with t&gt;2. What do you require before this set enters a production candidate?</p>
+<h3>A9. Class imbalance</h3>
+<p>Toxic flow is 2% of trades. Accuracy is 98%. What do you do to the <strong>loss</strong>, the <strong>sampler</strong>, and the <strong>decision threshold</strong> — three different knobs?</p>
+<h3>A10. Ensemble of experts</h3>
+<p>Would you train <strong>one global FX model</strong> or <strong>per-pair specialists</strong> (USDCNH, USDJPY, USDKRW NDF)? Give a hierarchical alternative.</p>
+<hr>
+<h2>B. Deep dives (40 min)</h2>
+<p>Speak as if a GM QR is at the whiteboard. Draw.</p>
+<h3>B1. Validation design (the job-defining question)</h3>
+<p>Design a validation protocol for a <strong>USDCNH 1-second mid-move classifier</strong> used to <strong>skew quotes</strong>.</p>
+<p>Cover: unit of split, embargo, purge, combinatorial CV, overlapping labels, session effects (Tokyo fix, CNH London hours), costs, and a <strong>go-live gate</strong>.</p>
+<p>They will interrupt: “Just use last 20% as test.” Fight back.</p>
+<h3>B2. Feature platform</h3>
+<p>Sketch a <strong>point-in-time feature store</strong> for eFX that researchers and the Java pricing stack can share. Include: as-of joins, clock (exchange vs local), corporate/fixing calendars, embargo, feature versioning, and what <strong>must not</strong> live in SageMaker if it is on the hot path.</p>
+<h3>B3. Recommender for eSales (multi-stakeholder)</h3>
+<p>the e-trading platform / eSales wants <strong>next-best action</strong>: which product (spot, NDF, vanilla, hedge) to show which client, subject to <strong>desk inventory and risk appetite</strong>.</p>
+<ul>
+<li>Why is this a <strong>multi-stakeholder</strong> recommender, not CTR?</li>
+<li>Implicit vs explicit feedback in RFQ/chat.</li>
+<li>Two-tower vs factorisation machine vs contextual bandit.</li>
+<li>How you prevent <strong>systematically worse prices</strong> for a client segment (conduct).</li>
+<li>Offline evaluation: IPS / SNIPS, not accuracy.</li>
+</ul>
+<h3>B4. Online learning</h3>
+<p>Quotes must track a <strong>changing</strong> toxicity regime. Compare: nightly batch XGBoost, exponentially weighted logistic, Bayesian linear with forgetting, and a contextual bandit on residual spread.</p>
+<p>What can be updated <strong>inside the trading day</strong> in a bank, and what cannot, given model-risk?</p>
+<hr>
+<h2>C. Mini-case (30 min)</h2>
+<p><strong>Prompt.</strong> An HK eFX trader says: “Your London USDJPY model is garbage in the Tokyo lunch and on USDCNH. Build me something I will actually turn on.”</p>
+<p>Deliver, on one page:</p>
+<ol>
+<li>Problem statement in <strong>PnL language</strong>.</li>
+<li>Labels and horizon.</li>
+<li>Features (≤12) with economic reason.</li>
+<li>Model class and <strong>why not DL</strong>.</li>
+<li>Validation and <strong>shadow-book</strong> design.</li>
+<li>Kill switch and override.</li>
+<li>Who you staff (from a 4–6 person team) and what you ask London engineering for.</li>
+<li>30/60/90 outcomes.</li>
+</ol>
+<hr>
+<h2>Model answers (fold after you attempt)</h2>
+<h3>A1</h3>
+<p>Same-window realised vol uses the return you are predicting if the window includes t. Session VWAP including the current bar is <strong>direct leakage</strong>. Use <strong>strictly lagged</strong> realised measures, decaying kernels that stop at t−1, and VWAP as-of the previous bar. If you need contemporaneous vol, it must come from <strong>other instruments</strong> or a <strong>leading</strong> microstructure channel that will exist at decision time (e.g. lagged futures). Document the <strong>information set</strong> I_{t−}.</p>
+<h3>A2</h3>
+<p>Ticks → sparse, mixed-type, heavy-tailed, missing, strong <strong>known interactions</strong> (tod × pair × inventory) that trees partition cheaply. Nets need more data, careful normalisation, and still lose on <strong>shift</strong>. Override when the raw input is a <strong>tensor</strong> (LOB snapshots, vol surface, text) or you need a <strong>policy</strong> (hedging) not a score. Even then: DL encoder + tree/linear head is often the grown-up design.</p>
+<h3>A3</h3>
+<p>AUC ignores <strong>asymmetric cost</strong>, <strong>size</strong>, <strong>inventory</strong>, and <strong>adverse selection after the fill</strong>. A high-AUC model can flag retail flow as “easy” and <strong>tighten</strong>, then get picked off by a last-look predator that is rare but large. Dashboard: <strong>markout at 50ms/1s/10s by bucket</strong>, fill ratio, internalization quality, and <strong>PnL per million</strong> vs control. Use a <strong>cost-sensitive</strong> threshold.</p>
+<h3>A4</h3>
+<p>Examples: (1) <strong>Session liquidity</strong> (Tokyo lunch) → time-of-day features + <strong>stateful</strong> spread multiplier, not a global residual. (2) <strong>Regime/vol</strong> (PBOC, US-China headlines) → regime detector, widen or fall back to a robust linear mid. (3) <strong>Fixing/event</strong> (WMR, CNY fix) → <strong>calendar features and model off</strong> around events. (4) <strong>Balance-sheet / quarter-end</strong> → inventory penalty schedule. Retraining is not a response; <strong>fallback policies</strong> are.</p>
+<h3>A5</h3>
+<p>Policies need <strong>P(toxic | x)</strong>, not a rank. If 0.2 means 0.8 in the tail, you will <strong>under-widen</strong> on the dangerous 2%. Fix: Platt or isotonic <strong>on a purged holdout</strong>, then <strong>online temperature / logistic intercept</strong> with a slow learning rate, monitored against realised markouts. Recalibrate <strong>per pair and session</strong>. Never isotonic-fit on the trading day itself without regularisation.</p>
+<h3>A6</h3>
+<p><strong>Early stopping on a purged validation set</strong> and <strong>feature/model freeze with dual-run</strong> are risk controls. Dropout is a training trick that disappears at eval (unless MC-dropout, which you probably will not run at 50µs). L2 is a prior; useful, not a control. <strong>Bagging / CPCV distribution of Sharpe</strong> is a control because it estimates <strong>selection bias</strong>.</p>
+<h3>A7</h3>
+<p>Confounding: you showed tight spreads to <strong>clients you already believed were uninformed</strong>, or when <strong>inventory wanted the trade</strong>. That is not the causal effect of tightening. Honest substitutes: (1) <strong>logged propensity</strong> of historical quoting policy and IPS; (2) <strong>discontinuity</strong> at automated spread grids; (3) <strong>shadow quotes</strong> / small sanctioned exploration with a bandit <strong>cap</strong>; (4) predict <strong>outcome conditional on spread</strong> as a <strong>forecast</strong>, labelled as such, not a treatment effect. Do not say “we used SHAP so it is causal”.</p>
+<h3>A8</h3>
+<p>Require: pre-registered hypothesis or <strong>train-only</strong> discovery; <strong>purged</strong> multiple-testing (e.g. deflated Sharpe, CPCV); stability across years/pairs; <strong>economic</strong> cap on feature count; a <strong>hold-out pair or hold-out year</strong> never used for selection. 400 tests with t&gt;2 is the definition of a false Sharpe.</p>
+<h3>A9</h3>
+<p>Loss: <strong>weighted logistic</strong> or focal, weights = cost of miss vs false widen. Sampler: <strong>do not</strong> naively downsample the easy majority if those trades <strong>pay the bills</strong>; keep them but down-weight. Threshold: set on <strong>expected markout</strong>, not F1. Three knobs, three meetings (QR, trader, MRM).</p>
+<h3>A10</h3>
+<p>Hierarchical: <strong>global backbone</strong> (tod, session, cross-asset vol, USD index) + <strong>pair-specific residual</strong> (CNH fixing, KRW NDF hours). Complete pooling fails on CNH; no pooling fails on data. Hierarchical Bayesian or a <strong>shared GBDT with pair ID + pair×feature interactions</strong>. Specialists for top pairs, pooled tail pairs.</p>
+<h3>B1 — sketch they want</h3>
+<ul>
+<li><strong>Decision time</strong> t, label = signed move / toxic fill over horizon h (e.g. 1s, 10s). Overlap ⇒ <strong>purge</strong> any train sample whose time is within h of a test sample (Lopez de Prado embargo).</li>
+<li>Splits: <strong>walk-forward by week</strong>, not random rows. Embargo around <strong>events</strong>.</li>
+<li><strong>CPCV</strong>: many combinatorial holdouts to get a <strong>distribution</strong> of PnL, not one lucky year.</li>
+<li>Session: evaluate <strong>Tokyo, HK afternoon, London CNH, NY</strong> separately. A model that only works in London is a London model.</li>
+<li>Costs: apply <strong>typical half-spread + expected widen</strong> in the backtest. A classifier that always says “toxic” has great recall and zero franchise.</li>
+<li>Go-live: <strong>shadow for 4–6 weeks</strong>, dual-run vs current skew, kill if markout or fill-ratio breach. Model <strong>tier</strong> = high if it auto-skews.</li>
+</ul>
+<h3>B2 — sketch they want</h3>
+<ul>
+<li>Clocks: exchange timestamps, not notebook <code>datetime.now()</code>.</li>
+<li>Point-in-time: as-of join; no “last” without <code>asof</code>.</li>
+<li>Two compute paths: <strong>slow</strong> (SageMaker, research, minutes) vs <strong>hot</strong> (C++/Java/kdb on box next to the pricing engine — Singapore). HK team owns <strong>spec and research</strong>; engine owners own <strong>hot implementation</strong>. Same unit tests, golden ticks.</li>
+<li>Version features as <strong>hashes</strong>; model binary pins a feature hash.</li>
+<li>Do not put a Python GBDT on the 50µs path; <strong>distil</strong> to a linear/spline/small net or a lookup.</li>
+</ul>
+<h3>B3 — sketch they want</h3>
+<ul>
+<li>Stakeholders: client (execution quality, fairness), salesperson (wallet, coverage), trader (inventory, franchise, conduct). CTR maximisation <strong>will</strong> dump risk into the book.</li>
+<li>Implicit feedback: RFQs, chat intents, the e-trading platform clicks; position bias.</li>
+<li>Start with <strong>contextual bandit / two-tower</strong> on client embedding × product embedding, <strong>constrained</strong> by a risk layer (hard inventory limits). Kernel FM is a fair adjacent answer if you can explain it.</li>
+<li>Conduct: monitor <strong>price quality and reject rates by client cluster</strong>; no protected-class proxies; audit logs.</li>
+<li>Offline: inverse-propensity on historical display policy; if logging is missing, <strong>you cannot evaluate</strong> — that is the first engineering ticket.</li>
+</ul>
+<h3>B4 — sketch they want</h3>
+<ul>
+<li>Intraday: <strong>intercept / temperature / EWMA residual</strong> of a <strong>frozen</strong> approved model is often acceptable; full tree retraining is a <strong>model change</strong>.</li>
+<li>Agree with MRM <strong>what is a parameter update vs a new model</strong>.</li>
+<li>Bandits: exploration is a <strong>client outcome</strong>; cap ε, exclude sensitive client classes, log everything.</li>
+<li>Fallback: if live Brier/markout blows up, <strong>revert to the approved frozen model</strong>.</li>
+</ul>
+<h3>C — a strong 30-minute answer (outline)</h3>
+<p><strong>PnL language:</strong> reduce <strong>adverse markouts</strong> on USDCNH and USDJPY Asia lunch without dropping <strong>good fill rate</strong> more than X bps of franchise.</p>
+<p><strong>Label:</strong> fill-level markout at 1s and 10s, plus a binary toxic flag at a quantile; horizon matches how fast the desk can hedge.</p>
+<p><strong>Features (example):</strong> lagged OFI, spread vs session quantile, inventory, time-to-fix, CNH-CNY basis, USDJPY futures lead, residual vs global mid, last N own-fills’ markouts, venue mix, realised vol <strong>lagged</strong>.</p>
+<p><strong>Model:</strong> LightGBM or L2 logistic on standardised features; <strong>not</strong> a transformer. Distil for hot path.</p>
+<p><strong>Validation:</strong> purged walk-forward, CPCV, session slices, costed PnL.</p>
+<p><strong>Shadow:</strong> identical quotes in a paper book; trader override logged; weekly review.</p>
+<p><strong>Staff:</strong> you + 1 modeller + 1 data/quant dev; London MLOps for registry; Singapore eFX for hot path.</p>
+<p><strong>30/60/90:</strong> feature PIT audit; shadow live; go-live on one pair one session with kill switch.</p>
+<hr>
+<h2>Self-test MCQ (untimed, after the mock)</h2>
+<ol>
+<li>Purged CV mainly fixes (a) class imbalance (b) <strong>overlap of labels with train/test</strong> (c) covariate shift (d) vanishing gradients.</li>
+<li>A reliability diagram plots (a) ROC (b) <strong>predicted prob vs empirical freq</strong> (c) SHAP (d) ACF.</li>
+<li>IPS in recommenders needs (a) GPU (b) <strong>logged propensities</strong> (c) BERT (d) PCA.</li>
+<li>Deflated Sharpe exists because (a) vol is stochastic (b) <strong>selection / multiple testing</strong> (c) fat tails only (d) FX swaps.</li>
+<li>For last-look, you need (a) rank-AUC only (b) <strong>calibrated P(toxic) and a costed threshold</strong> (c) BLEU (d) FID.</li>
+</ol>
+<p>Answers: 1-b, 2-b, 3-b, 4-b, 5-b.</p></section><section class="panel" id="dl"><h1>Round 2 — Deep Learning and GenAI (Director mock)</h1>
+<p><strong>Time:</strong> 90 minutes <strong>Format:</strong> 15 min conceptual, 45 min design, 35 min the desk assistant / hedging case <strong>Bar:</strong> You must be able to <strong>kill a DL project</strong> and to <strong>defend one</strong>. Both. The typical seat lists <strong>GenAI and agentic applications</strong> as part of an extremely broad mandate, and says you need <strong>fundamentals of modern GenAI</strong>, not expertise in every topic. C1 (the desk assistant) is that exam. Deep hedging / LOB nets are “when would I use DL” — not a requirement to have shipped HFT.</p>
+<p>Pass ≥ 26/36.</p>
+<hr>
+<h2>A. Conceptual (15 min)</h2>
+<h3>A1. When DL loses</h3>
+<p>State four concrete reasons a 12-layer Transformer on lagged FX returns will underperform LightGBM on the same tabular features.</p>
+<h3>A2. Receptive field vs horizon</h3>
+<p>You predict a 10-second return with a causal TCN. How do kernel size, dilation, and depth set the <strong>lookback</strong>? What goes wrong if lookback includes a <strong>fixing</strong> that will not have printed at t in live trading?</p>
+<h3>A3. Normalisation</h3>
+<p>Why is <strong>global</strong> batch-norm dangerous on a stream of ticks? What would you use instead for a live eFX net?</p>
+<h3>A4. Attention is not causality</h3>
+<p>A trader sees attention weights on “USDJPY” ticks and concludes those ticks <strong>caused</strong> the CNH move. Your response, in one minute.</p>
+<h3>A5. Overfitting the microstructure</h3>
+<p>A LOB CNN gets 0.57 accuracy on next-event sign in-sample and 0.50 out-of-sample after a matching-engine upgrade. Diagnose, in production language.</p>
+<h3>A6. Deep hedging in one minute</h3>
+<p>What problem does deep hedging solve that delta-hedging a Black–Scholes book does not? Name one <strong>risk-measure</strong> you would train, and one reason <strong>Risk</strong> will still want Greeks.</p>
+<hr>
+<h2>B. Design problems (45 min)</h2>
+<h3>B1. LOB or not LOB</h3>
+<p>HK Equities algo (equities-algo-quant) wants a <strong>fill-probability / queue-position</strong> model for HKEX. A VP wants a deep LOB image model “like the papers”.</p>
+<p>Design two options: (i) <strong>classical</strong>, (ii) <strong>DL</strong>. Compare data, latency, explainability, MRM, and a 90-day feasibility on a 4–6 person team. Make a recommendation.</p>
+<h3>B2. Sequence model for NDF algos</h3>
+<p>Singapore eFX wants a <strong>child-order</strong> policy for 1M KRW NDF that reacts to <strong>sign of flow and local vol</strong>. Compare: supervised imitation of historical algo, offline RL (CQL/IQL), and a <strong>simple hawkes + inventory</strong> policy. Include sim-to-real and conduct.</p>
+<h3>B3. Vol surface / FX options</h3>
+<p>engineering&#x27;s world includes FX options backtesters. A researcher proposes an <strong>operator network / DeepBSDE</strong> for USDJPY 25d RR. When is that research, and when is it a <strong>desk tool</strong>? What would you productionise first instead?</p>
+<h3>B4. Representation learning</h3>
+<p>You want a <strong>client embedding</strong> for the e-trading platform (recommenders, two-towers). Contrast: count-based, matrix factorisation, two-tower, and LLM-encoded chat. Data-leakage and <strong>conduct</strong> constraints?</p>
+<hr>
+<h2>C. Cases (35 min)</h2>
+<h3>C1. the desk assistant (already in production)</h3>
+<p>Group CIO has said Markets is in production with an FX tool that helps <strong>initiate trades</strong>. You are the APAC Director. eSales wants to let the bot <strong>suggest a price and a size</strong>.</p>
+<p>Write:</p>
+<ol>
+<li>System diagram: intent → tools → models → ticket.</li>
+<li>What the LLM is <strong>allowed</strong> to do vs what it must <strong>call</strong>.</li>
+<li>Retrieval (RAG) vs fine-tune vs prompts.</li>
+<li>Hallucination, stale mid, last-look, and <strong>client confidentiality</strong> (RAG over other clients’ tickets is a fire).</li>
+<li>HKMA human-in-the-loop vs a fully straight-through ticket.</li>
+<li>Telemetry: what you log for MRM and conduct.</li>
+<li>Why this is a <strong>different model tier</strong> from eFX mid.</li>
+</ol>
+<h3>C2. Deep hedging for an FX vanilla book</h3>
+<p>A QR wants a PyTorch hedging policy for USDJPY 1w ATM, trained on simulated paths with spreads and overnight gaps (APAC).</p>
+<p>Cover: environment, friction, objective (MSE vs CVaR vs exponential utility), <strong>model risk of the simulator</strong>, inventory and cut-off, and how you would <strong>shadow</strong> vs the desk’s current delta engine. When do you say no?</p>
+<hr>
+<h2>Model answers</h2>
+<h3>A1</h3>
+<p>(1) <strong>Small effective N</strong>: years of ticks are not i.i.d. samples; a net’s capacity fits <strong>seasonality and one-off events</strong>. (2) <strong>Shift</strong>: the test month is not the train month; trees + a few economically named features degrade more gracefully. (3) <strong>Loss vs PnL</strong>: CE on sign ≠ markout; DL will exploit <strong>label artefacts</strong>. (4) <strong>Latency and ops</strong>: 12-layer attention is the wrong serving shape; distillation adds another failure mode. (5) <strong>Tuning surface</strong>: DL has more knobs, so more <strong>selection bias</strong>. (6) <strong>Missingness and regime</strong>: trees split on “feature missing”; nets need imputed sentinels you will get wrong.</p>
+<h3>A2</h3>
+<p>Causal TCN lookback ≈ 1 + (k−1) * Σ dilation, for typical exponential dilations ~ 2^{depth}. If depth/dilation reaches <strong>through the unprinted fix</strong>, you trained on a feature that is <strong>future information</strong> relative to live. Also: if the label horizon is 10s but the net sees 30 minutes of <strong>overlapping</strong> path, it memorizes local trajectories. Match <strong>receptive field to economically available information</strong>, and <strong>cut sequences on events</strong>.</p>
+<h3>A3</h3>
+<p>Batch-norm uses <strong>batch statistics</strong> that (a) differ between train mini-batches of mixed sessions and (b) are <strong>not available</strong> the same way online (one tick is not a batch). It also <strong>leaks</strong> via population stats if you update them carelessly. Prefer: <strong>frozen</strong> per-feature running moments computed <strong>point-in-time</strong>, LayerNorm / RMSNorm on the channel dim, or <strong>online standardisation</strong> with slow EMA that is itself a <strong>controlled parameter</strong>. Never update BN population stats from live in an unapproved way.</p>
+<h3>A4</h3>
+<p>Attention is a <strong>weighted average in a fitted basis</strong>, not a causal effect. It is unstable under multicollinearity (USDJPY and Nikkei futures). Use it as <strong>debugging</strong>, not as an explanation to a client or to Compliance. If you need attribution, prefer <strong>interventions</strong> (ablate the feed) or simple ablations, and still speak in <strong>predictive</strong> language.</p>
+<h3>A5</h3>
+<p>The CNN learned <strong>engine artefacts</strong> (queue priority, lot size, matching rules, feed snapshots) that <strong>vanished</strong> in the upgrade — classic <strong>overfit to venue microstructure</strong>. Also possible: <strong>label leakage</strong> from snapshots that include the event. Production response: freeze, <strong>kill</strong>, rebuild features from <strong>spec of the new engine</strong>, shorter memory, simpler model, and a <strong>canary on a tiny order-flow slice</strong>. This is why DL on LOB needs <strong>venue-change tests</strong> in CI.</p>
+<h3>A6</h3>
+<p>Deep hedging trains a <strong>policy</strong> that minimises a <strong>risk measure of terminal P&amp;L</strong> under <strong>frictions</strong> (spread, impact, discrete time, constraints) where continuous delta in a complete market is a fantasy. Typical: <strong>CVaR</strong>, expected shortfall, or exponential utility. Risk will still want <strong>Greeks, scenario ladders, and limits</strong> because the policy is only as good as the <strong>simulated measure</strong>; they need a language for <strong>limit breaches</strong> that is not “the net wanted to”.</p>
+<h3>B1 — recommendation</h3>
+<p><strong>90-day: classical.</strong> Queue position, time-in-force, spread, imbalance at top K, time-of-day, own-order flags — logistic or GBDT, served in the <strong>algo box in HK co-lo</strong>. LOB images: research track with 1 scientist, <strong>not</strong> on the live router. DL becomes interesting when you have <strong>stable, reconstructed book</strong> and a <strong>latency budget in milliseconds not microseconds</strong>. MRM: image nets are a <strong>harder</strong> explain story for best-execution. Tell the VP: papers ≠ HKEX production.</p>
+<h3>B2</h3>
+<p>Imitation: copies <strong>old</strong> mistakes and yesterday’s risk appetite; fine as a <strong>baseline</strong>. Offline RL: need <strong>logged policies and propensities</strong>; KRW NDF is <strong>thin</strong> — sim-to-real will dominate. Hawkes + inventory: <strong>few parameters</strong>, trader-interpretable, easier SS1/23. Path: <strong>Hawkes/inventory in prod</strong>, imitation as shadow, RL <strong>only in simulator</strong> until the logging stack exists. Conduct: algos that <strong>detect</strong> client type from flow can become <strong>predatory</strong>; keep the objective <strong>implementation shortfall + risk</strong>, not “pick off the client”.</p>
+<h3>B3</h3>
+<p>DeepBSDE / operator nets: <strong>research</strong> for exotic/RR calibration speed, not a Q3 desk widget. Productionise first: <strong>arb-free surface interpolators</strong>, PCA/autoencoder on tenors with <strong>hard calendar/butterfly constraints</strong>, and a <strong>fast pricer</strong>. A net that <strong>violates no-arb</strong> is a non-starter. Use DL as a <strong>warm start</strong> to a classical calibrator.</p>
+<h3>B4</h3>
+<p>Start with <strong>count / FM</strong> on products × clients using <strong>the e-trading platform and RFQ logs</strong>. Two-tower when you have enough events. LLM on chat: <strong>useful for intent</strong>, dangerous as the <strong>only</strong> embedding (PII, off-channel, jokes). Never train on <strong>other clients’ confidential flow</strong> to predict this client. Separate <strong>research embeddings</strong> from <strong>production embeddings</strong>. Reset embeddings on coverage-change. multi-stakeholder bonus: <strong>multi-objective</strong> ranking (client utility, desk risk, coverage fairness).</p>
+<h3>C1 — the desk assistant</h3>
+<p><strong>Diagram:</strong> user utterance → <strong>intent classifier / LLM with grammar</strong> → <strong>tools</strong>: <code>get_mid(pair)</code>, <code>get_skew</code>, <code>get_limits</code>, <code>draft_ticket</code> → <strong>confirmation UI</strong> → trader or client ack → EMS.</p>
+<p>LLM <strong>must not</strong> invent a mid. It may <strong>phrase</strong> a mid returned by the pricer. RAG: <strong>product docs, playbooks, client-specific <em>permitted</em> static data</strong> — <strong>not</strong> other clients’ tickets, <strong>not</strong> unscoped chat.</p>
+<p>Fine-tune: only if logs are <strong>clean and consented</strong>; otherwise RAG + tools + small intent model.</p>
+<p>HKMA: customer-facing GenAI → <strong>human-in-the-loop</strong> at least at this stage; define <strong>scope</strong> in policy (initiate vs price vs commit).</p>
+<p>Telemetry: prompt, retrieved docs IDs, tool I/O, user, client, timestamp, model version, whether price was <strong>overridden</strong>. Retention per policy.</p>
+<p>Tier: <strong>workflow / assistant</strong>, not a pricing model — <strong>unless</strong> you let it commit risk, in which case it <strong>becomes</strong> a trading model. That sentence is the interview.</p>
+<h3>C2 — deep hedging</h3>
+<p>Simulator must include <strong>spread, discrete hedge times, APAC overnight jump, funding</strong>. Objective: <strong>CVaR_0.05 of discounted P&amp;L</strong> plus a <strong>transaction penalty</strong>. Train off policy in PyTorch; <strong>never</strong> live.</p>
+<p>Say <strong>no</strong> if: (i) they cannot <strong>replicate</strong> current desk hedges as a baseline, (ii) no <strong>limit</strong> layer, (iii) they want to replace the engine before shadowing a <strong>single tenor</strong>, (iv) the book is <strong>client-facing vanilla</strong> where explaining a net hedge to a corporate is a conduct problem.</p>
+<p>Shadow: same fills, compare <strong>hedge error and cost</strong> vs delta engine for 1w ATM only. Promote per tenor.</p>
+<hr>
+<h2>Rapid MCQ</h2>
+<ol>
+<li>Teacher forcing gap is (a) BN (b) <strong>train-on-truth vs live own-outputs</strong> (c) AdamW (d) dropout.</li>
+<li>CQL is used because (a) faster GPU (b) <strong>offline / overestimation on OOD actions</strong> (c) better BLEU (d) stationarity.</li>
+<li>RAG’s main Markets failure is (a) vanishing gradient (b) <strong>wrong or leaked retrieved context, plus stale numbers</strong> (c) ReLU (d) PCA.</li>
+<li>A VAE on a vol surface must still (a) maximise AUC (b) <strong>respect no-arb constraints or project onto them</strong> (c) use BERT (d) ignore butterflies.</li>
+<li>MC-dropout at quote time is (a) free (b) <strong>usually too slow / unapproved as uncertainty</strong> (c) unbiased for PnL (d) required by HKMA.</li>
+</ol>
+<p>Answers: 1-b, 2-b, 3-b, 4-b, 5-b.</p></section><section class="panel" id="coding"><h1>Round 3 — Coding (Director mock)</h1>
+<p><strong>Time:</strong> 90–120 minutes <strong>Language:</strong> Python 3.11+ (numpy/pandas allowed). No internet. <strong>Bar:</strong> they are <strong>not looking for software engineers</strong>. You need to be <strong>competent</strong> at coding: correct information sets, no leakage, code a desk would trust. You do <strong>not</strong> need kdb, Java, or a 50µs résumé. Style still matters: type hints, no <code>iterrows</code>.</p>
+<p>Run from this folder:</p>
+<pre><code>cd pack/mocks/coding
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+pytest -q</code></pre>
+<p>Implement <code>candidate.py</code>. <code>solutions.py</code> is the answer key. Tests import <strong>candidate</strong>.</p>
+<p>If they give you a <strong>HackerRank-style</strong> screen, still practise these: they are closer to a <strong>GM AI Director</strong> loop (leakage, microstructure, inventory) than reversing a linked list. Still warm up with <strong>one</strong> medium array/hash problem the night before so you are not rusty.</p>
+<hr>
+<h2>Problem 1 — Purged walk-forward (25 min)</h2>
+<p>Implement <code>purged_walk_forward_splits(t, horizon, n_folds, embargo)</code>.</p>
+<ul>
+<li><code>t</code> is a 1-D sorted array of decision timestamps (int64 ns or int seconds — treat as comparable numbers).</li>
+<li>Each sample <code>i</code> has a <strong>label that uses data in (t[i], t[i] + horizon]</strong>.</li>
+<li>Folds are contiguous in time (walk-forward: fold k’s test is a later block than fold k’s train).</li>
+<li><strong>Purge:</strong> drop from <strong>train</strong> any index whose interval <code>[t, t+horizon]</code> overlaps the test interval expanded by <code>embargo</code> on both sides.</li>
+<li>Return a list of <code>(train_idx, test_idx)</code> numpy int64 arrays. All indices unique within a split; test blocks cover the series as evenly as possible without shuffling.</li>
+</ul>
+<p>This is Lopez de Prado, not sklearn <code>TimeSeriesSplit</code>.</p>
+<p><strong>Follow-up they will ask:</strong> why embargo ≥ horizon; what if labels are triple-barrier and hitting time &lt; horizon; how CPCV differs.</p>
+<h2>Problem 2 — EWMA fair value and OFI (25 min)</h2>
+<p>Implement:</p>
+<ul>
+<li><code>ewma(x, alpha)</code> — causal EWMA, <code>y[0] = x[0]</code>, <code>y[t] = alpha <em> x[t] + (1-alpha) </em> y[t-1]</code>. No look-ahead.</li>
+<li><code>order_flow_imbalance(bid_sz, ask_sz, bid_px, ask_px)</code> — a simple <strong>level-1 OFI</strong>:</li>
+</ul>
+<p>For each t &gt; 0:</p>
+<ul>
+<li>bid increment: if bid_px up, +bid_sz[t]; if unchanged, bid_sz[t]−bid_sz[t-1]; if down, −bid_sz[t-1]</li>
+<li>ask increment: if ask_px down, +ask_sz[t]; if unchanged, ask_sz[t]−ask_sz[t-1]; if up, −ask_sz[t-1]</li>
+<li>OFI = bid_increment − ask_increment</li>
+<p>Index 0 is 0.</p>
+</ul>
+<ul>
+<li><code>microprice(bid_px, ask_px, bid_sz, ask_sz)</code> = (ask_px <em> bid_sz + bid_px </em> ask_sz) / (bid_sz + ask_sz) with safe denominator.</li>
+</ul>
+<p><strong>Follow-up:</strong> why microprice ≠ mid; how you would <strong>standardise</strong> OFI online; what happens at a tick-size change.</p>
+<h2>Problem 3 — Inventory-aware quotes (20 min)</h2>
+<p>Implement <code>reservation_quote(mid, inventory, q_max, gamma, sigma, horizon, kappa, fee)</code>.</p>
+<p>A simplified Avellaneda–Stoikov style:</p>
+<ul>
+<li>reservation <code>r = mid - inventory <em> gamma </em> sigma**2 * horizon</code></li>
+<li>half-spread <code>d = (1/gamma) <em> log(1 + gamma/kappa) + 0.5 </em> gamma * sigma**2 * horizon + fee</code>  (if gamma≈0, use <code>1/kappa + fee</code> as the finite limit)</li>
+<li>bid = r − d, ask = r + d</li>
+<li>Clip inventory effect so quotes do not cross: if bid &gt; ask, set both to mid.</li>
+</ul>
+<p>Return dict with keys <code>reservation</code>, <code>bid</code>, <code>ask</code>, <code>half_spread</code> (all ndarray).</p>
+<p><strong>Follow-up:</strong> map <code>gamma</code> to a desk risk appetite; what you <strong>monitor</strong> live (inventory, realised spread vs model, fill asymmetry).</p>
+<h2>Problem 4 — Debug the backtest (20–30 min)</h2>
+<p><code>broken_backtest.py</code> contains a <strong>deliberately leaky</strong> strategy simulator. Do <strong>not</strong> rewrite from scratch. List the bugs (there are at least five), then implement <code>fixed_backtest(df)</code> in <code>candidate.py</code> that:</p>
+<ul>
+<li>trades only on information available at bar <strong>close of t</strong> for a position held over <strong>t+1</strong></li>
+<li>applies spread cost</li>
+<li>reports net PnL mean and a <strong>purged</strong> Sharpe that does not use future vol</li>
+</ul>
+<p>Write the bug list in comments above <code>fixed_backtest</code>.</p>
+<hr>
+<h2>What interviewers listen for while you type</h2>
+<ul>
+<li>You define <strong>time</strong> before you write a loop.</li>
+<li>You ask whether timestamps are <strong>decision time or event time</strong>.</li>
+<li>You refuse <code>shift(-1)</code> “to align the label” without an embargo.</li>
+<li>You vectorise, but you can write the O(n) loop correctly first.</li>
+<li>You mention <strong>tests</strong>: a unit test where leakage would make PnL explode.</li>
+<li>You mention <strong>integer cents / tick size</strong> rather than float fantasy, even if the toy uses floats.</li>
+</ul>
+<h2>If they switch to “systems” instead of numpy</h2>
+<p>Only if <strong>they</strong> go there. The typical seat is not a software-engineer screen. Keep it to 10 minutes:</p>
+<ul>
+<li>You specify the model; Singapore/HK <strong>engineering</strong> owns the hot path.</li>
+<li>Registry, canary, kill switch, information set.</li>
+<li>You do not need to design exactly-once fill streams unless asked.</li>
+</ul></section><section class="panel" id="project"><h1>Round 4 — Project / case (Director mock)</h1>
+<p><strong>Time:</strong> 90 minutes (45 min working + 45 min interrogation) <strong>Deliverable:</strong> a structure you could put on one slide pack: problem, options, recommendation, 90-day plan, risks, ask.</p>
+<p>This is the round that <strong>hires or kills</strong> a Director. Technical rounds proved you can think. This round proves APAC GM can <strong>give you a team</strong>.</p>
+<hr>
+<h2>Case: “FX PoC, then the broad mandate”</h2>
+<p><strong>Prompt (read slowly, then start the clock).</strong></p>
+<blockquote><p>You are the new <strong>Director – Global Markets AI</strong>, Hong Kong. You sit in a <strong>centralised Quant</strong> unit of the Investment Bank that exists <strong>for Markets</strong>. Headcount: <strong>4–6 hybrid</strong>. You are the <strong>senior technical authority</strong>, hands-on where required. The recruiter was explicit: <strong>this is not a software-engineer hire</strong>; coding competence and <strong>GenAI fundamentals</strong> are enough. HFT is <strong>optional</strong>. The team mandate is <strong>extremely broad</strong>: quantitative modelling, <strong>GenAI and agentic</strong> applications. You must <strong>deliver initial use cases in FX as a proof of concept</strong>, then scale across asset classes. London already has a desk assistant in production and SageMaker/MLflow patterns. Singapore hosts the pricing engine. HK/Tokyo host Equities algos. APAC Markets is pushing Equities and Prime.<br><br>In 90 days the Global Head of GM AI/ML and the APAC Head of Markets will ask: <strong>what did we turn on, who uses it, and what did it do to PnL and risk?</strong><br><br>Design the programme. You must show <strong>two rails</strong>: (A) FX quantitative PoC (B) GenAI/agentic.</p></blockquote>
+<h3>Suggested structure (use it)</h3>
+<ol>
+<li><strong>Problem framing</strong> (5 min) — whose pain, why now, why this bank.</li>
+<li><strong>Use-case funnel</strong> (10 min) — 8 ideas, kill 5, spike 3, pick 1 production + 1 platform.</li>
+<li><strong>Architecture</strong> (10 min) — data, research, shadow, hot path, GenAI vs statistical.</li>
+<li><strong>Operating model</strong> (10 min) — team, London/SG/HK RACI, on-call.</li>
+<li><strong>Controls</strong> (10 min) — SS1/23, HKMA, conduct, model tiering.</li>
+<li><strong>90-day plan</strong> (10 min) — weeks, milestones, metrics.</li>
+<li><strong>18-month scaling</strong> (5 min) — Equities/Prime without losing the FX win.</li>
+<li><strong>Asks</strong> (5 min) — data, access, air cover.</li>
+</ol>
+<p>Interrogation will try to <strong>break</strong> your plan. Invite it.</p>
+<hr>
+<h2>Interrogation bank (practise out loud)</h2>
+<ol>
+<li>London already has a USDJPY model. Why do we need you?</li>
+<li>Why not hire six PhDs and publish?</li>
+<li>Trader says ML is a religion. How do you get a <strong>kill-switch culture</strong>, not a science club?</li>
+<li>Compliance: your recommender used client chat. What did you ingest?</li>
+<li>Last-look is in the press again. Does your toxicity model make it <strong>worse</strong>?</li>
+<li>SageMaker cannot hit our latency. So why did the posting mention it?</li>
+<li>CNH data cannot leave HK. How do you train?</li>
+<li>Your markout improved 0.2 bp and fill rate fell 8%. Did you succeed?</li>
+<li>GPU spend is 4× the PnL. What do you cut?</li>
+<li>A VP wants to put GPT-4 on the quote stream. You say?</li>
+<li>Equities quant team already has kdb and Java algos. Do you replace them?</li>
+<li>How do you staff India (offshore tech centre) vs HK?</li>
+<li>What is <strong>not</strong> a model under SS1/23 in your estate?</li>
+<li>Give me a <strong>RACI</strong> for a production incident at 02:00 London / 09:00 HK.</li>
+<li>We are <strong>not looking for software engineers</strong>. Why did you talk about gRPC and 50µs?</li>
+<li>HFT is not essential. Can you still be the technical authority?</li>
+<li>The mandate is <strong>quant modelling and agentic</strong>. You only listed an FX skew model. Where is GenAI?</li>
+<li>You have been Director 2–3 years. What is <strong>broader</strong> about this remit?</li>
+</ol>
+<hr>
+<h2>Scoring rubric (grade yourself honestly)</h2>
+<div class='table-wrap'><table><thead><tr><th>Dimension</th><th>1</th><th>3</th><th>5</th></tr></thead><tbody><tr><td><strong>PnL literacy</strong></td><td>Metrics are AUC/accuracy</td><td>Mix of ML and desk metrics</td><td>Optimises a <strong>costed franchise metric</strong> and names the trade-off</td></tr><tr><td><strong>Sequencing</strong></td><td>Boils the ocean</td><td>FX listed first</td><td>FX <strong>PoC</strong> plus a <strong>GenAI/agentic</strong> rail; then Equities/Prime</td></tr><tr><td><strong>Stakeholder map</strong></td><td>“Work with traders”</td><td>Names desks</td><td>RACI across <strong>London AI, SG eFX, HK QR/Prime, MRM, eSales</strong></td></tr><tr><td><strong>Architecture</strong></td><td>Cloud slogan</td><td>SageMaker mentioned</td><td>Research vs engine, <strong>and</strong> a GenAI tool path with HITL — you specify, engineering serves</td></tr><tr><td><strong>Controls</strong></td><td>“We will be responsible”</td><td>Inventory, validation</td><td><strong>Tiering</strong>, HITL for GenAI, kill switch, dual-run, data residency</td></tr><tr><td><strong>Team</strong></td><td>Generic org chart</td><td>4–6 roles</td><td>AI/ML people who can code; <strong>not</strong> an SE shop; hire less until a user exists</td></tr><tr><td><strong>No</strong></td><td>Never kill ideas</td><td>Kills DL theatre</td><td>Kills <strong>specific</strong> ideas with a reason the desk respects</td></tr><tr><td><strong>Voice</strong></td><td>IC who wants headcount</td><td>Manager</td><td><strong>Director</strong>: air cover, trade-offs, names what you will not do</td></tr></tbody></table></div>
+<p><strong>Pass:</strong> average ≥ 4 and no 1s on PnL, controls, or sequencing.</p>
+<hr>
+<h2>A strong reference plan (do not memorise; internalise)</h2>
+<h3>Framing</h3>
+<p>The bank is building <strong>GM AI/ML as a greenfield</strong> inside <strong>centralised Markets Quant</strong>. The HK Director is the APAC <strong>senior technical authority</strong>: FX <strong>PoC</strong> first, then scale, with a mandate that is <strong>quant modelling + GenAI/agentic</strong>. You translate desk pain into <strong>tiered</strong> models existing QR/QD/traders will <strong>use</strong>. You work <strong>with</strong> engineering. You do not replace the pricing engine or HK Equities Java, and you do not staff an SE org.</p>
+<h3>Funnel (example)</h3>
+<p><strong>Kill now</strong></p>
+<ul>
+<li>Transformer on raw mid returns.</li>
+<li>Live RL on the pricing engine.</li>
+<li>Unconstrained LLM prices.</li>
+<li>Firm-wide “AI platform” with no user.</li>
+</ul>
+<p><strong>Spike (4 weeks, two people)</strong></p>
+<ol>
+<li><strong>FX statistical PoC:</strong> toxicity / markout or RFQ win-rate for USDCNH + USDJPY Asia sessions.</li>
+<li><strong>GenAI/agentic PoC:</strong> desk-assistant tools for APAC hours (<code>get_mid</code>, <code>get_skew</code>, draft ticket) — never invented numbers; HKMA HITL.</li>
+<li>Logging: if RFQ propensities are missing, the spike <strong>is</strong> the log.</li>
+</ol>
+<p><strong>Production (one statistical + one workflow, different tiers)</strong></p>
+<ul>
+<li><strong>Skew assistant</strong> (trader or rules commit). Metric: 1s/10s markout <strong>and</strong> fill ratio.</li>
+<li><strong>Agentic ticket draft</strong> that can only <strong>call</strong> the pricer. Separate, lower model tier.</li>
+</ul>
+<p><strong>Platform (must ship with it)</strong></p>
+<ul>
+<li>Point-in-time feature spec + golden ticks + MLflow registry + shadow harness that Equities can clone.</li>
+</ul>
+<h3>Architecture</h3>
+<pre><code>Desks (HK) ── pain, override, colour
+   │
+Research (HK Python, SageMaker) ── train, CPCV, notebooks
+   │  feature spec + golden tests
+Feature / model registry (London MLOps patterns)
+   │
+Shadow book ── dual run
+   │
+Hot path (SG pricing engine / HK algo box) ── distilled model or rules
+   │
+Desk assistant (workflow) ── tools to mid/skew; HITL</code></pre>
+<h3>Team (first 90 days)</h3>
+<ul>
+<li>You — senior technical authority, hands-on on FX model #1.</li>
+<li>1 applied scientist (forecasting / recommenders / uncertainty).</li>
+<li>1 applied scientist (GenAI/agentic fundamentals) <strong>once</strong> Compliance has scoped tools — can be week 3, not day 90.</li>
+<li>1 production-minded quant working <strong>with</strong> London/SG engineering.</li>
+<li>0.5 London MLOps (matrix), 0.5 HK QR design partner.</li>
+</ul>
+<p>Do not hire a software-engineering org. The seat forbade that identity.</p>
+<h3>Controls</h3>
+<ul>
+<li>Inventory all artefacts on day 30.</li>
+<li><strong>Tier 0</strong> workflow (assistant) vs <strong>Tier 1+</strong> if auto-skew.</li>
+<li>Dual run, kill switch, session-level fallback.</li>
+<li>CNH: train <strong>in-region</strong> if required; no raw ticks in an unconstrained London notebook.</li>
+<li>GenAI: scope written; no RAG over other clients.</li>
+</ul>
+<h3>90-day calendar</h3>
+<div class='table-wrap'><table><thead><tr><th>Week</th><th>Outcome</th></tr></thead><tbody><tr><td>1–2</td><td>Stakeholder map; data access; model inventory; pick pair/session</td></tr><tr><td>3–4</td><td>PIT audit; leakage tests; baseline linear/GBDT</td></tr><tr><td>5–6</td><td>Shadow book live; trader override UX with eSales/eFX</td></tr><tr><td>7–8</td><td>CPCV + costed metrics; MRM pre-read; desk-assistant tool spec</td></tr><tr><td>9–10</td><td>Canary one pair/session; kill criteria signed</td></tr><tr><td>11–12</td><td>Review with London + APAC Markets: <strong>on/off</strong>, Equities clone plan</td></tr></tbody></table></div>
+<h3>18 months</h3>
+<p>Same <strong>feature + shadow + registry</strong> pattern for <strong>HKEX algo fill probability</strong> and a <strong>Prime client-flow / utilisation</strong> tool. Do not start those until FX canary is boring.</p>
+<h3>Asks</h3>
+<ul>
+<li>Tick + RFQ + markout access with a <strong>named data owner</strong>.</li>
+<li>Intro to SG pricing-engine engineering and HK Equities quant.</li>
+<li>MRM fast-track for <strong>Tier 1 skew assistant</strong>.</li>
+<li>Air cover to say no to a firm-wide LLM demo week 3.</li>
+</ul>
+<hr>
+<h2>Mini-cases (if they pivot)</h2>
+<p>Sit these in 20 minutes each after the main case.</p>
+<p><strong>M1. The researcher’s notebook is in production.</strong> Overnight job on a desktop, no tests, making money. What do you do in week 1 vs week 8? (Do not kill PnL on day one; wrap, test, dual-run, then retire the desktop.)</p>
+<p><strong>M2. Prime wants an LLM over client inventory.</strong> Conduct, information barriers, who the user is, why a <strong>constrained tool</strong> beats a chatbot.</p>
+<p><strong>M3. Build vs buy.</strong> Vendor claims 20 bp TCA improvement. How you trial (A/B, capacity, last-look policy alignment, data egress, kill).</p>
+<p><strong>M4. Incident.</strong> Model widened everyone at Tokyo open, franchise volume collapsed. Walk the <strong>bridge</strong>: detect, kill, fallback, client comms, post-mortem, who speaks.</p>
+<hr>
+<h2>Behavioural extras</h2>
+<p>Prepare STAR stories mapped to <strong>challenge, drive, align, develop, stewardship</strong>:</p>
+<ul>
+<li><strong>Challenge:</strong> you stopped a launch; the number looked good.</li>
+<li><strong>Drive:</strong> you landed a model through MRM.</li>
+<li><strong>Align:</strong> you sat between two desks who wanted opposite loss functions.</li>
+<li><strong>Develop:</strong> someone you hired or grew.</li>
+<li><strong>Stewardship:</strong> client confidentiality or a conduct near-miss.</li>
+</ul>
+<p>Keep each story <strong>90 seconds</strong>, with a <strong>metric</strong> and a <strong>control</strong>.</p></section><section class="panel" id="morning"><h1>Morning-of one-pager</h1>
+<p>If a word here is still opaque, look it up in <a href="#jargon">Words</a> — do not walk in hoping the panel will translate.</p>
+<h2>Opening (≈90 seconds)</h2>
+<p>Centralised <strong>Markets Quant</strong> AI in APAC. I am the HK <strong>Director and senior technical authority</strong>: hybrid <strong>4–6</strong>, hands-on, <strong>not a software engineer</strong>, HFT optional. Mandate is <strong>broad</strong> — quantitative modelling <strong>and</strong> GenAI/agentic. Sequence: <strong>FX PoC</strong>, then scale. 90 days: one FX slice the desk can kill <strong>and</strong> a desk-assistant tool that never invents a mid. Then Equities/Prime on the same rails.</p>
+<h2>Seats, not names</h2>
+<p>Head of GM · CEO APAC · Head of Markets APAC · Global Head of AI/ML GM (London) · AI/ML &amp; Quant Engineering · Equities algo quant product (HK) · Prime quant (HK).</p>
+<p>Behavioural: risk and controls, change, business acumen. People-leader: listen, energise, align, develop.</p>
+<h2>Numbers</h2>
+<p>Recent UK IB prints: GM still FICC-heavy; Equities the growth lean (often ~30% of Markets in a strong half, sharp quarterly jumps). Asia tilt via Prime, top-100 clients.</p>
+<h2>Geography</h2>
+<p>SG = eFX engine (you partner, you do not own it). HK/Tokyo = Equities algos/SOR. Distil if a model must sit near the engine; do not lead with 50µs — the seat is not hiring HFT.</p>
+<h2>Four round one-liners</h2>
+<ul>
+<li><strong>ML:</strong> purged walk-forward + embargo; costed markouts not AUC; trees first; recommenders are multi-stakeholder (forecasting, recommenders, uncertainty).</li>
+<li><strong>DL:</strong> DL only for tensors/policies; desk assistant <strong>tools</strong> for prices; <strong>agentic</strong> is on the mandate — fundamentals, not every topic; no live RL.</li>
+<li><strong>Coding:</strong> competent Python and information sets. They are <strong>not</strong> hiring a software engineer.</li>
+<li><strong>Project:</strong> FX PoC + GenAI/agentic rail; hire modellers not an SE shop; kill switch; desk assistant ≠ pricing tier.</li>
+</ul>
+<h2>Kill list</h2>
+<p>Transformer on mids · PPO live · LLM-invented mid · RAG over other clients · firm-wide platform with no user · replacing HK Equities Java algos on day one.</p>
+<h2>First team</h2>
+<p>You (hands-on authority) + applied scientist (forecast/recommender) + GenAI/agentic scientist + production-minded quant working <strong>with</strong> engineering. Matrix London MLOps. Do not hire six SEs.</p>
+<h2>Controls</h2>
+<p>SS1/23 inventory and tiering. HKMA HITL on customer-facing GenAI. CNH residency. Dual-run. Signed kill criteria.</p></section>
+</article>
+</main>
+<script>
+const panels = document.querySelectorAll('.panel');
+function show(id) {
+  const panel = document.getElementById(id);
+  const already = panel && panel.classList.contains('on');
+  panels.forEach(p => p.classList.toggle('on', p.id === id));
+  document.querySelectorAll('.ticket').forEach(t => t.classList.toggle('on', t.dataset.go === id));
+  if (!already) document.querySelector('main').scrollTop = 0;
+  if (location.hash !== '#' + id) location.hash = id;
+}
+document.querySelectorAll('[data-go]').forEach(el => {
+  if (el.tagName !== 'A') return;
+  el.addEventListener('click', e => {
+    e.preventDefault();
+    show(el.dataset.go);
+  });
+});
+const start = (location.hash || '#home').slice(1) || 'home';
+show(document.getElementById(start) ? start : 'home');
+window.addEventListener('hashchange', () => {
+  const id = location.hash.slice(1);
+  if (document.getElementById(id)) show(id);
+});
+const KEY = 'quantprep-ticks';
+const ticks = JSON.parse(localStorage.getItem(KEY) || '{}');
+document.querySelectorAll('input[data-tick]').forEach(box => {
+  box.checked = !!ticks[box.dataset.tick];
+  box.addEventListener('change', () => {
+    ticks[box.dataset.tick] = box.checked;
+    localStorage.setItem(KEY, JSON.stringify(ticks));
+  });
+});
+const q = document.getElementById('find');
+function normFind(s) {
+  return s.toLowerCase().replace(/[/–—−-]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function runFind() {
+  const raw = q.value.trim();
+  const n = normFind(raw);
+  const jargon = document.getElementById('jargon');
+  if (n) show('jargon');
+  jargon.classList.toggle('searching', !!n);
+  let termMatch = null;
+  let other = null;
+  if (!n) {
+    jargon.querySelectorAll('h2, h3, .table-wrap').forEach(el => { el.hidden = false; });
+  } else {
+    jargon.querySelectorAll('h2, h3').forEach(h => { h.hidden = true; });
+  }
+  jargon.querySelectorAll('table').forEach(table => {
+    let any = false;
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      const cells = [...tr.children].map(td => normFind(td.textContent));
+      const termHit = Boolean(n && cells[0] && cells[0].includes(n));
+      const hit = !n || cells.some(c => c.includes(n));
+      tr.style.display = hit ? '' : 'none';
+      tr.classList.toggle('hit', Boolean(n && termHit));
+      if (hit) any = true;
+      if (n && termHit && !termMatch) termMatch = tr;
+      else if (n && hit && !other) other = tr;
+    });
+    const wrap = table.closest('.table-wrap');
+    if (wrap) wrap.hidden = Boolean(n && !any);
+    if (wrap && !wrap.hidden) {
+      const heading = wrap.previousElementSibling;
+      if (heading && /^H[23]$/.test(heading.tagName)) heading.hidden = false;
+    }
+  });
+  const first = termMatch || other;
+  let empty = document.getElementById('find-empty');
+  if (!empty) {
+    empty = document.createElement('div');
+    empty.id = 'find-empty';
+    jargon.prepend(empty);
+  }
+  empty.hidden = !n || Boolean(first);
+  empty.textContent = n && !first ? 'No Words match “' + raw + '”.' : '';
+  if (first) requestAnimationFrame(() => first.scrollIntoView({ block: 'center' }));
+}
+q.addEventListener('input', runFind);
+q.addEventListener('search', runFind);
+
+const GLOSSARY = [{"term": "Investment Bank (IB)", "mean": "The part of the bank that serves companies and investors, not UK current accounts. Global Markets sits inside it.", "why": "Your customer is IB / GM, not the retail bank.", "keys": ["Investment Bank (IB)", "Investment Bank", "IB"]}, {"term": "Global Markets (GM)", "mean": "Sales and trading: prices, liquidity, hedging, financing for institutions.", "why": "The organisation you serve.", "keys": ["Global Markets (GM)", "Global Markets", "GM"]}, {"term": "Franchise", "mean": "The client relationships and the flow they send the bank, not a McDonald’s. “Protect the franchise” = do not chase 0.1 bp of trading profit if you lose the client.", "why": "Project round: fill rate vs markout is a franchise trade-off.", "keys": ["Franchise"]}, {"term": "FICC", "mean": "Fixed Income, Currencies, Commodities — bonds, rates, FX, credit, etc.", "why": "H1 2026 still the larger GM slice.", "keys": ["FICC"]}, {"term": "Equities", "mean": "Stocks, equity derivatives, electronic cash trading, parts of prime.", "why": "The growth story in recent UK IB prints.", "keys": ["Equities"]}, {"term": "Prime / Prime Services / QPS", "mean": "Financing and services for hedge funds: borrow stock, leverage, clearing, low-latency access. QPS = quantitative prime services.", "why": "HK has a Prime quant bench; APAC growth is partly here.", "keys": ["Prime / Prime Services / QPS", "Prime Services", "QPS"]}, {"term": "DMA", "mean": "Direct market access — the client’s order hits the exchange through the bank’s pipes.", "why": "Prime / equities electronic.", "keys": ["DMA"]}, {"term": "Intermediation vs financing", "mean": "Intermediation = trading/spreads. Financing = lending, prime, repo — more stable revenue.", "why": "the bank strategy mix; do not talk as if only spread capture exists.", "keys": ["Intermediation vs financing", "Intermediation", "financing"]}, {"term": "RoTE", "mean": "Return on tangible equity — profit versus the capital the desk consumes.", "why": "IB metric; not a model metric.", "keys": ["RoTE"]}, {"term": "Greenfield", "mean": "A new team with no legacy product to babysit (yet).", "why": "The GM AI/ML function.", "keys": ["Greenfield"]}, {"term": "Centralised Quant", "mean": "A Quant group that sits in the IB and serves Markets desks, rather than reporting into a single trading desk or into CIB Tech.", "why": "Where this Director role sits.", "keys": ["Centralised Quant"]}, {"term": "Senior technical authority", "mean": "The person in the room who can still be wrong about a model and be believed — hands-on, not a pure manager.", "why": "The typical seat’s words for you.", "keys": ["Senior technical authority"]}, {"term": "Agentic", "mean": "A GenAI system that calls tools (get mid, draft ticket) in a loop, rather than only writing text.", "why": "On the typical seat as part of a “broad mandate.”", "keys": ["Agentic"]}, {"term": "PoC / proof of concept", "mean": "A first use case that is real enough to learn from, then scale.", "why": "“Initial use cases within FX.”", "keys": ["PoC / proof of concept", "PoC", "proof of concept"]}, {"term": "TTC / total comp", "mean": "Base + bonus + anything else in the year.", "why": "Recruiter language, not a number here.", "keys": ["TTC / total comp", "TTC", "total comp"]}, {"term": "QR / QD", "mean": "Quant researcher (signals, models) vs quant developer (production code, data, latency).", "why": "The two tribes besides traders.", "keys": ["QR / QD", "QR", "QD"]}, {"term": "Trader / eSales / eTrading", "mean": "Trader owns the book. eSales covers electronic clients. eTrading is the electronic platform team.", "why": "Your users.", "keys": ["Trader / eSales / eTrading", "Trader", "eSales", "eTrading"]}, {"term": "VP / Director", "mean": "Bank titles. VP is senior IC or small-team lead. Director is people + P&L/programme ownership.", "why": "You are interviewing Director.", "keys": ["VP / Director"]}, {"term": "RACI", "mean": "Who is Responsible, Accountable, Consulted, Informed.", "why": "Project round.", "keys": ["RACI"]}, {"term": "People-leader craft", "mean": "Listen, energise, align across the enterprise, develop others.", "why": "Behavioural round.", "keys": ["People-leader craft", "People–leader craft"]}, {"term": "Behavioural themes", "mean": "Risk and controls, change, business acumen, stewardship.", "why": "Closing interviews.", "keys": ["Behavioural themes"]}, {"term": "offshore tech centre", "mean": "India / nearshore tech and ops bench.", "why": "“How do you staff India vs HK?”", "keys": ["offshore tech centre"]}, {"term": "Hybrid team", "mean": "Some London, some HK, maybe SG; not all in one room.", "why": "4–6 headcount.", "keys": ["Hybrid team"]}, {"term": "PnL", "mean": "Profit and loss. The only scoreboard that counts on a desk.", "why": "Optimise this (after costs), not AUC.", "keys": ["PnL"]}, {"term": "Bid / ask (offer)", "mean": "Buy price / sell price of the dealer.", "why": "Coding mock quotes.", "keys": ["Bid / ask (offer)", "bid/ask", "bid / ask"]}, {"term": "Spread / half-spread", "mean": "Ask minus bid. Half-spread is the cost to trade one way vs mid.", "why": "Wider = safer for the bank, worse for the client.", "keys": ["Spread / half-spread", "Spread", "half-spread", "Spread / half–spread", "half–spread"]}, {"term": "Pip / pipette", "mean": "FX tick: in USDCNH, 0.0001 is often a pip.", "why": "“2 bp” is a size of edge.", "keys": ["Pip / pipette", "pipette"]}, {"term": "Basis point (bp)", "mean": "0.01%. 1 bp of USD 100m = $10,000.", "why": "“Markout improved 0.2 bp.”", "keys": ["Basis point (bp)", "Basis point"]}, {"term": "Inventory", "mean": "The bank’s leftover position after client trades.", "why": "Skew and Avellaneda quotes exist to dump inventory.", "keys": ["Inventory"]}, {"term": "Skew (quoting)", "mean": "Make bid and ask asymmetric so you attract the side you want. Not the options “skew” unless said in an options sentence.", "why": "First FX use case: skew assistant.", "keys": ["Skew (quoting)", "Skew"]}, {"term": "Widen / tighten", "mean": "Increase / decrease the spread.", "why": "Toxicity model output.", "keys": ["Widen / tighten", "Widen", "tighten"]}, {"term": "Fill / fill rate", "mean": "A quote that actually trades. Fill rate = how often you get hit.", "why": "Trade-off vs markout. If you never get filled you “won” on toxicity and lost the franchise.", "keys": ["Fill / fill rate", "fill rate", "fill-rate"]}, {"term": "Greeks / delta", "mean": "Sensitivities of an option price (delta ≈ how much the option moves when the underlying moves).", "why": "Risk still wants Greeks even if a neural net hedges.", "keys": ["Greeks / delta", "Greeks", "delta"]}, {"term": "Markout", "mean": "How the mid moved after you filled, at 50ms / 1s / 10s. Positive for you = you captured spread; negative = you were picked off.", "why": "The desk metric for a toxicity model.", "keys": ["Markout", "markouts"]}, {"term": "Toxicity / toxic flow", "mean": "Flow that systematically markouts against you — often faster or better-informed clients.", "why": "Core eFX ML problem.", "keys": ["Toxicity / toxic flow", "Toxicity", "toxic flow"]}, {"term": "Adverse selection", "mean": "The people who choose to trade with you know more than you.", "why": "Same idea as toxicity, older name.", "keys": ["Adverse selection"]}, {"term": "Last look", "mean": "On some FX streams the bank can reject a trade after the client clicks, if the market moved. Controversial.", "why": "A toxicity score used as last-look is a conduct + press problem.", "keys": ["Last look", "last-look"]}, {"term": "Internalization", "mean": "Fill the client against the bank’s own book instead of sending to the market.", "why": "Quality of internalization is a PnL + franchise metric.", "keys": ["Internalization"]}, {"term": "TCA", "mean": "Transaction cost analysis — did the client get a good deal vs a benchmark?", "why": "Vendor claims; eSales analytics.", "keys": ["TCA"]}, {"term": "Slippage", "mean": "You wanted 100 at 10.00 and got 10.03.", "why": "Execution algos.", "keys": ["Slippage"]}, {"term": "Kill switch", "mean": "Instantly disable the model and fall back to a dumb/safe policy.", "why": "Non-negotiable in the project round.", "keys": ["Kill switch", "kill-switch"]}, {"term": "Shadow book / paper book", "mean": "Model runs as if live but does not quote. You compare would-have PnL.", "why": "90-day milestone.", "keys": ["Shadow book / paper book", "Shadow book", "paper book"]}, {"term": "Dual-run", "mean": "Old and new models run together.", "why": "SS1/23-friendly go-live.", "keys": ["Dual-run", "Dual–run"]}, {"term": "Canary", "mean": "Turn on for a tiny slice (one pair, one session, one client tier).", "why": "Weeks 9–10.", "keys": ["Canary"]}, {"term": "Tick / bar", "mean": "A tick is one market-data update. A bar is a bucket (1-second, 1-minute OHLC).", "why": "Coding: no look-ahead across bars.", "keys": ["Tick / bar"]}, {"term": "Tick size", "mean": "Minimum price increment.", "why": "Microprice/OFI break if you ignore it.", "keys": ["Tick size"]}, {"term": "Notional", "mean": "Face amount of the trade (USD 10m).", "why": "Size-weights markouts.", "keys": ["Notional"]}, {"term": "Swap (FX)", "mean": "Spot + forward in opposite directions; a funding product.", "why": "the FX platform product list.", "keys": ["Swap (FX)"]}, {"term": "NDF", "mean": "Non-deliverable forward — settle the difference in USD; used when the currency does not fully deliver offshore (KRW, TWD, INR, IDR, PHP…).", "why": "APAC FX; Singapore NDF algos.", "keys": ["NDF"]}, {"term": "NDS", "mean": "Non-deliverable swap.", "why": "FX platform product list.", "keys": ["NDS"]}, {"term": "Option / vanilla / exotic", "mean": "Right to transact at a strike. Vanilla = call/put. Exotic = barriers, touch, etc.", "why": "Recommenders: which product to show.", "keys": ["Option / vanilla / exotic"]}, {"term": "ATM", "mean": "At-the-money option (strike near spot).", "why": "Deep-hedging toy tenor.", "keys": ["ATM"]}, {"term": "25d RR", "mean": "25-delta risk reversal — a quote of call vs put vol; the market’s “skew” in the options sense.", "why": "Vol-surface research; not first 90 days.", "keys": ["25d RR"]}, {"term": "Vol / implied vol / vol surface", "mean": "Vol = how much it moves. Implied vol = vol baked into option prices. Surface = that number by strike and maturity.", "why": "DL on surfaces; no-arbitrage constraints.", "keys": ["Vol / implied vol / vol surface", "implied vol", "vol surface"]}, {"term": "G10 vs EM", "mean": "G10 = most liquid currencies (USD, EUR, JPY, GBP, CHF, CAD, AUD, NZD, NOK, SEK — lists vary). EM = emerging-market currencies, often NDFs.", "why": "CNH/KRW ≠ EURUSD.", "keys": ["G10 vs EM", "G10", "EM"]}, {"term": "Algo (execution)", "mean": "Software that slices a large order over time (VWAP, POV, implementation shortfall).", "why": "Equities HK; FX NDF algos.", "keys": ["Algo (execution)"]}, {"term": "IS / POV / arrival", "mean": "Implementation shortfall = vs arrival price. POV = percent of volume. Arrival = the first mid you saw.", "why": "Execution objectives.", "keys": ["IS / POV / arrival", "IS"]}, {"term": "Child order", "mean": "One slice of a parent algo order.", "why": "RL vs Hawkes child-order policy.", "keys": ["Child order"]}, {"term": "CNY vs CNH", "mean": "CNY = onshore mainland yuan. CNH = offshore (HK) yuan, the one international banks trade more freely.", "why": "USDCNH is the first-pair example.", "keys": ["CNY vs CNH", "CNY", "CNH", "USDCNH"]}, {"term": "USDCNH / USDJPY / USDKRW", "mean": "Dollar versus those currencies.", "why": "Specialists vs global backbone.", "keys": ["USDCNH / USDJPY / USDKRW", "USDCNH", "USDJPY", "USDKRW"]}, {"term": "Fixing", "mean": "An official or WM/Refinitiv snapshot used to settle benchmarks and some corporate orders.", "why": "Turn models off or special-case around fixes.", "keys": ["Fixing"]}, {"term": "WMR", "mean": "WM/Refinitiv 4pm London FX fix — huge fixing.", "why": "Calendar feature.", "keys": ["WMR"]}, {"term": "Tokyo fix / CNY fix", "mean": "Local benchmark prints.", "why": "Same.", "keys": ["Tokyo fix / CNY fix", "Tokyo fix", "CNY fix"]}, {"term": "PBOC", "mean": "People’s Bank of China.", "why": "CNH regime shifts.", "keys": ["PBOC"]}, {"term": "Data residency", "mean": "Some data (sometimes CNH-related, always client) must stay in-region.", "why": "“CNH cannot leave HK.”", "keys": ["Data residency"]}, {"term": "e-trading platform", "mean": "The bank's cross-asset electronic trading surface.", "why": "Your production surface.", "keys": ["e-trading platform", "e–trading platform", "e-trading", "eTrading"]}, {"term": "pricing engine", "mean": "The local pricing engine (Singapore for APAC FX) — ultra-low-latency quotes.", "why": "Hot path. Not SageMaker.", "keys": ["pricing engine", "pricing engines"]}, {"term": "desk assistant", "mean": "GenAI assistant on the FX platform to help initiate trades. Already in production at several houses.", "why": "Workflow/LLM case; must not invent mids.", "keys": ["desk assistant", "desk-assistant", "desk assistants"]}, {"term": "own-book fill", "mean": "Execute against the bank's own liquidity.", "why": "Principal risk.", "keys": ["own-book fill", "own–book fill"]}, {"term": "mixed-venue execution", "mean": "Mix the bank's liquidity with external venues.", "why": "Different toxicity mix.", "keys": ["mixed-venue execution", "mixed–venue execution"]}, {"term": "Manual / benchmark orders", "mean": "Route to a human trader, or target a fix.", "why": "Fallback.", "keys": ["Manual / benchmark orders", "Manual", "benchmark orders"]}, {"term": "Streaming vs RFQ", "mean": "Streaming = live bid/ask always on. RFQ = client asks “price me 50m.”", "why": "Different models and logs.", "keys": ["Streaming vs RFQ", "Streaming", "RFQ"]}, {"term": "FIX", "mean": "A standard protocol for orders.", "why": "How machines connect.", "keys": ["FIX"]}, {"term": "MDP", "mean": "Multi-dealer platform (Bloomberg, FXall, 360T).", "why": "Client access.", "keys": ["MDP"]}, {"term": "eFX", "mean": "Electronic FX market making and execution.", "why": "First use-case franchise.", "keys": ["eFX"]}, {"term": "SOR", "mean": "Smart order router — decides which exchange/venue to send an equities order to.", "why": "HK/Tokyo hosting.", "keys": ["SOR"]}, {"term": "Co-lo / co-location", "mean": "Servers in the same building as the exchange.", "why": "HK Equities; latency.", "keys": ["Co-lo / co-location", "Co-lo", "co-location", "Co–lo / co–location", "Co–lo", "co–location"]}, {"term": "Latency / hot path / 50µs", "mean": "Latency = delay. Hot path = the code that must answer in microseconds or milliseconds. 50µs = 0.00005 seconds.", "why": "Why GBDT in Python is not on the pricing engine.", "keys": ["Latency / hot path / 50µs", "hot path", "50µs"]}, {"term": "kdb+ / q", "mean": "Column-store time-series DB used on many trading floors. q is its language.", "why": "HK Equities quants.", "keys": ["kdb+ / q", "kdb+"]}, {"term": "LOB / limit order book", "mean": "The ladder of bids and asks at the exchange.", "why": "DL-on-images temptation; usually the wrong 90-day plan.", "keys": ["LOB / limit order book", "LOB", "limit order book"]}, {"term": "internal crossing book", "mean": "Dark / internal crossing and single-dealer equities liquidity.", "why": "e-trading Equities.", "keys": ["internal crossing book"]}, {"term": "HKEX", "mean": "Hong Kong stock exchange.", "why": "Equities algo case.", "keys": ["HKEX"]}, {"term": "Follow-the-sun", "mean": "Coverage handed Tokyo → HK/SG → London → NY.", "why": "eSales.", "keys": ["Follow-the-sun", "Follow–the–sun"]}, {"term": "EMS", "mean": "Execution management system — where tickets actually go.", "why": "desk assistant → ticket.", "keys": ["EMS"]}, {"term": "Microstructure", "mean": "The physics of how trades happen at the tick: queues, spreads, who is informed.", "why": "Coding + ML features.", "keys": ["Microstructure"]}, {"term": "OFI", "mean": "Order-flow imbalance — a signed measure of whether the bid or the ask is getting stronger.", "why": "Coding problem 2.", "keys": ["OFI"]}, {"term": "Microprice", "mean": "Mid weighted by sizes: more size on the bid pulls the “fair” price toward the ask.", "why": "Not the same as mid.", "keys": ["Microprice"]}, {"term": "EWMA", "mean": "Exponentially weighted moving average — yesterday’s value decays, today’s tick matters more. Causal = only uses the past.", "why": "Fair-value smoother.", "keys": ["EWMA"]}, {"term": "Avellaneda–Stoikov", "mean": "A classic formula: if you are long, you lower both bid and ask so you sell more. Gamma = risk aversion; kappa = how dense the book is.", "why": "Coding problem 3.", "keys": ["Avellaneda–Stoikov", "Avellaneda-Stoikov"]}, {"term": "Reservation price", "mean": "Inventory-adjusted “personal mid.”", "why": "Same.", "keys": ["Reservation price"]}, {"term": "Quotes cross", "mean": "Bid above ask — a bug. You must clip.", "why": "Coding.", "keys": ["Quotes cross"]}, {"term": "Almgren–Chriss", "mean": "Classic optimal execution (how to sell a lot without crashing the price).", "why": "Bandits for execution live in this family.", "keys": ["Almgren–Chriss", "Almgren-Chriss"]}, {"term": "Kyle / Glosten–Milgrom", "mean": "Theory: the market maker loses to informed flow and survives on noise traders.", "why": "Last-look / toxicity conversation.", "keys": ["Kyle / Glosten–Milgrom", "Kyle", "Glosten–Milgrom", "Kyle / Glosten-Milgrom", "Glosten-Milgrom"]}, {"term": "Hawkes", "mean": "A model where events (trades) make more events more likely for a while.", "why": "Simple child-order / flow model vs RL.", "keys": ["Hawkes"]}, {"term": "Information set", "mean": "Everything the decision-maker is allowed to know at time t.", "why": "If the label or a feature is not in the information set, it is cheating.", "keys": ["Information set", "information sets"]}, {"term": "Look-ahead / leakage", "mean": "Using the future (tomorrow’s close, the same-bar return) as if you had it.", "why": "The silent way ML “works” and then loses money.", "keys": ["Look-ahead / leakage", "Look-ahead", "leakage", "Look–ahead / leakage", "Look–ahead", "lookahead", "look ahead"]}, {"term": "Causal (time)", "mean": "Feature at t uses only data ≤ t. Different from causal inference (what if we had tightened the spread?).", "why": "Both appear; do not mix them up.", "keys": ["Causal (time)", "Causal"]}, {"term": "Label / horizon", "mean": "What you predict, and how far ahead. A 1-second mid-move label uses the next 1 second of data.", "why": "Overlap → purge.", "keys": ["Label / horizon"]}, {"term": "Feature store / PIT / as-of join", "mean": "A library of features computed as they would have been at that timestamp. Point-in-time (PIT) = no restated history. As-of join = “last value known at t.”", "why": "Researchers and Java must share this.", "keys": ["Feature store / PIT / as-of join", "Feature store", "PIT", "as-of join", "Feature store / PIT / as–of join", "as–of join", "point-in-time"]}, {"term": "Walk-forward", "mean": "Train on the past, test on the next block of time. Never shuffle rows.", "why": "ML round.", "keys": ["Walk-forward", "Walk–forward", "walk forward"]}, {"term": "Purge / embargo", "mean": "Delete train samples whose label window overlaps the test window, plus a gap (embargo) around it.", "why": "Lopez de Prado; coding problem 1.", "keys": ["Purge / embargo", "Purge", "embargo", "purged CV", "purged", "purged walk-forward"]}, {"term": "CPCV", "mean": "Combinatorial purged CV — many different holdout combinations so you get a distribution of Sharpes, not one lucky year.", "why": "Go-live gate.", "keys": ["CPCV"]}, {"term": "Triple-barrier", "mean": "Label: did price hit profit / stop / time-out first?", "why": "Lopez de Prado; embargo still needed.", "keys": ["Triple-barrier", "Triple–barrier"]}, {"term": "Non-stationarity / regime", "mean": "The world changed (Tokyo lunch, PBOC, a new matching engine). Yesterday’s model is the wrong sport.", "why": "Fallback > “retrain often.”", "keys": ["Non-stationarity / regime", "Non-stationarity", "Non–stationarity / regime", "Non–stationarity"]}, {"term": "Covariate shift", "mean": "Input distribution moved.", "why": "Same family.", "keys": ["Covariate shift"]}, {"term": "Calibration", "mean": "When the model says 30% toxic, it is toxic 30% of the time. AUC only ranks. Policies need probabilities.", "why": "Last-look / widen.", "keys": ["Calibration"]}, {"term": "Reliability diagram", "mean": "Plot predicted probability vs actual frequency.", "why": "Calibration check.", "keys": ["Reliability diagram"]}, {"term": "Platt / isotonic", "mean": "Two ways to map a score to a probability. Isotonic can overfit small books.", "why": "Online calibration.", "keys": ["Platt / isotonic", "Platt", "isotonic"]}, {"term": "Brier / logloss", "mean": "Proper scores for probabilities.", "why": "Monitor these; ship on markouts.", "keys": ["Brier / logloss", "Brier", "logloss"]}, {"term": "AUC", "mean": "How well you rank positives vs negatives. Silent on cost and calibration.", "why": "The metric trap.", "keys": ["AUC"]}, {"term": "GBDT / LightGBM / XGBoost", "mean": "Gradient-boosted decision trees. Default on tabular tick features.", "why": "“Trees still win.”", "keys": ["GBDT / LightGBM / XGBoost", "GBDT", "LightGBM", "XGBoost"]}, {"term": "SHAP", "mean": "Attribution of a prediction to features. Not a causal effect.", "why": "Do not say SHAP ⇒ “if we tighten, win-rate rises.”", "keys": ["SHAP"]}, {"term": "Bandit / contextual bandit / UCB / Thompson", "mean": "Learn by trying actions (which spread, which product) and seeing reward. Exploration costs real money.", "why": "multi-stakeholder; recommenders.", "keys": ["Bandit / contextual bandit / UCB / Thompson", "Bandit", "contextual bandit", "Thompson"]}, {"term": "IPS / SNIPS / propensity", "mean": "Offline estimate of “what if we had shown a different price?” using the logged probability of the old policy. If you did not log it, you cannot evaluate.", "why": "Recommender eval.", "keys": ["IPS / SNIPS / propensity", "IPS", "SNIPS", "propensity"]}, {"term": "Two-tower / FM / CTR", "mean": "Recommender architectures. CTR = click-through rate — the wrong objective if it dumps risk on the desk. FM = factorisation machine.", "why": "Multi-stakeholder ranking.", "keys": ["Two-tower / FM / CTR", "Two-tower", "FM", "CTR", "Two–tower / FM / CTR", "Two–tower"]}, {"term": "Next-best action", "mean": "What the salesperson or bot should do next.", "why": "eSales.", "keys": ["Next-best action", "Next–best action"]}, {"term": "Multiple testing / deflated Sharpe", "mean": "You tried 400 features; some “work” by chance. Deflated Sharpe haircuts for that.", "why": "Kill the researcher’s t>2 fishing.", "keys": ["Multiple testing / deflated Sharpe", "Multiple testing", "deflated Sharpe"]}, {"term": "Sharpe", "mean": "Average return / volatility. Easy to fake with leakage or selection.", "why": "Report a CPCV distribution.", "keys": ["Sharpe"]}, {"term": "Online learning / freeze", "mean": "Updating a tiny parameter live vs freezing the approved model. Full retrain is often a new model for MRM.", "why": "B4 in ML mock.", "keys": ["Online learning / freeze", "Online learning", "freeze"]}, {"term": "Temperature / intercept", "mean": "Small knobs on a frozen classifier to recalibrate.", "why": "Allowed-ish intraday update.", "keys": ["Temperature / intercept", "Temperature", "intercept"]}, {"term": "VWAP", "mean": "Volume-weighted average price. If it includes the current bar, it leaks.", "why": "A1 in ML mock.", "keys": ["VWAP"]}, {"term": "Realised vol", "mean": "How much it actually moved. Same-window realised vol can leak the return you predict.", "why": "A1.", "keys": ["Realised vol"]}, {"term": "Class imbalance / focal loss", "mean": "Toxic trades are rare. Accuracy of 98% can be a model that never flags toxic.", "why": "A9.", "keys": ["Class imbalance / focal loss", "Class imbalance", "focal loss"]}, {"term": "Cost-sensitive threshold", "mean": "Choose the cut-off using money, not F1.", "why": "Same.", "keys": ["Cost-sensitive threshold", "Cost–sensitive threshold"]}, {"term": "Hierarchical model", "mean": "Shared backbone + per-pair residual.", "why": "A10.", "keys": ["Hierarchical model"]}, {"term": "DL / net / transformer / LSTM / TCN", "mean": "Deep nets. Transformer = attention. LSTM = old sequence net. TCN = causal convolutions over time.", "why": "Usually lose to trees on raw FX returns.", "keys": ["DL / net / transformer / LSTM / TCN", "DL", "transformer", "LSTM", "TCN"]}, {"term": "Receptive field", "mean": "How far back a causal net can see. If it sees through an unpublished fix, that is leakage.", "why": "A2 in DL mock.", "keys": ["Receptive field"]}, {"term": "Teacher forcing", "mean": "Train the net on true past labels; live it must eat its own outputs. Gap = it falls apart live.", "why": "DL MCQ.", "keys": ["Teacher forcing"]}, {"term": "Batch-norm (BN)", "mean": "Normalise using batch statistics. A live tick is not a training batch; sessions mix.", "why": "Do not use on eFX streams.", "keys": ["Batch-norm (BN)", "Batch-norm", "BN", "Batch–norm (BN)", "Batch–norm"]}, {"term": "LayerNorm / RMSNorm", "mean": "Normalise within the vector; more internable online.", "why": "Replacement.", "keys": ["LayerNorm / RMSNorm", "LayerNorm", "RMSNorm"]}, {"term": "Attention ≠ causality", "mean": "Weights in a fitted average, not “this tick caused CNH.”", "why": "Trader explanation trap.", "keys": ["Attention ≠ causality"]}, {"term": "Deep hedging", "mean": "Train a policy (what to buy/sell each step) to a risk measure of final P&L, with spreads and gaps, instead of copying Black–Scholes delta.", "why": "DL case.", "keys": ["Deep hedging"]}, {"term": "CVaR / expected shortfall", "mean": "Average of the worst tail of losses. A typical deep-hedge objective.", "why": "Same.", "keys": ["CVaR / expected shortfall", "CVaR", "expected shortfall"]}, {"term": "Greeks-free", "mean": "The policy does not explicitly target delta. Risk will still ask for Greeks.", "why": "Say no to replacing the engine before shadow.", "keys": ["Greeks-free", "Greeks–free"]}, {"term": "RL / PPO / CQL / IQL / offline RL", "mean": "Reinforcement learning. PPO = a common live-interaction algorithm — not for live FX. CQL/IQL = offline (learn from logs).", "why": "Sim-to-real gap; need logged propensities.", "keys": ["RL / PPO / CQL / IQL / offline RL", "RL", "PPO", "CQL", "IQL", "offline RL"]}, {"term": "Sim-to-real", "mean": "Simulator ≠ the market.", "why": "Why RL stays in the lab.", "keys": ["Sim-to-real", "Sim–to–real"]}, {"term": "LLM / GenAI / agentic", "mean": "Language models; generative AI; agentic = the model calls tools in a loop.", "why": "desk assistant.", "keys": ["LLM / GenAI / agentic", "LLM", "GenAI", "agentic"]}, {"term": "RAG", "mean": "Retrieval-augmented generation: search docs, then write. Failure = wrong or leaked docs, stale numbers.", "why": "No RAG over other clients’ tickets.", "keys": ["RAG"]}, {"term": "Vector DB / Bedrock / SageMaker", "mean": "Vector DB stores embeddings for RAG. Bedrock = AWS hosted foundation models. SageMaker = AWS train/serve for research-speed ML.", "why": "Research-speed path; not the 50µs path.", "keys": ["Vector DB / Bedrock / SageMaker", "Vector DB", "Bedrock", "SageMaker"]}, {"term": "Hallucination", "mean": "Fluent, wrong. A made-up mid is a trading incident.", "why": "Tools for numbers.", "keys": ["Hallucination"]}, {"term": "HITL", "mean": "Human-in-the-loop.", "why": "HKMA GenAI.", "keys": ["HITL", "human-in-the-loop", "human in the loop"]}, {"term": "Fine-tune vs prompt vs tools", "mean": "Change model weights vs instructions vs calling get_mid().", "why": "Prefer tools for prices.", "keys": ["Fine-tune vs prompt vs tools", "Fine-tune", "prompt", "tools", "Fine–tune vs prompt vs tools", "Fine–tune"]}, {"term": "DeepBSDE / operator net", "mean": "Nets that solve pricing PDEs/BSDEs.", "why": "Research, not Q3 desk widget.", "keys": ["DeepBSDE / operator net", "DeepBSDE", "operator net"]}, {"term": "MC-dropout", "mean": "Dropout at predict time for uncertainty. Usually too slow / unapproved at quote time.", "why": "DL MCQ.", "keys": ["MC-dropout", "MC–dropout"]}, {"term": "No-arb / butterfly / calendar", "mean": "Option prices cannot allow riskless profit. A VAE on a vol surface must project back onto those constraints.", "why": "DL B3.", "keys": ["No-arb / butterfly / calendar", "No-arb", "butterfly", "calendar", "No–arb / butterfly / calendar", "No–arb"]}, {"term": "Two-speed", "mean": "Slow cloud research vs hot engine. Same tests.", "why": "Architecture.", "keys": ["Two-speed", "Two–speed"]}, {"term": "MLOps", "mean": "The plumbing: train, register, deploy, monitor, roll back.", "why": "London engineering.", "keys": ["MLOps"]}, {"term": "MLflow", "mean": "Experiment + model registry (which binary is approved).", "why": "engineering's stack.", "keys": ["MLflow"]}, {"term": "Feature hash", "mean": "A fingerprint of the feature code the model was trained on. Pin it.", "why": "B2.", "keys": ["Feature hash"]}, {"term": "Golden ticks / golden dataset", "mean": "A frozen replay file. If the engine changes, tests fail.", "why": "LOB upgrade story.", "keys": ["Golden ticks / golden dataset", "Golden ticks", "golden dataset"]}, {"term": "CI", "mean": "Automated tests on every change.", "why": "Venue-change tests.", "keys": ["CI"]}, {"term": "On-call", "mean": "Who gets paged at 3am.", "why": "RACI.", "keys": ["On-call", "On–call"]}, {"term": "Model inventory / tiering", "mean": "The list of models and how dangerous each is (chatbot draft vs auto-skew).", "why": "SS1/23.", "keys": ["Model inventory / tiering", "Model inventory", "tiering"]}, {"term": "MRM", "mean": "Model risk management team — independent challengers.", "why": "You partner; you do not “self-validate.”", "keys": ["MRM"]}, {"term": "SS1/23", "mean": "UK PRA rules: model risk is its own risk. Identify, govern, develop, validate, monitor. Includes AI/ML.", "why": "Project controls.", "keys": ["SS1/23", "SS1 / 23"]}, {"term": "PRA / HKMA / PCPD / SFC", "mean": "UK bank supervisor; HK banking supervisor; HK privacy commissioner; HK markets regulator.", "why": "Dual-hat: UK group + HK entity.", "keys": ["PRA / HKMA / PCPD / SFC", "PRA", "HKMA", "PCPD", "SFC"]}, {"term": "SMF / SMCR", "mean": "UK senior manager functions / conduct regime. Someone named owns model risk.", "why": "“Who is accountable?”", "keys": ["SMF / SMCR", "SMF", "SMCR"]}, {"term": "Information barriers / walls", "mean": "You must not use Client A’s confidential flow to price Client B.", "why": "Prime LLM mini-case.", "keys": ["Information barriers / walls", "Information barriers", "walls"]}, {"term": "Model change vs parameter update", "mean": "Retraining trees = often a change. Tweaking an intercept may be a parameter. Agree this in writing with MRM.", "why": "B4.", "keys": ["Model change vs parameter update", "Model change", "parameter update"]}, {"term": "gRPC / REST / schema registry", "mean": "How services talk; how feature layouts stay compatible.", "why": "QD needs.", "keys": ["gRPC / REST / schema registry", "gRPC", "REST", "schema registry"]}, {"term": "Observability", "mean": "Logs of predictions, features, PnL.", "why": "Incident.", "keys": ["Observability"]}, {"term": "Lopez de Prado", "mean": "Advances in Financial Machine Learning — purged CV, embargo, CPCV, triple-barrier.", "why": "“We will not shuffle financial labels.”", "keys": ["Lopez de Prado"]}, {"term": "Buehler et al.", "mean": "Deep hedging paper.", "why": "Policy + frictions + risk measure.", "keys": ["Buehler et al"]}, {"term": "Gu–Kelly–Xiu", "mean": "Empirical result: trees beat many fancy models on tabular return prediction.", "why": "Defend GBDT.", "keys": ["Gu–Kelly–Xiu", "Gu-Kelly-Xiu"]}, {"term": "Black–Scholes", "mean": "The textbook option formula in a frictionless world.", "why": "Deep hedge exists because that world is false.", "keys": ["Black–Scholes", "Black-Scholes"]}];
+
+(function bindGlossary() {
+  const SKIP = new Set(["CODE", "PRE", "SCRIPT", "STYLE", "TEXTAREA", "INPUT"]);
+  const items = [];
+  for (const e of GLOSSARY) {
+    for (const k of e.keys) {
+      items.push({
+        k,
+        lower: k.toLowerCase(),
+        sensitive: k.length <= 3 && k === k.toUpperCase(),
+        term: e.term,
+        mean: e.mean,
+        why: e.why || ""
+      });
+    }
+  }
+  items.sort((a, b) => b.k.length - a.k.length);
+
+  const wordy = /[A-Za-z0-9+\-\u00b5]/;
+  function okBound(text, start, end) {
+    const before = start === 0 ? "" : text[start - 1];
+    const after = end >= text.length ? "" : text[end];
+    if (before && wordy.test(before)) return false;
+    if (after && wordy.test(after)) return false;
+    return true;
+  }
+  function matchAt(text, i) {
+    for (const it of items) {
+      const n = it.k.length;
+      if (i + n > text.length) continue;
+      const slice = text.substr(i, n);
+      const hit = it.sensitive ? slice === it.k : slice.toLowerCase() === it.lower;
+      if (hit && okBound(text, i, i + n)) return it;
+    }
+    return null;
+  }
+
+  const root = document.querySelector("article");
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const p = node.parentElement;
+      if (!p || SKIP.has(p.tagName)) return NodeFilter.FILTER_REJECT;
+      if (p.closest("#jargon table, .jarg, #gloss")) return NodeFilter.FILTER_REJECT;
+      if (!node.nodeValue || !/[A-Za-z]/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const text = node.nodeValue;
+    let i = 0;
+    while (i < text.length && !matchAt(text, i)) i++;
+    if (i >= text.length) continue;
+    const frag = document.createDocumentFragment();
+    i = 0;
+    while (i < text.length) {
+      const it = matchAt(text, i);
+      if (!it) {
+        let j = i + 1;
+        while (j < text.length && !matchAt(text, j)) j++;
+        frag.append(text.slice(i, j));
+        i = j;
+        continue;
+      }
+      const el = document.createElement("span");
+      el.className = "jarg";
+      el.textContent = text.substr(i, it.k.length);
+      el.dataset.term = it.term;
+      el.dataset.mean = it.mean;
+      el.dataset.why = it.why;
+      frag.append(el);
+      i += it.k.length;
+    }
+    node.parentNode.replaceChild(frag, node);
+  }
+
+  const tip = document.createElement("div");
+  tip.id = "gloss";
+  tip.innerHTML = '<div class="gt"></div><div class="gm"></div><div class="gw"></div>';
+  document.body.append(tip);
+
+  function place(el) {
+    tip.querySelector(".gt").textContent = el.dataset.term;
+    tip.querySelector(".gm").textContent = el.dataset.mean;
+    const why = el.dataset.why;
+    const gw = tip.querySelector(".gw");
+    gw.textContent = why ? "In this pack: " + why : "";
+    gw.style.display = why ? "" : "none";
+    tip.classList.add("on");
+    tip.style.display = "block";
+    const r = el.getBoundingClientRect();
+    const tw = tip.offsetWidth;
+    const th = tip.offsetHeight;
+    let left = r.left + r.width / 2 - tw / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    let top = r.top - th - 10;
+    if (top < 8) top = r.bottom + 10;
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  }
+  function hide() {
+    tip.classList.remove("on");
+    tip.style.display = "";
+  }
+
+  root.addEventListener("pointerover", e => {
+    const el = e.target.closest(".jarg");
+    if (el) place(el);
+  });
+  root.addEventListener("pointerout", e => {
+    const el = e.target.closest(".jarg");
+    if (!el) return;
+    if (e.relatedTarget && el.contains(e.relatedTarget)) return;
+    hide();
+  });
+  root.addEventListener("focusin", e => {
+    const el = e.target.closest(".jarg");
+    if (el) place(el);
+  });
+  root.addEventListener("focusout", hide);
+  document.querySelector("main").addEventListener("scroll", hide, { passive: true });
+  window.addEventListener("resize", hide);
+})();
+</script>
+</body>
+</html>
