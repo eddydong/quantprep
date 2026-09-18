@@ -568,6 +568,42 @@ summary { cursor: pointer; font-weight: 600; }
   tab-size: 4;
 }
 .lab-ed:read-only { opacity: 0.92; }
+.cm-s-blotter.CodeMirror {
+  height: 420px;
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  border: 1px solid #0a1612;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.warmup .cm-s-blotter.CodeMirror { height: 280px; }
+.cm-s-blotter .CodeMirror-gutters {
+  background: #0c1a16;
+  border-right: 1px solid #1a2e26;
+}
+.cm-s-blotter .CodeMirror-linenumber { color: #5e7468; }
+.cm-s-blotter .CodeMirror-cursor { border-left: 1.5px solid var(--gold); }
+.cm-s-blotter .CodeMirror-selected { background: rgba(166, 124, 45, 0.28); }
+.cm-s-blotter .CodeMirror-activeline-background { background: rgba(255,255,255,0.035); }
+.cm-s-blotter .CodeMirror-matchingbracket { color: var(--gold) !important; }
+.cm-s-blotter.cm-readonly { opacity: 0.92; }
+.cm-s-blotter span.cm-comment { color: #7a8f83; font-style: italic; }
+.cm-s-blotter span.cm-string,
+.cm-s-blotter span.cm-string-2 { color: #d4b06a; }
+.cm-s-blotter span.cm-number { color: #e6c48a; }
+.cm-s-blotter span.cm-keyword { color: #d36b78; }
+.cm-s-blotter span.cm-def { color: #f4efe4; }
+.cm-s-blotter span.cm-variable { color: var(--blotter-ink); }
+.cm-s-blotter span.cm-variable-2,
+.cm-s-blotter span.cm-variable-3 { color: #b9d0c4; }
+.cm-s-blotter span.cm-builtin { color: #7eb8a4; }
+.cm-s-blotter span.cm-operator { color: #c5b89a; }
+.cm-s-blotter span.cm-meta,
+.cm-s-blotter span.cm-decorator { color: var(--gold); }
+.cm-s-blotter span.cm-atom,
+.cm-s-blotter span.cm-property { color: #d4b06a; }
+pre.cm-s-blotter.cm-static span { background: none; }
 .lab-bar {
   display: flex;
   gap: 8px;
@@ -689,6 +725,12 @@ function show(id) {
     const el = document.getElementById(id === 'coding' ? 'lab-status' : 'wu-status');
     window.primeQuantPy(t => { if (el) el.textContent = t; });
   }
+  if (window.ensureCodeMirror && panel && panel.querySelector('pre code, textarea.lab-ed, .CodeMirror')) {
+    window.ensureCodeMirror().then(() => {
+      if (window.colorQuantCode) window.colorQuantCode(panel);
+      requestAnimationFrame(() => { if (window.refreshQuantEditors) window.refreshQuantEditors(); });
+    });
+  }
 }
 document.querySelectorAll('[data-go]').forEach(el => {
   if (el.tagName !== 'A') return;
@@ -806,7 +848,7 @@ GLOSS_JS = r"""
     acceptNode(node) {
       const p = node.parentElement;
       if (!p || SKIP.has(p.tagName)) return NodeFilter.FILTER_REJECT;
-      if (p.closest("#jargon table, .jarg, #gloss")) return NodeFilter.FILTER_REJECT;
+      if (p.closest("#jargon table, .jarg, #gloss, .CodeMirror")) return NodeFilter.FILTER_REJECT;
       if (!node.nodeValue || !/[A-Za-z]/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     }
@@ -1087,6 +1129,7 @@ def main() -> None:
 
     glossary = parse_glossary((PACK / "jargon.md").read_text(encoding="utf-8"))
     runtime_js = (PACK / "warmup" / "runtime.js").read_text(encoding="utf-8")
+    editor_js = (PACK / "warmup" / "editor.js").read_text(encoding="utf-8")
     warmup_js = (PACK / "warmup" / "warmup.js").read_text(encoding="utf-8")
     lab_js = (PACK / "mocks" / "coding" / "lab.js").read_text(encoding="utf-8")
     script = (
@@ -1105,6 +1148,8 @@ def main() -> None:
         + GLOSS_JS
         + "\n"
         + runtime_js
+        + "\n"
+        + editor_js
         + "\n"
         + warmup_js
         + "\n"

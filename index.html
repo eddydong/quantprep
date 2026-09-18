@@ -198,6 +198,42 @@ summary { cursor: pointer; font-weight: 600; }
   tab-size: 4;
 }
 .lab-ed:read-only { opacity: 0.92; }
+.cm-s-blotter.CodeMirror {
+  height: 420px;
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  border: 1px solid #0a1612;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.warmup .cm-s-blotter.CodeMirror { height: 280px; }
+.cm-s-blotter .CodeMirror-gutters {
+  background: #0c1a16;
+  border-right: 1px solid #1a2e26;
+}
+.cm-s-blotter .CodeMirror-linenumber { color: #5e7468; }
+.cm-s-blotter .CodeMirror-cursor { border-left: 1.5px solid var(--gold); }
+.cm-s-blotter .CodeMirror-selected { background: rgba(166, 124, 45, 0.28); }
+.cm-s-blotter .CodeMirror-activeline-background { background: rgba(255,255,255,0.035); }
+.cm-s-blotter .CodeMirror-matchingbracket { color: var(--gold) !important; }
+.cm-s-blotter.cm-readonly { opacity: 0.92; }
+.cm-s-blotter span.cm-comment { color: #7a8f83; font-style: italic; }
+.cm-s-blotter span.cm-string,
+.cm-s-blotter span.cm-string-2 { color: #d4b06a; }
+.cm-s-blotter span.cm-number { color: #e6c48a; }
+.cm-s-blotter span.cm-keyword { color: #d36b78; }
+.cm-s-blotter span.cm-def { color: #f4efe4; }
+.cm-s-blotter span.cm-variable { color: var(--blotter-ink); }
+.cm-s-blotter span.cm-variable-2,
+.cm-s-blotter span.cm-variable-3 { color: #b9d0c4; }
+.cm-s-blotter span.cm-builtin { color: #7eb8a4; }
+.cm-s-blotter span.cm-operator { color: #c5b89a; }
+.cm-s-blotter span.cm-meta,
+.cm-s-blotter span.cm-decorator { color: var(--gold); }
+.cm-s-blotter span.cm-atom,
+.cm-s-blotter span.cm-property { color: #d4b06a; }
+pre.cm-s-blotter.cm-static span { background: none; }
 .lab-bar {
   display: flex;
   gap: 8px;
@@ -1316,6 +1352,12 @@ function show(id) {
     const el = document.getElementById(id === 'coding' ? 'lab-status' : 'wu-status');
     window.primeQuantPy(t => { if (el) el.textContent = t; });
   }
+  if (window.ensureCodeMirror && panel && panel.querySelector('pre code, textarea.lab-ed, .CodeMirror')) {
+    window.ensureCodeMirror().then(() => {
+      if (window.colorQuantCode) window.colorQuantCode(panel);
+      requestAnimationFrame(() => { if (window.refreshQuantEditors) window.refreshQuantEditors(); });
+    });
+  }
 }
 document.querySelectorAll('[data-go]').forEach(el => {
   if (el.tagName !== 'A') return;
@@ -1436,7 +1478,7 @@ const WARMUP = [{"title": "Numbers and a mid", "goal": "Variables, arithmetic, a
     acceptNode(node) {
       const p = node.parentElement;
       if (!p || SKIP.has(p.tagName)) return NodeFilter.FILTER_REJECT;
-      if (p.closest("#jargon table, .jarg, #gloss")) return NodeFilter.FILTER_REJECT;
+      if (p.closest("#jargon table, .jarg, #gloss, .CodeMirror")) return NodeFilter.FILTER_REJECT;
       if (!node.nodeValue || !/[A-Za-z]/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     }
@@ -1568,14 +1610,171 @@ const WARMUP = [{"title": "Numbers and a mid", "goal": "Variables, arithmetic, a
   };
 })();
 
+(function quantEditor() {
+  const CM_VER = "5.65.16";
+  const BASE = "https://cdn.jsdelivr.net/npm/codemirror@" + CM_VER + "/";
+  const mounted = [];
+  let loading = null;
+
+  function loadStyle(href) {
+    if ([...document.querySelectorAll("link")].some(l => l.href === href)) return;
+    const l = document.createElement("link");
+    l.rel = "stylesheet";
+    l.href = href;
+    document.head.appendChild(l);
+  }
+
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const found = [...document.getElementsByTagName("script")].find(s => s.src === src);
+      if (found) {
+        if (found.dataset.ok === "1" || (src.endsWith("codemirror.js") && window.CodeMirror)) {
+          resolve();
+          return;
+        }
+        found.addEventListener("load", resolve, { once: true });
+        found.addEventListener("error", () => reject(new Error("Could not load " + src)), { once: true });
+        return;
+      }
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = () => {
+        s.dataset.ok = "1";
+        resolve();
+      };
+      s.onerror = () => reject(new Error("Could not load " + src));
+      document.head.appendChild(s);
+    });
+  }
+
+  function bindTab(textarea, onChange) {
+    textarea.addEventListener("keydown", e => {
+      if (e.key !== "Tab" || textarea.readOnly) return;
+      e.preventDefault();
+      const s = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      textarea.value = textarea.value.slice(0, s) + "    " + textarea.value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = s + 4;
+      if (onChange) onChange();
+    });
+    if (onChange) textarea.addEventListener("input", onChange);
+  }
+
+  function fallback(textarea, opts) {
+    bindTab(textarea, opts.onChange);
+    return {
+      get: () => textarea.value,
+      set: v => {
+        textarea.value = v == null ? "" : v;
+      },
+      setReadOnly: ro => {
+        textarea.readOnly = !!ro;
+      },
+      refresh: () => {}
+    };
+  }
+
+  window.ensureCodeMirror = function ensureCodeMirror() {
+    if (window.CodeMirror && window.CodeMirror.modes && window.CodeMirror.modes.python) {
+      return Promise.resolve(window.CodeMirror);
+    }
+    if (loading) return loading;
+    loading = (async () => {
+      loadStyle(BASE + "lib/codemirror.css");
+      await loadScript(BASE + "lib/codemirror.js");
+      await loadScript(BASE + "mode/python/python.js");
+      await loadScript(BASE + "addon/edit/matchbrackets.js");
+      await loadScript(BASE + "addon/selection/active-line.js");
+      await loadScript(BASE + "addon/runmode/runmode.js");
+      return window.CodeMirror;
+    })();
+    try {
+      return loading;
+    } finally {
+      loading.catch(() => {
+        loading = null;
+      });
+    }
+  };
+
+  window.colorQuantCode = function colorQuantCode(root) {
+    const CM = window.CodeMirror;
+    if (!CM || !CM.runMode) return;
+    const scope = root || document;
+    scope.querySelectorAll("pre code").forEach(el => {
+      if (el.dataset.cm === "1") return;
+      if (el.closest(".CodeMirror")) return;
+      const text = el.textContent;
+      el.textContent = "";
+      const pre = el.parentElement;
+      if (pre) pre.classList.add("cm-s-blotter", "cm-static");
+      CM.runMode(text, "python", el);
+      el.dataset.cm = "1";
+    });
+  };
+
+  window.refreshQuantEditors = function refreshQuantEditors() {
+    mounted.forEach(cm => {
+      try {
+        cm.refresh();
+      } catch (_) {}
+    });
+  };
+
+  window.mountQuantEditor = async function mountQuantEditor(textarea, opts) {
+    opts = opts || {};
+    try {
+      const CM = await window.ensureCodeMirror();
+      const cm = CM.fromTextArea(textarea, {
+        mode: "python",
+        theme: "blotter",
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4,
+        indentWithTabs: false,
+        lineWrapping: true,
+        matchBrackets: true,
+        styleActiveLine: true,
+        extraKeys: {
+          Tab(cm) {
+            if (cm.getOption("readOnly")) return;
+            if (cm.somethingSelected()) cm.indentSelection("add");
+            else cm.replaceSelection("    ", "end");
+          }
+        }
+      });
+      cm.setSize("100%", opts.height || "420px");
+      if (opts.readOnly) cm.setOption("readOnly", true);
+      if (opts.onChange) cm.on("change", opts.onChange);
+      mounted.push(cm);
+      requestAnimationFrame(() => cm.refresh());
+      window.colorQuantCode(document);
+      return {
+        get: () => cm.getValue(),
+        set: v => {
+          const next = v == null ? "" : v;
+          if (cm.getValue() !== next) cm.setValue(next);
+        },
+        setReadOnly: ro => {
+          cm.setOption("readOnly", !!ro);
+          cm.getWrapperElement().classList.toggle("cm-readonly", !!ro);
+        },
+        refresh: () => cm.refresh()
+      };
+    } catch (_) {
+      return fallback(textarea, opts);
+    }
+  };
+})();
+
 (function pythonWarmup() {
   const root = document.getElementById("warmup-lab");
-  if (!root || typeof WARMUP === "undefined") return;
+  if (!root || typeof WARMUP === "undefined" || !window.mountQuantEditor) return;
 
   const STORE = (typeof WARMUP_STORE === "string" && WARMUP_STORE) || "quantprep-warmup";
   const sessions = WARMUP;
   const n = sessions.length;
-  const ed = document.getElementById("wu-ed");
+  const host = document.getElementById("wu-ed");
   const out = document.getElementById("wu-out");
   const status = document.getElementById("wu-status");
   const track = document.getElementById("wu-track");
@@ -1588,6 +1787,7 @@ const WARMUP = [{"title": "Numbers and a mid", "goal": "Variables, arithmetic, a
   const hintBtn = document.getElementById("wu-hint");
   const resetBtn = document.getElementById("wu-reset");
   const nextBtn = document.getElementById("wu-next");
+  let editor = null;
 
   function blank() {
     return {
@@ -1615,8 +1815,9 @@ const WARMUP = [{"title": "Numbers and a mid", "goal": "Variables, arithmetic, a
   let idx = state.i;
 
   function persist() {
+    if (!editor) return;
     state.i = idx;
-    state.code[idx] = ed.value;
+    state.code[idx] = editor.get();
     try {
       localStorage.setItem(STORE, JSON.stringify(state));
     } catch (_) {}
@@ -1646,8 +1847,14 @@ const WARMUP = [{"title": "Numbers and a mid", "goal": "Variables, arithmetic, a
     title.textContent = s.title;
     goal.textContent = s.goal;
     lesson.innerHTML = s.lesson;
-    ed.value = state.code[idx] || s.starter;
-    ed.readOnly = false;
+    if (window.colorQuantCode) window.colorQuantCode(lesson);
+    if (editor) {
+      editor.set(state.code[idx] || s.starter);
+      editor.setReadOnly(false);
+      editor.refresh();
+    } else {
+      host.value = state.code[idx] || s.starter;
+    }
     nextBtn.disabled = idx >= n - 1;
     paintTrack();
     out.hidden = true;
@@ -1670,26 +1877,17 @@ const WARMUP = [{"title": "Numbers and a mid", "goal": "Variables, arithmetic, a
     track.append(li);
   });
 
-  ed.addEventListener("input", persist);
-  ed.addEventListener("keydown", e => {
-    if (e.key !== "Tab" || ed.readOnly) return;
-    e.preventDefault();
-    const s = ed.selectionStart;
-    const end = ed.selectionEnd;
-    ed.value = ed.value.slice(0, s) + "    " + ed.value.slice(end);
-    ed.selectionStart = ed.selectionEnd = s + 4;
-    persist();
-  });
-
   resetBtn.addEventListener("click", () => {
-    ed.value = sessions[idx].starter;
+    if (!editor) return;
+    editor.set(sessions[idx].starter);
     persist();
     setStatus("Stub restored.");
   });
 
   hintBtn.addEventListener("click", () => {
     if (!confirm("Show this session’s answer? Try the checks first.")) return;
-    ed.value = sessions[idx].solution;
+    if (!editor) return;
+    editor.set(sessions[idx].solution);
     persist();
     setStatus("Answer in the editor. Run checks to confirm.");
   });
@@ -1724,7 +1922,7 @@ _wu_out
         throw new Error("Python runtime is not on this page.");
       }
       const py = await window.ensureQuantPy(setStatus);
-      py.FS.writeFile("wu_student.py", ed.value);
+      py.FS.writeFile("wu_student.py", editor ? editor.get() : host.value);
       py.FS.writeFile("wu_checks.py", sessions[idx].tests);
       setStatus("Running checks…");
       const raw = py.runPython(RUNNER);
@@ -1757,20 +1955,28 @@ _wu_out
     }
   });
 
+  host.value = state.code[idx] || sessions[idx].starter;
   render();
+  window.mountQuantEditor(host, { height: "280px", onChange: persist }).then(ed => {
+    editor = ed;
+    editor.set(state.code[idx] || sessions[idx].starter);
+    editor.refresh();
+    if (window.colorQuantCode) window.colorQuantCode(lesson);
+  });
 })();
 
 (function codingLab() {
-  const ed = document.getElementById("lab-ed");
+  const host = document.getElementById("lab-ed");
   const out = document.getElementById("lab-out");
   const status = document.getElementById("lab-status");
   const runBtn = document.getElementById("lab-run");
   const resetBtn = document.getElementById("lab-reset");
-  if (!ed || typeof CODING === "undefined") return;
+  if (!host || typeof CODING === "undefined" || !window.mountQuantEditor) return;
 
   const STORE = (typeof CODING_STORE === "string" && CODING_STORE) || "quantprep-candidate";
   let tab = "candidate";
   let revealed = false;
+  let editor = null;
 
   function stub() {
     return CODING.candidate;
@@ -1783,9 +1989,9 @@ _wu_out
     }
   }
   function persist() {
-    if (tab !== "candidate") return;
+    if (tab !== "candidate" || !editor) return;
     try {
-      localStorage.setItem(STORE, ed.value);
+      localStorage.setItem(STORE, editor.get());
     } catch (_) {}
   }
   function setStatus(t) {
@@ -1796,47 +2002,36 @@ _wu_out
     out.textContent = text;
     out.className = "lab-out" + (kind ? " " + kind : "");
   }
-
-  ed.value = saved() || stub();
-  ed.addEventListener("input", persist);
-  ed.addEventListener("keydown", e => {
-    if (e.key !== "Tab" || ed.readOnly) return;
-    e.preventDefault();
-    const s = ed.selectionStart;
-    const end = ed.selectionEnd;
-    ed.value = ed.value.slice(0, s) + "    " + ed.value.slice(end);
-    ed.selectionStart = ed.selectionEnd = s + 4;
-    persist();
-  });
+  function showTab(next) {
+    if (next === "solutions" && !revealed) {
+      if (!confirm("Show the answer key? Sit the mock in the editor first.")) return;
+      revealed = true;
+    }
+    if (tab === "candidate") persist();
+    tab = next;
+    document.querySelectorAll("[data-lab-tab]").forEach(b => b.classList.toggle("on", b.dataset.labTab === tab));
+    if (!editor) return;
+    if (tab === "candidate") {
+      editor.set(saved() || stub());
+      editor.setReadOnly(false);
+    } else if (tab === "broken") {
+      editor.set(CODING.broken);
+      editor.setReadOnly(true);
+    } else {
+      editor.set(CODING.solutions);
+      editor.setReadOnly(true);
+    }
+    editor.refresh();
+  }
 
   document.querySelectorAll("[data-lab-tab]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const next = btn.dataset.labTab;
-      if (next === "solutions" && !revealed) {
-        if (!confirm("Show the answer key? Sit the mock in the editor first.")) return;
-        revealed = true;
-      }
-      if (tab === "candidate") persist();
-      tab = next;
-      document.querySelectorAll("[data-lab-tab]").forEach(b => b.classList.toggle("on", b.dataset.labTab === tab));
-      if (tab === "candidate") {
-        ed.value = saved() || stub();
-        ed.readOnly = false;
-      } else if (tab === "broken") {
-        ed.value = CODING.broken;
-        ed.readOnly = true;
-      } else {
-        ed.value = CODING.solutions;
-        ed.readOnly = true;
-      }
-    });
+    btn.addEventListener("click", () => showTab(btn.dataset.labTab));
   });
 
   resetBtn.addEventListener("click", () => {
-    if (tab !== "candidate") {
-      document.querySelector("[data-lab-tab='candidate']").click();
-    }
-    ed.value = stub();
+    if (tab !== "candidate") showTab("candidate");
+    if (!editor) return;
+    editor.set(stub());
     persist();
     setStatus("Stub restored.");
   });
@@ -1850,6 +2045,7 @@ _wu_out
 
   window.primeCodingLab = function primeCodingLab() {
     if (window.primeQuantPy) window.primeQuantPy(setStatus);
+    if (editor) editor.refresh();
   };
 
   const RUNNER = String.raw`
@@ -1893,7 +2089,7 @@ _lab_out
 
   runBtn.addEventListener("click", async () => {
     if (tab === "candidate") persist();
-    const code = tab === "candidate" ? ed.value : (saved() || stub());
+    const code = tab === "candidate" && editor ? editor.get() : (saved() || stub());
     runBtn.disabled = true;
     try {
       const py = await ensurePy();
@@ -1928,6 +2124,11 @@ _lab_out
     } finally {
       runBtn.disabled = false;
     }
+  });
+
+  host.value = saved() || stub();
+  window.mountQuantEditor(host, { height: "420px", onChange: persist }).then(ed => {
+    editor = ed;
   });
 })();
 </script>

@@ -1,11 +1,11 @@
 (function pythonWarmup() {
   const root = document.getElementById("warmup-lab");
-  if (!root || typeof WARMUP === "undefined") return;
+  if (!root || typeof WARMUP === "undefined" || !window.mountQuantEditor) return;
 
   const STORE = (typeof WARMUP_STORE === "string" && WARMUP_STORE) || "quantprep-warmup";
   const sessions = WARMUP;
   const n = sessions.length;
-  const ed = document.getElementById("wu-ed");
+  const host = document.getElementById("wu-ed");
   const out = document.getElementById("wu-out");
   const status = document.getElementById("wu-status");
   const track = document.getElementById("wu-track");
@@ -18,6 +18,7 @@
   const hintBtn = document.getElementById("wu-hint");
   const resetBtn = document.getElementById("wu-reset");
   const nextBtn = document.getElementById("wu-next");
+  let editor = null;
 
   function blank() {
     return {
@@ -45,8 +46,9 @@
   let idx = state.i;
 
   function persist() {
+    if (!editor) return;
     state.i = idx;
-    state.code[idx] = ed.value;
+    state.code[idx] = editor.get();
     try {
       localStorage.setItem(STORE, JSON.stringify(state));
     } catch (_) {}
@@ -76,8 +78,14 @@
     title.textContent = s.title;
     goal.textContent = s.goal;
     lesson.innerHTML = s.lesson;
-    ed.value = state.code[idx] || s.starter;
-    ed.readOnly = false;
+    if (window.colorQuantCode) window.colorQuantCode(lesson);
+    if (editor) {
+      editor.set(state.code[idx] || s.starter);
+      editor.setReadOnly(false);
+      editor.refresh();
+    } else {
+      host.value = state.code[idx] || s.starter;
+    }
     nextBtn.disabled = idx >= n - 1;
     paintTrack();
     out.hidden = true;
@@ -100,26 +108,17 @@
     track.append(li);
   });
 
-  ed.addEventListener("input", persist);
-  ed.addEventListener("keydown", e => {
-    if (e.key !== "Tab" || ed.readOnly) return;
-    e.preventDefault();
-    const s = ed.selectionStart;
-    const end = ed.selectionEnd;
-    ed.value = ed.value.slice(0, s) + "    " + ed.value.slice(end);
-    ed.selectionStart = ed.selectionEnd = s + 4;
-    persist();
-  });
-
   resetBtn.addEventListener("click", () => {
-    ed.value = sessions[idx].starter;
+    if (!editor) return;
+    editor.set(sessions[idx].starter);
     persist();
     setStatus("Stub restored.");
   });
 
   hintBtn.addEventListener("click", () => {
     if (!confirm("Show this session’s answer? Try the checks first.")) return;
-    ed.value = sessions[idx].solution;
+    if (!editor) return;
+    editor.set(sessions[idx].solution);
     persist();
     setStatus("Answer in the editor. Run checks to confirm.");
   });
@@ -154,7 +153,7 @@ _wu_out
         throw new Error("Python runtime is not on this page.");
       }
       const py = await window.ensureQuantPy(setStatus);
-      py.FS.writeFile("wu_student.py", ed.value);
+      py.FS.writeFile("wu_student.py", editor ? editor.get() : host.value);
       py.FS.writeFile("wu_checks.py", sessions[idx].tests);
       setStatus("Running checks…");
       const raw = py.runPython(RUNNER);
@@ -187,5 +186,12 @@ _wu_out
     }
   });
 
+  host.value = state.code[idx] || sessions[idx].starter;
   render();
+  window.mountQuantEditor(host, { height: "280px", onChange: persist }).then(ed => {
+    editor = ed;
+    editor.set(state.code[idx] || sessions[idx].starter);
+    editor.refresh();
+    if (window.colorQuantCode) window.colorQuantCode(lesson);
+  });
 })();

@@ -1,14 +1,15 @@
 (function codingLab() {
-  const ed = document.getElementById("lab-ed");
+  const host = document.getElementById("lab-ed");
   const out = document.getElementById("lab-out");
   const status = document.getElementById("lab-status");
   const runBtn = document.getElementById("lab-run");
   const resetBtn = document.getElementById("lab-reset");
-  if (!ed || typeof CODING === "undefined") return;
+  if (!host || typeof CODING === "undefined" || !window.mountQuantEditor) return;
 
   const STORE = (typeof CODING_STORE === "string" && CODING_STORE) || "quantprep-candidate";
   let tab = "candidate";
   let revealed = false;
+  let editor = null;
 
   function stub() {
     return CODING.candidate;
@@ -21,9 +22,9 @@
     }
   }
   function persist() {
-    if (tab !== "candidate") return;
+    if (tab !== "candidate" || !editor) return;
     try {
-      localStorage.setItem(STORE, ed.value);
+      localStorage.setItem(STORE, editor.get());
     } catch (_) {}
   }
   function setStatus(t) {
@@ -34,47 +35,36 @@
     out.textContent = text;
     out.className = "lab-out" + (kind ? " " + kind : "");
   }
-
-  ed.value = saved() || stub();
-  ed.addEventListener("input", persist);
-  ed.addEventListener("keydown", e => {
-    if (e.key !== "Tab" || ed.readOnly) return;
-    e.preventDefault();
-    const s = ed.selectionStart;
-    const end = ed.selectionEnd;
-    ed.value = ed.value.slice(0, s) + "    " + ed.value.slice(end);
-    ed.selectionStart = ed.selectionEnd = s + 4;
-    persist();
-  });
+  function showTab(next) {
+    if (next === "solutions" && !revealed) {
+      if (!confirm("Show the answer key? Sit the mock in the editor first.")) return;
+      revealed = true;
+    }
+    if (tab === "candidate") persist();
+    tab = next;
+    document.querySelectorAll("[data-lab-tab]").forEach(b => b.classList.toggle("on", b.dataset.labTab === tab));
+    if (!editor) return;
+    if (tab === "candidate") {
+      editor.set(saved() || stub());
+      editor.setReadOnly(false);
+    } else if (tab === "broken") {
+      editor.set(CODING.broken);
+      editor.setReadOnly(true);
+    } else {
+      editor.set(CODING.solutions);
+      editor.setReadOnly(true);
+    }
+    editor.refresh();
+  }
 
   document.querySelectorAll("[data-lab-tab]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const next = btn.dataset.labTab;
-      if (next === "solutions" && !revealed) {
-        if (!confirm("Show the answer key? Sit the mock in the editor first.")) return;
-        revealed = true;
-      }
-      if (tab === "candidate") persist();
-      tab = next;
-      document.querySelectorAll("[data-lab-tab]").forEach(b => b.classList.toggle("on", b.dataset.labTab === tab));
-      if (tab === "candidate") {
-        ed.value = saved() || stub();
-        ed.readOnly = false;
-      } else if (tab === "broken") {
-        ed.value = CODING.broken;
-        ed.readOnly = true;
-      } else {
-        ed.value = CODING.solutions;
-        ed.readOnly = true;
-      }
-    });
+    btn.addEventListener("click", () => showTab(btn.dataset.labTab));
   });
 
   resetBtn.addEventListener("click", () => {
-    if (tab !== "candidate") {
-      document.querySelector("[data-lab-tab='candidate']").click();
-    }
-    ed.value = stub();
+    if (tab !== "candidate") showTab("candidate");
+    if (!editor) return;
+    editor.set(stub());
     persist();
     setStatus("Stub restored.");
   });
@@ -88,6 +78,7 @@
 
   window.primeCodingLab = function primeCodingLab() {
     if (window.primeQuantPy) window.primeQuantPy(setStatus);
+    if (editor) editor.refresh();
   };
 
   const RUNNER = String.raw`
@@ -131,7 +122,7 @@ _lab_out
 
   runBtn.addEventListener("click", async () => {
     if (tab === "candidate") persist();
-    const code = tab === "candidate" ? ed.value : (saved() || stub());
+    const code = tab === "candidate" && editor ? editor.get() : (saved() || stub());
     runBtn.disabled = true;
     try {
       const py = await ensurePy();
@@ -166,5 +157,10 @@ _lab_out
     } finally {
       runBtn.disabled = false;
     }
+  });
+
+  host.value = saved() || stub();
+  window.mountQuantEditor(host, { height: "420px", onChange: persist }).then(ed => {
+    editor = ed;
   });
 })();
