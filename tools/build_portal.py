@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import html
+import importlib.util
 import json
 import re
 from pathlib import Path
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "pack"
 OUT = ROOT / "index.html"
 KEY_CANDIDATE = "quantprep-candidate"
+KEY_WARMUP = "quantprep-warmup"
 
 SECTIONS = [
     ("home", "Start", None, "Desk blotter"),
@@ -21,6 +23,7 @@ SECTIONS = [
     ("landing", "90 days", PACK / "landing.md", "How you'd start — not a mock"),
     ("plan", "4 · Study plan", PACK / "study-plan.md", "14 days"),
     ("drills", "Drills", None, "Closed-book 5+5, then walk-in"),
+    ("warmup", "Python", None, "20 sessions from zero"),
     ("ml", "5 · ML mock", PACK / "mocks" / "01-ml.md", "90 minutes"),
     ("dl", "6 · DL mock", PACK / "mocks" / "02-dl.md", "90 minutes"),
     ("coding", "7 · Coding", PACK / "mocks" / "03-coding.md", "In-page lab"),
@@ -46,6 +49,29 @@ CODING_LAB = """
     <span id="lab-status"></span>
   </div>
   <pre class="lab-out" id="lab-out" hidden></pre>
+</div>
+"""
+
+WARMUP_HTML = """
+<div class="warmup" id="warmup-lab">
+  <p class="kicker">Twenty sessions · in this browser</p>
+  <h1>Python warmup</h1>
+  <p class="lede">From zero, aimed at people who will later sit a markets coding mock. Each session is a short lesson, a stub, and checks that run in the same Python as the lab. Work stays in this browser. Finish this before <a href="#coding" data-go="coding">7 · Coding</a> if you are new to the language.</p>
+  <ol class="wu-track" id="wu-track"></ol>
+  <p class="wu-progress" id="wu-progress"></p>
+  <p class="kicker" id="wu-kicker"></p>
+  <h2 id="wu-title"></h2>
+  <p class="lede" id="wu-goal"></p>
+  <div class="wu-lesson" id="wu-lesson"></div>
+  <textarea class="lab-ed" id="wu-ed" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="session editor"></textarea>
+  <div class="lab-bar">
+    <button type="button" id="wu-run">Run checks</button>
+    <button type="button" id="wu-hint">Show answer</button>
+    <button type="button" id="wu-reset">Reset stub</button>
+    <button type="button" id="wu-next">Next session</button>
+    <span id="wu-status"></span>
+  </div>
+  <pre class="lab-out" id="wu-out" hidden></pre>
 </div>
 """
 
@@ -223,6 +249,7 @@ HOME = """
 <li>Open <strong>1 · Words</strong> if you are not from markets. Read the opening trade story, then search terms as you go.</li>
 <li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud. <strong>90 days</strong> is how you would start the job — not a technical mock.</li>
 <li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Mock 8 is a live desk <em>scenario</em>. Do not peek at model answers first.</li>
+<li>If you are new to Python, sit <a href="#warmup" data-go="warmup"><strong>Python</strong></a> first — twenty short sessions in this page, from a bid/ask to a leak-safe pipeline.</li>
 <li>Coding is the lab on <strong>7 · Coding</strong> — implement <code>candidate.py</code> and run tests in the page. Do not open the answer key first.</li>
 <li><strong>Morning of</strong> is for interview day only.</li>
 </ol>
@@ -561,6 +588,50 @@ summary { cursor: pointer; font-weight: 600; }
 .lab-out.pass { box-shadow: inset 3px 0 0 var(--gold); }
 .lab-out.fail { box-shadow: inset 3px 0 0 var(--stamp); }
 .lab-out.skip { box-shadow: inset 3px 0 0 var(--mute); }
+.warmup .lab-ed { min-height: 280px; }
+.wu-track {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  padding: 0;
+  margin: 1.2rem 0 0.6rem;
+}
+.wu-track button {
+  width: 100%;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 8px 0;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  cursor: pointer;
+}
+.wu-track button:hover { border-color: var(--gold); }
+.wu-track button.on { border-color: var(--stamp); color: var(--stamp); }
+.wu-track button.done {
+  background: var(--blotter);
+  color: var(--gold);
+  border-color: var(--blotter);
+}
+.wu-track button.done.on { box-shadow: inset 0 0 0 2px var(--gold); }
+.wu-progress {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--soft);
+  margin: 0 0 1.4rem;
+}
+.wu-lesson { margin: 0 0 1rem; }
+.wu-lesson p, .wu-lesson li { font-size: 15px; }
+#wu-run {
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  border-color: var(--blotter);
+}
+@media (max-width: 820px) {
+  .wu-track { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
 .jarg {
   border-bottom: 1px dotted var(--stamp);
   background: rgba(143, 45, 60, 0.08);
@@ -614,7 +685,10 @@ function show(id) {
   document.querySelectorAll('.ticket').forEach(t => t.classList.toggle('on', t.dataset.go === id));
   if (!already) document.querySelector('main').scrollTop = 0;
   if (location.hash !== '#' + id) location.hash = id;
-  if (id === 'coding' && window.primeCodingLab) window.primeCodingLab();
+  if ((id === 'coding' || id === 'warmup') && window.primeQuantPy) {
+    const el = document.getElementById(id === 'coding' ? 'lab-status' : 'wu-status');
+    window.primeQuantPy(t => { if (el) el.textContent = t; });
+  }
 }
 document.querySelectorAll('[data-go]').forEach(el => {
   if (el.tagName !== 'A') return;
@@ -957,6 +1031,27 @@ def rewrite_pack_links(html_body: str) -> str:
     return re.sub(r'href="([^"]+)"', sub, html_body)
 
 
+def warmup_payload() -> list[dict]:
+    path = PACK / "warmup" / "sessions.py"
+    spec = importlib.util.spec_from_file_location("quant_warmup_sessions", path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    spec.loader.exec_module(mod)
+    out = []
+    for s in mod.SESSIONS:
+        out.append(
+            {
+                "title": s["title"],
+                "goal": s["goal"],
+                "lesson": md_to_html(s["lesson"].strip()),
+                "starter": s["starter"],
+                "solution": s["solution"],
+                "tests": s["tests"],
+            }
+        )
+    return out
+
+
 def strip_pack_nav(md: str) -> str:
     lines = []
     for line in md.split("\n"):
@@ -982,6 +1077,8 @@ def main() -> None:
             body = HOME
         elif sid == "drills":
             body = DRILLS
+        elif sid == "warmup":
+            body = WARMUP_HTML
         elif sid == "coding":
             body = rewrite_pack_links(md_to_html(strip_pack_nav(path.read_text(encoding="utf-8")))) + CODING_LAB
         else:
@@ -989,6 +1086,8 @@ def main() -> None:
         panels.append(f'<section class="panel" id="{sid}">{body}</section>')
 
     glossary = parse_glossary((PACK / "jargon.md").read_text(encoding="utf-8"))
+    runtime_js = (PACK / "warmup" / "runtime.js").read_text(encoding="utf-8")
+    warmup_js = (PACK / "warmup" / "warmup.js").read_text(encoding="utf-8")
     lab_js = (PACK / "mocks" / "coding" / "lab.js").read_text(encoding="utf-8")
     script = (
         JS
@@ -998,8 +1097,16 @@ def main() -> None:
         + json.dumps(KEY_CANDIDATE)
         + ";\nconst CODING = "
         + json.dumps(coding_files(), ensure_ascii=False)
+        + ";\nconst WARMUP_STORE = "
+        + json.dumps(KEY_WARMUP)
+        + ";\nconst WARMUP = "
+        + json.dumps(warmup_payload(), ensure_ascii=False)
         + ";\n"
         + GLOSS_JS
+        + "\n"
+        + runtime_js
+        + "\n"
+        + warmup_js
         + "\n"
         + lab_js
     )

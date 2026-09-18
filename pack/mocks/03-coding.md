@@ -1,10 +1,12 @@
 # Round 3 — Coding (Director mock)
 
-**7 of 8** in the pack. Previous: [02-dl.md](02-dl.md). Next: [04-project.md](04-project.md). Code: [coding/](coding/). 
+**7 of 8** in the pack. Previous: [02-dl.md](02-dl.md). Next: [04-project.md](04-project.md).
 
 **Time:** 90–120 minutes  
 **Language:** Python (numpy/pandas). The lab on this page is the mock.  
 **Bar:** they are **not looking for software engineers**. You need to be **competent** at coding: correct information sets, no leakage, code a desk would trust. You do **not** need kdb, Java, or a 50µs résumé. Style still matters: type hints, no `iterrows`.
+
+If you are new to Python, finish [Python](#warmup) first (20 short sessions in the page).
 
 Scroll to the **lab** below. Implement `candidate.py`, then **Run tests**. Stubs skip until you replace `raise NotImplementedError`. Your work stays in this browser. The answer key is a separate tab — do not open it first.
 

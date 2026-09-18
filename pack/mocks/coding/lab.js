@@ -1,6 +1,4 @@
 (function codingLab() {
-  const PYODIDE_VER = "0.27.7";
-  const PYODIDE_BASE = "https://cdn.jsdelivr.net/pyodide/v" + PYODIDE_VER + "/full/";
   const ed = document.getElementById("lab-ed");
   const out = document.getElementById("lab-out");
   const status = document.getElementById("lab-status");
@@ -10,8 +8,6 @@
 
   const STORE = (typeof CODING_STORE === "string" && CODING_STORE) || "quantprep-candidate";
   let tab = "candidate";
-  let pyodide = null;
-  let loading = null;
   let revealed = false;
 
   function stub() {
@@ -83,41 +79,15 @@
     setStatus("Stub restored.");
   });
 
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = src;
-      s.onload = resolve;
-      s.onerror = () => reject(new Error("Could not load " + src));
-      document.head.appendChild(s);
-    });
-  }
-
   async function ensurePy() {
-    if (pyodide) return pyodide;
-    if (loading) return loading;
-    loading = (async () => {
-      setStatus("Loading Python in this browser… first time is a few megabytes.");
-      if (typeof loadPyodide !== "function") {
-        await loadScript(PYODIDE_BASE + "pyodide.js");
-      }
-      const py = await loadPyodide({ indexURL: PYODIDE_BASE });
-      setStatus("Loading numpy and pandas…");
-      await py.loadPackage(["numpy", "pandas"]);
-      pyodide = py;
-      setStatus("Python ready.");
-      return py;
-    })();
-    try {
-      return await loading;
-    } catch (err) {
-      loading = null;
-      throw err;
+    if (typeof window.ensureQuantPy !== "function") {
+      throw new Error("Python runtime is not on this page.");
     }
+    return window.ensureQuantPy(setStatus);
   }
 
   window.primeCodingLab = function primeCodingLab() {
-    ensurePy().catch(err => setStatus(String(err.message || err)));
+    if (window.primeQuantPy) window.primeQuantPy(setStatus);
   };
 
   const RUNNER = String.raw`
