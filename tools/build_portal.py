@@ -14,6 +14,7 @@ PACK = ROOT / "pack"
 OUT = ROOT / "index.html"
 KEY_CANDIDATE = "quantprep-candidate"
 KEY_WARMUP = "quantprep-warmup"
+KEY_SANDBOX = "quantprep-sandbox"
 
 SECTIONS = [
     ("home", "Start", None, "Desk blotter"),
@@ -24,6 +25,7 @@ SECTIONS = [
     ("plan", "4 · Study plan", PACK / "study-plan.md", "14 days"),
     ("drills", "Drills", None, "Closed-book 5+5, then walk-in"),
     ("warmup", "Python", None, "20 sessions from zero"),
+    ("sandbox", "Sandbox", None, "Type, run, see output"),
     ("ml", "5 · ML mock", PACK / "mocks" / "01-ml.md", "90 minutes"),
     ("dl", "6 · DL mock", PACK / "mocks" / "02-dl.md", "90 minutes"),
     ("coding", "7 · Coding", PACK / "mocks" / "03-coding.md", "In-page lab"),
@@ -56,7 +58,7 @@ WARMUP_HTML = """
 <div class="warmup" id="warmup-lab">
   <p class="kicker">Twenty sessions · in this browser</p>
   <h1>Python warmup</h1>
-  <p class="lede">From zero, aimed at people who will later sit a markets coding mock. Each session is a short lesson, a stub, and checks that run in the same Python as the lab. Work stays in this browser. Finish this before <a href="#coding" data-go="coding">7 · Coding</a> if you are new to the language.</p>
+  <p class="lede">From zero, aimed at people who will later sit a markets coding mock. Each session is a short lesson, a stub, and checks that run in the same Python as the lab. Work stays in this browser. Finish this before <a href="#coding" data-go="coding">7 · Coding</a> if you are new to the language. Scratch pad: <a href="#sandbox" data-go="sandbox">Sandbox</a>.</p>
   <ol class="wu-track" id="wu-track"></ol>
   <p class="wu-progress" id="wu-progress"></p>
   <p class="kicker" id="wu-kicker"></p>
@@ -72,6 +74,32 @@ WARMUP_HTML = """
     <span id="wu-status"></span>
   </div>
   <pre class="lab-out" id="wu-out" hidden></pre>
+</div>
+"""
+
+SANDBOX_HTML = """
+<div class="sandbox" id="sandbox-lab">
+  <p class="kicker">Scratch pad · in this browser</p>
+  <h1>Sandbox</h1>
+  <p class="lede">A blank Python file. Same runtime as the warmup and the lab — it runs in this tab, not on a server. First run may download a few megabytes; after that it is cached. Work stays in this browser.</p>
+  <h2>How to see output</h2>
+  <ol class="sb-guide">
+    <li>Type in the editor. Click <strong>Run</strong>, or press Ctrl+Enter (Cmd+Enter on a Mac).</li>
+    <li>The whole file runs from the top each time. Names do not carry over from the previous click unless they are still in the editor.</li>
+    <li>To send text to the <strong>console</strong> below, call <code>print</code>. Quotes make a string: <code>print("hello")</code>. You can print several things, separated by commas: <code>print("mid", 7.78)</code>.</li>
+    <li>A last line that is <em>just a value</em> (for example <code>1 + 1</code>) is also shown. A line that only assigns, like <code>x = 1</code>, stays silent — print <code>x</code> if you want to see it.</li>
+    <li>If Python cannot run the file, the error appears in the same console. Change the editor and Run again.</li>
+    <li><code>import numpy as np</code> and <code>import pandas as pd</code> work; both libraries are already in this page.</li>
+  </ol>
+  <textarea class="lab-ed" id="sb-ed" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="sandbox editor"></textarea>
+  <div class="lab-bar">
+    <button type="button" id="sb-run">Run</button>
+    <button type="button" id="sb-reset">Reset starter</button>
+    <button type="button" id="sb-clear">Clear console</button>
+    <span id="sb-status"></span>
+  </div>
+  <p class="kicker">Console</p>
+  <pre class="lab-out" id="sb-out">Output from print() will show here.</pre>
 </div>
 """
 
@@ -249,7 +277,7 @@ HOME = """
 <li>Open <strong>1 · Words</strong> if you are not from markets. Read the opening trade story, then search terms as you go.</li>
 <li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud. <strong>90 days</strong> is how you would start the job — not a technical mock.</li>
 <li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Mock 8 is a live desk <em>scenario</em>. Do not peek at model answers first.</li>
-<li>If you are new to Python, sit <a href="#warmup" data-go="warmup"><strong>Python</strong></a> first — twenty short sessions in this page, from a bid/ask to a leak-safe pipeline.</li>
+<li>If you are new to Python, sit <a href="#warmup" data-go="warmup"><strong>Python</strong></a> first — twenty short sessions in this page, from a bid/ask to a leak-safe pipeline. <a href="#sandbox" data-go="sandbox"><strong>Sandbox</strong></a> is a blank file: type, Run, read the console.</li>
 <li>Coding is the lab on <strong>7 · Coding</strong> — implement <code>candidate.py</code> and run tests in the page. Do not open the answer key first.</li>
 <li><strong>Morning of</strong> is for interview day only.</li>
 </ol>
@@ -660,11 +688,14 @@ pre.cm-s-blotter.cm-static span { background: none; }
 }
 .wu-lesson { margin: 0 0 1rem; }
 .wu-lesson p, .wu-lesson li { font-size: 15px; }
-#wu-run {
+#wu-run, #sb-run {
   background: var(--blotter);
   color: var(--blotter-ink);
   border-color: var(--blotter);
 }
+.sandbox .cm-s-blotter.CodeMirror { height: 320px; }
+.sb-guide { padding-left: 1.2rem; }
+.sb-guide li { font-size: 15px; margin: 0.35rem 0; }
 @media (max-width: 820px) {
   .wu-track { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
@@ -721,8 +752,8 @@ function show(id) {
   document.querySelectorAll('.ticket').forEach(t => t.classList.toggle('on', t.dataset.go === id));
   if (!already) document.querySelector('main').scrollTop = 0;
   if (location.hash !== '#' + id) location.hash = id;
-  if ((id === 'coding' || id === 'warmup') && window.primeQuantPy) {
-    const el = document.getElementById(id === 'coding' ? 'lab-status' : 'wu-status');
+  if ((id === 'coding' || id === 'warmup' || id === 'sandbox') && window.primeQuantPy) {
+    const el = document.getElementById(id === 'coding' ? 'lab-status' : id === 'warmup' ? 'wu-status' : 'sb-status');
     window.primeQuantPy(t => { if (el) el.textContent = t; });
   }
   if (window.ensureCodeMirror && panel && panel.querySelector('pre code, textarea.lab-ed, .CodeMirror')) {
@@ -1121,6 +1152,8 @@ def main() -> None:
             body = DRILLS
         elif sid == "warmup":
             body = WARMUP_HTML
+        elif sid == "sandbox":
+            body = SANDBOX_HTML
         elif sid == "coding":
             body = rewrite_pack_links(md_to_html(strip_pack_nav(path.read_text(encoding="utf-8")))) + CODING_LAB
         else:
@@ -1131,6 +1164,7 @@ def main() -> None:
     runtime_js = (PACK / "warmup" / "runtime.js").read_text(encoding="utf-8")
     editor_js = (PACK / "warmup" / "editor.js").read_text(encoding="utf-8")
     warmup_js = (PACK / "warmup" / "warmup.js").read_text(encoding="utf-8")
+    sandbox_js = (PACK / "warmup" / "sandbox.js").read_text(encoding="utf-8")
     lab_js = (PACK / "mocks" / "coding" / "lab.js").read_text(encoding="utf-8")
     script = (
         JS
@@ -1144,6 +1178,8 @@ def main() -> None:
         + json.dumps(KEY_WARMUP)
         + ";\nconst WARMUP = "
         + json.dumps(warmup_payload(), ensure_ascii=False)
+        + ";\nconst SANDBOX_STORE = "
+        + json.dumps(KEY_SANDBOX)
         + ";\n"
         + GLOSS_JS
         + "\n"
@@ -1152,6 +1188,8 @@ def main() -> None:
         + editor_js
         + "\n"
         + warmup_js
+        + "\n"
+        + sandbox_js
         + "\n"
         + lab_js
     )

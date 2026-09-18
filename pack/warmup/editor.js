@@ -35,8 +35,15 @@
     });
   }
 
-  function bindTab(textarea, onChange) {
+  function bindTab(textarea, opts) {
+    const onChange = opts && opts.onChange;
+    const onRun = opts && opts.onRun;
     textarea.addEventListener("keydown", e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (onRun) onRun();
+        return;
+      }
       if (e.key !== "Tab" || textarea.readOnly) return;
       e.preventDefault();
       const s = textarea.selectionStart;
@@ -49,7 +56,7 @@
   }
 
   function fallback(textarea, opts) {
-    bindTab(textarea, opts.onChange);
+    bindTab(textarea, opts);
     return {
       get: () => textarea.value,
       set: v => {
@@ -113,6 +120,18 @@
     opts = opts || {};
     try {
       const CM = await window.ensureCodeMirror();
+      const extraKeys = {
+        Tab(cm) {
+          if (cm.getOption("readOnly")) return;
+          if (cm.somethingSelected()) cm.indentSelection("add");
+          else cm.replaceSelection("    ", "end");
+        }
+      };
+      if (opts.onRun) {
+        extraKeys["Ctrl-Enter"] = opts.onRun;
+        extraKeys["Cmd-Enter"] = opts.onRun;
+      }
+      Object.assign(extraKeys, opts.extraKeys || {});
       const cm = CM.fromTextArea(textarea, {
         mode: "python",
         theme: "blotter",
@@ -123,13 +142,7 @@
         lineWrapping: true,
         matchBrackets: true,
         styleActiveLine: true,
-        extraKeys: {
-          Tab(cm) {
-            if (cm.getOption("readOnly")) return;
-            if (cm.somethingSelected()) cm.indentSelection("add");
-            else cm.replaceSelection("    ", "end");
-          }
-        }
+        extraKeys
       });
       cm.setSize("100%", opts.height || "420px");
       if (opts.readOnly) cm.setOption("readOnly", true);
