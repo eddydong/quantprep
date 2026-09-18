@@ -117,12 +117,35 @@ buf.getvalue()
     setStatus("Console cleared.");
   });
 
+  function fitEditor() {
+    const wrap = root.querySelector(".sb-ed-wrap");
+    const cmEl = wrap && wrap.querySelector(".CodeMirror");
+    if (!wrap || !cmEl || !cmEl.CodeMirror) {
+      if (editor) editor.refresh();
+      return;
+    }
+    const h = wrap.clientHeight;
+    cmEl.CodeMirror.setSize("100%", Math.max(80, h) + "px");
+    cmEl.CodeMirror.refresh();
+  }
+  window.fitSandboxEditor = fitEditor;
+  window.addEventListener("resize", () => {
+    if (document.body.classList.contains("sandbox-ide")) fitEditor();
+  });
+  const wrap = root.querySelector(".sb-ed-wrap");
+  if (wrap && window.ResizeObserver) {
+    new ResizeObserver(() => fitEditor()).observe(wrap);
+  }
+  const help = root.querySelector(".sb-help");
+  if (help) help.addEventListener("toggle", fitEditor);
+
   host.value = saved() || stub();
   window.mountQuantEditor(host, {
-    height: "320px",
+    height: "100%",
     onChange: persist,
     onRun: run
   }).then(ed => {
     editor = ed;
+    requestAnimationFrame(() => requestAnimationFrame(fitEditor));
   });
 })();

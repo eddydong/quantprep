@@ -295,9 +295,117 @@ pre.cm-s-blotter.cm-static span { background: none; }
   color: var(--blotter-ink);
   border-color: var(--blotter);
 }
-.sandbox .cm-s-blotter.CodeMirror { height: 320px; }
-.sb-guide { padding-left: 1.2rem; }
-.sb-guide li { font-size: 15px; margin: 0.35rem 0; }
+.sb-guide { padding-left: 1.2rem; margin: 0.4rem 0 0.2rem; }
+.sb-guide li { font-size: 14px; margin: 0.25rem 0; }
+body.sandbox-ide {
+  overflow: hidden;
+  height: 100%;
+  max-height: 100vh;
+  max-height: 100dvh;
+}
+body.sandbox-ide main {
+  overflow: hidden;
+  min-height: 0;
+}
+body.sandbox-ide article {
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  padding: 14px 18px 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+body.sandbox-ide #sandbox.panel.on {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+.sandbox {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+.sandbox h1 { font-size: 1.35rem; margin: 0; letter-spacing: -0.03em; }
+.sb-chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 8px 28px;
+  flex: 0 0 auto;
+  margin: 0 0 8px;
+}
+.sb-chrome .kicker { margin: 0 0 4px; }
+.sb-chrome .lede { margin: 0; font-size: 14px; max-width: 36rem; }
+.sb-help {
+  flex: 0 0 auto;
+  margin: 0 0 8px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--rule);
+}
+.sb-help summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--soft);
+}
+.sb-work {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #0a1612;
+  background: var(--blotter);
+}
+.sb-ed-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+.sandbox .lab-ed { min-height: 0; height: 100%; resize: none; }
+.sandbox .cm-s-blotter.CodeMirror {
+  height: 100%;
+  border: 0;
+}
+.sandbox #sb-status { font-size: 13px; color: var(--soft); }
+.sandbox #sb-out.pass { box-shadow: inset 3px 0 0 var(--gold); }
+.sandbox #sb-out.fail { box-shadow: inset 3px 0 0 var(--stamp); }
+.sandbox .lab-bar {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 8px 10px;
+  background: #ebe4d4;
+  border-top: 1px solid #0a1612;
+  border-bottom: 1px solid #0a1612;
+}
+.sb-console {
+  flex: 0 0 28%;
+  min-height: 110px;
+  max-height: 45%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.sb-console .kicker {
+  flex: 0 0 auto;
+  margin: 8px 12px 0;
+  color: var(--gold);
+}
+.sandbox #sb-out {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  max-height: none;
+  overflow: auto;
+  border: 0;
+  box-shadow: none;
+}
 @media (max-width: 820px) {
   .wu-track { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
@@ -335,6 +443,20 @@ pre.cm-s-blotter.cm-static span { background: none; }
   body { grid-template-columns: 1fr; }
   .blotter { height: auto; position: relative; }
   main { height: auto; }
+  body.sandbox-ide {
+    grid-template-rows: minmax(72px, 26vh) minmax(0, 1fr);
+    overflow: hidden;
+  }
+  body.sandbox-ide .blotter {
+    height: auto;
+    max-height: 100%;
+    overflow: auto;
+  }
+  body.sandbox-ide main {
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
 @media print {
   .blotter, #gloss { display: none; }
@@ -927,27 +1049,37 @@ Desk assistant (workflow) ── tools to mid/skew; HITL</code></pre>
 </div>
 </section><section class="panel" id="sandbox">
 <div class="sandbox" id="sandbox-lab">
-  <p class="kicker">Scratch pad · in this browser</p>
-  <h1>Sandbox</h1>
-  <p class="lede">A blank Python file. Same runtime as the warmup and the lab — it runs in this tab, not on a server. First run may download a few megabytes; after that it is cached. Work stays in this browser.</p>
-  <h2>How to see output</h2>
-  <ol class="sb-guide">
-    <li>Type in the editor. Click <strong>Run</strong>, or press Ctrl+Enter (Cmd+Enter on a Mac).</li>
-    <li>The whole file runs from the top each time. Names do not carry over from the previous click unless they are still in the editor.</li>
-    <li>To send text to the <strong>console</strong> below, call <code>print</code>. Quotes make a string: <code>print("hello")</code>. You can print several things, separated by commas: <code>print("mid", 7.78)</code>.</li>
-    <li>A last line that is <em>just a value</em> (for example <code>1 + 1</code>) is also shown. A line that only assigns, like <code>x = 1</code>, stays silent — print <code>x</code> if you want to see it.</li>
-    <li>If Python cannot run the file, the error appears in the same console. Change the editor and Run again.</li>
-    <li><code>import numpy as np</code> and <code>import pandas as pd</code> work; both libraries are already in this page.</li>
-  </ol>
-  <textarea class="lab-ed" id="sb-ed" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="sandbox editor"></textarea>
-  <div class="lab-bar">
-    <button type="button" id="sb-run">Run</button>
-    <button type="button" id="sb-reset">Reset starter</button>
-    <button type="button" id="sb-clear">Clear console</button>
-    <span id="sb-status"></span>
+  <header class="sb-chrome">
+    <div>
+      <p class="kicker">Scratch pad · this tab</p>
+      <h1>Sandbox</h1>
+    </div>
+    <p class="lede"><code>print()</code> writes to the console. Ctrl+Enter (Cmd+Enter) runs the whole file. Python stays in this browser.</p>
+  </header>
+  <details class="sb-help">
+    <summary>How to see output</summary>
+    <ol class="sb-guide">
+      <li>The whole file runs from the top each time. Names do not carry over from the previous click unless they are still in the editor.</li>
+      <li>Quotes make a string: <code>print("hello")</code>. Several values: <code>print("mid", 7.78)</code>.</li>
+      <li>A last line that is just a value (for example <code>1 + 1</code>) is also shown. <code>x = 1</code> stays silent — <code>print(x)</code> if you want to see it.</li>
+      <li>Errors appear in the same console. <code>import numpy as np</code> and <code>import pandas as pd</code> work.</li>
+    </ol>
+  </details>
+  <div class="sb-work">
+    <div class="sb-ed-wrap">
+      <textarea class="lab-ed" id="sb-ed" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="sandbox editor"></textarea>
+    </div>
+    <div class="lab-bar">
+      <button type="button" id="sb-run">Run</button>
+      <button type="button" id="sb-reset">Reset starter</button>
+      <button type="button" id="sb-clear">Clear console</button>
+      <span id="sb-status"></span>
+    </div>
+    <div class="sb-console">
+      <p class="kicker">Console</p>
+      <pre class="lab-out" id="sb-out">Output from print() will show here.</pre>
+    </div>
   </div>
-  <p class="kicker">Console</p>
-  <pre class="lab-out" id="sb-out">Output from print() will show here.</pre>
 </div>
 </section><section class="panel" id="ml"><h1>Round 1 — Machine Learning (Director mock)</h1>
 <p><strong>Time:</strong> 90 minutes <strong>Format:</strong> 20 min rapid-fire, 40 min deep dives, 30 min mini-case <strong>Rules:</strong> No laptop except for a blank sheet. Say assumptions. Tie every method to a desk consumer.</p>
@@ -1375,6 +1507,10 @@ function show(id) {
   document.querySelectorAll('.ticket').forEach(t => t.classList.toggle('on', t.dataset.go === id));
   if (!already) document.querySelector('main').scrollTop = 0;
   if (location.hash !== '#' + id) location.hash = id;
+  document.body.classList.toggle('sandbox-ide', id === 'sandbox');
+  if (id === 'sandbox' && window.fitSandboxEditor) {
+    requestAnimationFrame(() => requestAnimationFrame(() => window.fitSandboxEditor()));
+  }
   if ((id === 'coding' || id === 'warmup' || id === 'sandbox') && window.primeQuantPy) {
     const el = document.getElementById(id === 'coding' ? 'lab-status' : id === 'warmup' ? 'wu-status' : 'sb-status');
     window.primeQuantPy(t => { if (el) el.textContent = t; });
@@ -2125,13 +2261,36 @@ buf.getvalue()
     setStatus("Console cleared.");
   });
 
+  function fitEditor() {
+    const wrap = root.querySelector(".sb-ed-wrap");
+    const cmEl = wrap && wrap.querySelector(".CodeMirror");
+    if (!wrap || !cmEl || !cmEl.CodeMirror) {
+      if (editor) editor.refresh();
+      return;
+    }
+    const h = wrap.clientHeight;
+    cmEl.CodeMirror.setSize("100%", Math.max(80, h) + "px");
+    cmEl.CodeMirror.refresh();
+  }
+  window.fitSandboxEditor = fitEditor;
+  window.addEventListener("resize", () => {
+    if (document.body.classList.contains("sandbox-ide")) fitEditor();
+  });
+  const wrap = root.querySelector(".sb-ed-wrap");
+  if (wrap && window.ResizeObserver) {
+    new ResizeObserver(() => fitEditor()).observe(wrap);
+  }
+  const help = root.querySelector(".sb-help");
+  if (help) help.addEventListener("toggle", fitEditor);
+
   host.value = saved() || stub();
   window.mountQuantEditor(host, {
-    height: "320px",
+    height: "100%",
     onChange: persist,
     onRun: run
   }).then(ed => {
     editor = ed;
+    requestAnimationFrame(() => requestAnimationFrame(fitEditor));
   });
 })();
 
