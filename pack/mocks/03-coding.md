@@ -3,19 +3,12 @@
 **7 of 8** in the pack. Previous: [02-dl.md](02-dl.md). Next: [04-project.md](04-project.md). Code: [coding/](coding/). 
 
 **Time:** 90–120 minutes  
-**Language:** Python 3.11+ (numpy/pandas allowed). No internet.  
+**Language:** Python (numpy/pandas). The lab on this page is the mock.  
 **Bar:** they are **not looking for software engineers**. You need to be **competent** at coding: correct information sets, no leakage, code a desk would trust. You do **not** need kdb, Java, or a 50µs résumé. Style still matters: type hints, no `iterrows`.
 
-Run from this folder:
+Scroll to the **lab** below. Implement `candidate.py`, then **Run tests**. Stubs skip until you replace `raise NotImplementedError`. Your work stays in this browser. The answer key is a separate tab — do not open it first.
 
-```bash
-cd pack/mocks/coding
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-pytest -q
-```
-
-Implement `candidate.py`. `solutions.py` is the answer key. Tests import **candidate**.
+`broken_backtest.py` is in the lab too (read-only). First test run downloads a Python runtime into the browser (cached after that).
 
 If they give you a **HackerRank-style** screen, still practise these: they are closer to a **GM AI Director** loop (leakage, microstructure, inventory) than reversing a linked list. Still warm up with **one** medium array/hash problem the night before so you are not rusty.
 

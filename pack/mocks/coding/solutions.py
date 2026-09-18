@@ -183,3 +183,17 @@ def fixed_backtest(df: pd.DataFrame) -> dict[str, float]:
         "sharpe": sharpe,
         "turnover": turnover,
     }
+
+
+# Interviewer notes for Problem 4 — not in broken_backtest.py on purpose.
+BROKEN_BACKTEST_BUGS = """
+1. Signal uses the same-bar return (look-ahead).
+2. Position is applied to the same-bar return (executes at stale/future px).
+3. No spread / fee.
+4. Sharpe uses the full-sample standard deviation including the future
+   (and sqrt(n) instead of a time convention).
+5. shift(-1) on close to 'align labels' pulls tomorrow into today.
+6. Drops NaNs with bfill, which fills backward from the future.
+7. Sorts by return (survivorship / peeking) before computing the mean.
+"""
+

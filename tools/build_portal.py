@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "pack"
 OUT = ROOT / "index.html"
+KEY_CANDIDATE = "quantprep-candidate"
 
 SECTIONS = [
     ("home", "Start", None, "Desk blotter"),
@@ -22,10 +23,41 @@ SECTIONS = [
     ("drills", "Drills", None, "Closed-book 5+5, then walk-in"),
     ("ml", "5 · ML mock", PACK / "mocks" / "01-ml.md", "90 minutes"),
     ("dl", "6 · DL mock", PACK / "mocks" / "02-dl.md", "90 minutes"),
-    ("coding", "7 · Coding", PACK / "mocks" / "03-coding.md", "90–120 minutes"),
+    ("coding", "7 · Coding", PACK / "mocks" / "03-coding.md", "In-page lab"),
     ("project", "8 · Project", PACK / "mocks" / "04-project.md", "Scenario, 90 min"),
     ("morning", "Morning of", PACK / "one-pager.md", "Interview day only"),
 ]
+
+
+CODING_LAB = """
+<div class="lab" id="coding-lab">
+  <p class="kicker">In this browser</p>
+  <h2>Lab</h2>
+  <p class="lede">Type in <code>candidate.py</code>, then run the same tests the mock uses. First run downloads a Python runtime (numpy + pandas) into this tab; after that it is cached. Work is saved locally in the browser, not on a server.</p>
+  <div class="lab-tabs">
+    <button type="button" data-lab-tab="candidate" class="on">candidate.py</button>
+    <button type="button" data-lab-tab="broken">broken_backtest.py</button>
+    <button type="button" data-lab-tab="solutions">answer key</button>
+  </div>
+  <textarea class="lab-ed" id="lab-ed" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="candidate.py"></textarea>
+  <div class="lab-bar">
+    <button type="button" id="lab-run">Run tests</button>
+    <button type="button" id="lab-reset">Reset stub</button>
+    <span id="lab-status"></span>
+  </div>
+  <pre class="lab-out" id="lab-out" hidden></pre>
+</div>
+"""
+
+
+def coding_files() -> dict[str, str]:
+    folder = PACK / "mocks" / "coding"
+    return {
+        "candidate": (folder / "candidate.py").read_text(encoding="utf-8"),
+        "solutions": (folder / "solutions.py").read_text(encoding="utf-8"),
+        "broken": (folder / "broken_backtest.py").read_text(encoding="utf-8"),
+        "tests": (folder / "test_coding.py").read_text(encoding="utf-8"),
+    }
 
 
 def inline(text: str) -> str:
@@ -191,7 +223,7 @@ HOME = """
 <li>Open <strong>1 · Words</strong> if you are not from markets. Read the opening trade story, then search terms as you go.</li>
 <li>Read <strong>2 · The seat</strong> then <strong>3 · Briefing</strong>. Say the two-minute opening out loud. <strong>90 days</strong> is how you would start the job — not a technical mock.</li>
 <li>Follow <strong>4 · Study plan</strong>. Sit <strong>Drills</strong> closed, then mocks 5–8 timed. Mock 8 is a live desk <em>scenario</em>. Do not peek at model answers first.</li>
-<li>Coding lives in this page <em>and</em> as Python under <code>pack/mocks/coding/</code>. Run pytest there. Do not look at <code>solutions.py</code> until you have tried.</li>
+<li>Coding is the lab on <strong>7 · Coding</strong> — implement <code>candidate.py</code> and run tests in the page. Do not open the answer key first.</li>
 <li><strong>Morning of</strong> is for interview day only.</li>
 </ol>
 <p>They are not looking for software engineers. Competent coding plus fundamentals of modern GenAI is the bar.</p>
@@ -474,6 +506,61 @@ summary { cursor: pointer; font-weight: 600; }
 .why { color: var(--soft); font-size: 15px; }
 .walk { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; font-size: 15px; line-height: 1.45; }
 .walk input { margin-top: 4px; accent-color: var(--gold); }
+.lab {
+  margin: 2.4rem 0 0;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--rule);
+}
+.lab-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
+.lab-tabs button, .lab-bar button {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  cursor: pointer;
+}
+.lab-tabs button.on,
+.lab-bar button#lab-run {
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  border-color: var(--blotter);
+}
+.lab-ed {
+  width: 100%;
+  min-height: 420px;
+  padding: 12px 14px;
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  border: 1px solid #0a1612;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+  resize: vertical;
+  tab-size: 4;
+}
+.lab-ed:read-only { opacity: 0.92; }
+.lab-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 10px 0 8px;
+}
+#lab-status { font-size: 13px; color: var(--soft); }
+.lab-out {
+  background: var(--blotter);
+  color: var(--blotter-ink);
+  padding: 14px 16px;
+  overflow: auto;
+  max-height: 360px;
+  white-space: pre-wrap;
+  font-size: 12px;
+}
+.lab-out.pass { box-shadow: inset 3px 0 0 var(--gold); }
+.lab-out.fail { box-shadow: inset 3px 0 0 var(--stamp); }
+.lab-out.skip { box-shadow: inset 3px 0 0 var(--mute); }
 .jarg {
   border-bottom: 1px dotted var(--stamp);
   background: rgba(143, 45, 60, 0.08);
@@ -527,6 +614,7 @@ function show(id) {
   document.querySelectorAll('.ticket').forEach(t => t.classList.toggle('on', t.dataset.go === id));
   if (!already) document.querySelector('main').scrollTop = 0;
   if (location.hash !== '#' + id) location.hash = id;
+  if (id === 'coding' && window.primeCodingLab) window.primeCodingLab();
 }
 document.querySelectorAll('[data-go]').forEach(el => {
   if (el.tagName !== 'A') return;
@@ -894,12 +982,27 @@ def main() -> None:
             body = HOME
         elif sid == "drills":
             body = DRILLS
+        elif sid == "coding":
+            body = rewrite_pack_links(md_to_html(strip_pack_nav(path.read_text(encoding="utf-8")))) + CODING_LAB
         else:
             body = rewrite_pack_links(md_to_html(strip_pack_nav(path.read_text(encoding="utf-8"))))
         panels.append(f'<section class="panel" id="{sid}">{body}</section>')
 
     glossary = parse_glossary((PACK / "jargon.md").read_text(encoding="utf-8"))
-    script = JS + "\nconst GLOSSARY = " + json.dumps(glossary, ensure_ascii=False) + ";\n" + GLOSS_JS
+    lab_js = (PACK / "mocks" / "coding" / "lab.js").read_text(encoding="utf-8")
+    script = (
+        JS
+        + "\nconst GLOSSARY = "
+        + json.dumps(glossary, ensure_ascii=False)
+        + ";\nconst CODING_STORE = "
+        + json.dumps(KEY_CANDIDATE)
+        + ";\nconst CODING = "
+        + json.dumps(coding_files(), ensure_ascii=False)
+        + ";\n"
+        + GLOSS_JS
+        + "\n"
+        + lab_js
+    )
     html_doc = f"""<!DOCTYPE html>
 <html lang="en">
 <head>

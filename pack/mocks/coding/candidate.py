@@ -1,8 +1,6 @@
 """Director coding mock — implement these APIs.
 
-Run tests from this directory:
-
-    pytest -q
+Sit this in the page lab (Run tests). Optional local: pytest -q
 
 Do not import solutions.py from this module.
 """

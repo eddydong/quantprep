@@ -48,7 +48,7 @@ They will also sample **risk and controls** and **APAC stakeholder craft** (HK d
 
 The typical seat: competent at coding, **not** a software-engineer interview.
 
-- Implement `mocks/coding/candidate.py` until `pytest` is green.
+- Sit the lab on the Coding ticket in the portal until the tests are green. Stubs skip; implemented functions are scored against the answer key.
 - Then **delete your solutions from working memory** and re-implement from the problem statements in 90 minutes.
 - Extra: write a 20-line critique of a messy pandas backtest (the debug problem).
 - Do **not** grind leetcode system design, kdb, or Java unless a later interviewer asks.
