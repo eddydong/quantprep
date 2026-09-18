@@ -27,14 +27,23 @@
       done: sessions.map(() => false)
     };
   }
+  function taughtNumpy(src) {
+    if (typeof src !== "string") return src;
+    return src
+      .replace(/\bnp\.asarray\b/g, "np.array")
+      .replace(/\bnp\.empty_like\(\s*([^,)]+)(?:\s*,[^)]*)?\)/g, "np.zeros(len($1))")
+      .replace(/\bnp\.zeros_like\(\s*([^,)]+)(?:\s*,[^)]*)?\)/g, "np.zeros(len($1))")
+      .replace(/\bnp\.ones_like\(\s*([^,)]+)(?:\s*,[^)]*)?\)/g, "np.ones(len($1))");
+  }
   function load() {
     try {
       const raw = localStorage.getItem(STORE);
       if (!raw) return blank();
       const st = JSON.parse(raw);
-      const code = sessions.map((s, i) =>
-        typeof (st.code && st.code[i]) === "string" ? st.code[i] : s.starter
-      );
+      const code = sessions.map((s, i) => {
+        const saved = st.code && st.code[i];
+        return typeof saved === "string" ? taughtNumpy(saved) : s.starter;
+      });
       const done = sessions.map((_, i) => Boolean(st.done && st.done[i]));
       const i = Math.min(Math.max(0, st.i | 0), n - 1);
       return { i, code, done };
@@ -48,7 +57,7 @@
   function persist() {
     if (!editor) return;
     state.i = idx;
-    state.code[idx] = editor.get();
+    state.code[idx] = taughtNumpy(editor.get());
     try {
       localStorage.setItem(STORE, JSON.stringify(state));
     } catch (_) {}
@@ -80,11 +89,11 @@
     lesson.innerHTML = s.lesson;
     if (window.colorQuantCode) window.colorQuantCode(lesson);
     if (editor) {
-      editor.set(state.code[idx] || s.starter);
+      editor.set(taughtNumpy(state.code[idx] || s.starter));
       editor.setReadOnly(false);
       editor.refresh();
     } else {
-      host.value = state.code[idx] || s.starter;
+      host.value = taughtNumpy(state.code[idx] || s.starter);
     }
     nextBtn.disabled = idx >= n - 1;
     paintTrack();
@@ -190,11 +199,11 @@ _wu_out
     }
   });
 
-  host.value = state.code[idx] || sessions[idx].starter;
+  host.value = taughtNumpy(state.code[idx] || sessions[idx].starter);
   render();
   window.mountQuantEditor(host, { height: "280px", onChange: persist }).then(ed => {
     editor = ed;
-    editor.set(state.code[idx] || sessions[idx].starter);
+    editor.set(taughtNumpy(state.code[idx] || sessions[idx].starter));
     editor.refresh();
     if (window.colorQuantCode) window.colorQuantCode(lesson);
   });
