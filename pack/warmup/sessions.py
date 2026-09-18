@@ -4,6 +4,7 @@ from __future__ import annotations
 
 PREFIX = """
 def run(st):
+    import numpy as np
     rows = []
     def check(name, fn):
         try:
@@ -19,6 +20,11 @@ def run(st):
         if a is None:
             raise AssertionError(msg)
         if abs(float(a) - float(b)) >= eps:
+            raise AssertionError(msg)
+    def nums(x, msg="return a list or array of numbers"):
+        try:
+            return np.array(x, dtype=float)
+        except Exception:
             raise AssertionError(msg)
 """
 
@@ -496,11 +502,19 @@ mids = np.array([100.0, 101.0, 100.0, 103.0])
 rets = mids[1:] / mids[:-1] - 1
 """,
         "tests": checks("""
-    import numpy as np
-    rets = np.asarray(need("rets"), dtype=float)
-    check("len", lambda: rets.size == 3 or (_ for _ in ()).throw(AssertionError("four mids → three returns")))
-    check("first", lambda: abs(rets[0] - 0.01) < 1e-12 or (_ for _ in ()).throw(AssertionError("first return 101/100 - 1")))
-    check("last", lambda: abs(rets[-1] - 0.03) < 1e-12 or (_ for _ in ()).throw(AssertionError("last return 103/100 - 1")))
+    def _len():
+        rets = nums(need("rets"), "rets should be three numbers")
+        if len(rets) != 3:
+            raise AssertionError("four mids → three returns")
+    def _first():
+        rets = nums(need("rets"), "rets should be three numbers")
+        near(rets[0], 0.01, "first return 101/100 - 1", 1e-12)
+    def _last():
+        rets = nums(need("rets"), "rets should be three numbers")
+        near(rets[-1], 0.03, "last return 103/100 - 1", 1e-12)
+    check("len", _len)
+    check("first", _first)
+    check("last", _last)
 """),
     },
     {
@@ -548,15 +562,23 @@ def ewma(x, alpha):
     return y
 """,
         "tests": checks("""
-    import numpy as np
-    fn = need("ewma")
-    x = np.array([1.0, 2.0, 3.0])
-    y = np.asarray(fn(x, 0.5), dtype=float)
-    check("first", lambda: abs(y[0] - 1.0) < 1e-12 or (_ for _ in ()).throw(AssertionError("y[0] must equal x[0]")))
-    check("step", lambda: abs(y[1] - 1.5) < 1e-12 or (_ for _ in ()).throw(AssertionError("y[1] = 0.5*2 + 0.5*1")))
-    x2 = x.copy(); x2[-1] = 99
-    y2 = np.asarray(fn(x2, 0.5), dtype=float)
-    check("causal", lambda: abs(y[1] - y2[1]) < 1e-12 or (_ for _ in ()).throw(AssertionError("changing the last tick must not change earlier y")))
+    def _y():
+        fn = need("ewma")
+        return nums(fn(np.array([1.0, 2.0, 3.0]), 0.5), "ewma should return an array the same length as x")
+    def _first():
+        y = _y()
+        near(y[0], 1.0, "y[0] must equal x[0]", 1e-12)
+    def _step():
+        y = _y()
+        near(y[1], 1.5, "y[1] = 0.5*2 + 0.5*1", 1e-12)
+    def _causal():
+        fn = need("ewma")
+        y = nums(fn(np.array([1.0, 2.0, 3.0]), 0.5), "ewma should return an array")
+        y2 = nums(fn(np.array([1.0, 2.0, 99.0]), 0.5), "ewma should return an array")
+        near(y[1], y2[1], "changing the last tick must not change earlier y", 1e-12)
+    check("first", _first)
+    check("step", _step)
+    check("causal", _causal)
 """),
     },
     {
@@ -610,6 +632,8 @@ last = close.iloc[-1]
 
 `.shift(-1)` pulls **tomorrow** onto today. That is a **label**, not a feature. Train on it as if it were known and the model is cheating.
 
+A missing cell is **NaN**. `pd.isna(value)` is True when that value is missing.
+
 **Chaining:** `a.b().c()` means do `b`, then `c` on the result. Read left to right.
 
 On closes `[100, 110, 132]`, `.pct_change()` is missing, +10%, +20%. Lagging that series by one bar puts **yesterday’s return** on today’s row, so the last value becomes +10%, not +20%. Early rows stay NaN.
@@ -628,14 +652,16 @@ def lagged_ret(close):
 """,
         "tests": checks("""
     import pandas as pd
-    import numpy as np
-    fn = need("lagged_ret")
-    close = pd.Series([100.0, 110.0, 132.0])
-    out = pd.Series(fn(close)).astype(float)
+    def _out():
+        fn = need("lagged_ret")
+        close = pd.Series([100.0, 110.0, 132.0])
+        return pd.Series(fn(close))
     def _early():
-        if not (bool(np.isnan(out.iloc[0])) or bool(np.isnan(out.iloc[1]))):
+        out = _out()
+        if not (bool(pd.isna(out.iloc[0])) or bool(pd.isna(out.iloc[1]))):
             raise AssertionError("early rows should be NaN after pct_change and a lag")
     def _past():
+        out = _out()
         near(out.iloc[-1], 0.10, "last feature should be the previous bar's 10% return, not 132/110-1")
     check("nan early", _early)
     check("no future", _past)
@@ -726,13 +752,24 @@ def asia_mask(hour):
     return (hour >= 0) & (hour < 8)
 """,
         "tests": checks("""
-    import numpy as np
-    fn = need("asia_mask")
-    h = np.array([0, 7, 8, 15, 3])
-    m = np.asarray(fn(h))
-    check("shape", lambda: m.shape == h.shape or (_ for _ in ()).throw(AssertionError("mask length follows hour")))
-    check("tokyo", lambda: bool(m[0] and m[1] and m[4]) or (_ for _ in ()).throw(AssertionError("0, 7, 3 should be True")))
-    check("london", lambda: bool((not m[2]) and (not m[3])) or (_ for _ in ()).throw(AssertionError("8 and 15 should be False")))
+    def _mask():
+        fn = need("asia_mask")
+        h = np.array([0, 7, 8, 15, 3])
+        m = np.array(fn(h))
+        if len(m) != len(h):
+            raise AssertionError("mask length follows hour")
+        return m
+    def _tokyo():
+        m = _mask()
+        if not (bool(m[0]) and bool(m[1]) and bool(m[4])):
+            raise AssertionError("0, 7, 3 should be True")
+    def _london():
+        m = _mask()
+        if bool(m[2]) or bool(m[3]):
+            raise AssertionError("8 and 15 should be False")
+    check("shape", lambda: _mask())
+    check("tokyo", _tokyo)
+    check("london", _london)
 """),
     },
     {
@@ -775,16 +812,18 @@ def fit_predict(X_train, y_train, X_test):
     return X_test @ w
 """,
         "tests": checks("""
-    import numpy as np
-    fn = need("fit_predict")
-    Xtr = np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0]])
-    ytr = np.array([0.0, 2.0, 4.0])
-    Xte = np.array([[1.0, 3.0], [1.0, 4.0]])
-    pred = np.asarray(fn(Xtr, ytr, Xte), dtype=float)
+    def _pred():
+        fn = need("fit_predict")
+        Xtr = np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0]])
+        ytr = np.array([0.0, 2.0, 4.0])
+        Xte = np.array([[1.0, 3.0], [1.0, 4.0]])
+        return nums(fn(Xtr, ytr, Xte), "return predictions for X_test")
     def _len():
-        if pred.shape[0] != 2:
+        pred = _pred()
+        if len(pred) != 2:
             raise AssertionError("predict on X_test (2 rows), not on y_train")
     def _fit():
+        pred = _pred()
         near(pred[0], 6.0, "the line is y = 2 * x1; test x1=3 → 6")
         near(pred[1], 8.0, "test x1=4 → 8")
     check("test length", _len)
@@ -829,13 +868,27 @@ def time_split(n, train_frac):
     return train, test
 """,
         "tests": checks("""
-    import numpy as np
-    fn = need("time_split")
-    tr, te = fn(10, 0.7)
-    tr = np.asarray(tr); te = np.asarray(te)
-    check("cover", lambda: tr.size + te.size == 10 or (_ for _ in ()).throw(AssertionError("train and test should partition 0..n-1")))
-    check("order", lambda: (te.size == 0 or tr.size == 0 or tr.max() < te.min()) or (_ for _ in ()).throw(AssertionError("every train index must be before test")))
-    check("frac", lambda: tr.size == 7 and te.size == 3 or (_ for _ in ()).throw(AssertionError("int(10*0.7) = 7 train, 3 test")))
+    def _split():
+        fn = need("time_split")
+        tr, te = fn(10, 0.7)
+        return nums(tr, "train should be an array of indices"), nums(te, "test should be an array of indices")
+    def _cover():
+        tr, te = _split()
+        if len(tr) + len(te) != 10:
+            raise AssertionError("train and test should partition 0..n-1")
+    def _order():
+        tr, te = _split()
+        if len(te) == 0 or len(tr) == 0:
+            return
+        if max(tr) >= min(te):
+            raise AssertionError("every train index must be before test")
+    def _frac():
+        tr, te = _split()
+        if len(tr) != 7 or len(te) != 3:
+            raise AssertionError("int(10*0.7) = 7 train, 3 test")
+    check("cover", _cover)
+    check("order", _order)
+    check("frac", _frac)
 """),
     },
     {
@@ -931,29 +984,33 @@ def pipeline(mids):
     return {"train_mse": train_mse, "test_mse": test_mse}
 """,
         "tests": checks("""
-    import numpy as np
-    fn = need("pipeline")
-    mids = np.array([100.0, 101.0, 100.5, 102.0, 101.0, 103.0, 102.5, 104.0] * 10, dtype=float)
-    out = fn(mids)
-    def ref(xs):
-        xs = np.asarray(xs, dtype=float)
-        ret = np.zeros_like(xs)
+    def _pipe():
+        fn = need("pipeline")
+        mids = np.array([100.0, 101.0, 100.5, 102.0, 101.0, 103.0, 102.5, 104.0] * 10, dtype=float)
+        return fn(mids), mids
+    def _ref(xs):
+        xs = np.array(xs, dtype=float)
+        ret = np.zeros(len(xs))
         ret[1:] = xs[1:] / xs[:-1] - 1.0
         y = ret[2:]
         x1 = ret[1:-1]
-        X = np.column_stack([np.ones(x1.size), x1])
+        X = np.column_stack([np.ones(len(x1)), x1])
         cut = int(len(X) * 0.7)
         w = np.linalg.lstsq(X[:cut], y[:cut], rcond=None)[0]
         def mse(Xa, ya):
             return float(np.mean((Xa @ w - ya) ** 2))
         return mse(X[:cut], y[:cut]), mse(X[cut:], y[cut:])
-    want_tr, want_te = ref(mids)
     def _keys():
+        out, _mids = _pipe()
         if not (isinstance(out, dict) and {"train_mse", "test_mse"} <= set(out)):
             raise AssertionError("return a dict with train_mse and test_mse")
     def _train():
+        out, mids = _pipe()
+        want_tr, _want_te = _ref(mids)
         near(out["train_mse"], want_tr, "train_mse should match lag-1 return + intercept, 70% time split, lstsq", 1e-8)
     def _test():
+        out, mids = _pipe()
+        _want_tr, want_te = _ref(mids)
         near(out["test_mse"], want_te, "test_mse is scored on the later 30%, not shuffled, not in-sample", 1e-8)
     check("keys", _keys)
     check("train_mse", _train)
@@ -964,3 +1021,9 @@ def pipeline(mids):
 
 
 assert len(SESSIONS) == 20, len(SESSIONS)
+
+_BANNED = ("asarray", "empty_like", "zeros_like", "ones_like", "full_like")
+for _s in SESSIONS:
+    _blob = _s["lesson"] + _s["starter"] + _s["solution"] + _s["tests"]
+    for _name in _BANNED:
+        assert _name not in _blob, f"{_s['title']} still mentions {_name}"

@@ -138,10 +138,14 @@ for name in ("wu_student", "wu_checks"):
 
 try:
     import wu_student
-    import wu_checks
-    _wu_out = json.dumps({"rows": list(wu_checks.run(wu_student))})
 except Exception:
     _wu_out = json.dumps({"rows": [{"name": "session", "ok": "fail", "msg": traceback.format_exc()}]})
+else:
+    try:
+        import wu_checks
+        _wu_out = json.dumps({"rows": list(wu_checks.run(wu_student))})
+    except Exception as e:
+        _wu_out = json.dumps({"rows": [{"name": "session", "ok": "fail", "msg": str(e)}]})
 _wu_out
 `;
 

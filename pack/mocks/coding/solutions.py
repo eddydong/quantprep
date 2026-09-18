@@ -12,7 +12,7 @@ def purged_walk_forward_splits(
     n_folds: int,
     embargo: float,
 ) -> list[tuple[np.ndarray, np.ndarray]]:
-    t = np.asarray(t, dtype=np.float64)
+    t = np.array(t, dtype=np.float64)
     n = t.size
     if n_folds < 1:
         raise ValueError("n_folds must be >= 1")
@@ -42,15 +42,15 @@ def purged_walk_forward_splits(
 
 
 def ewma(x: np.ndarray, alpha: float) -> np.ndarray:
-    x = np.asarray(x, dtype=np.float64)
+    x = np.array(x, dtype=float)
     if not (0 < alpha <= 1):
         raise ValueError("alpha must be in (0, 1]")
-    y = np.empty_like(x, dtype=np.float64)
-    if x.size == 0:
+    y = np.zeros(len(x))
+    if len(x) == 0:
         return y
     y[0] = x[0]
     one_minus = 1.0 - alpha
-    for i in range(1, x.size):
+    for i in range(1, len(x)):
         y[i] = alpha * x[i] + one_minus * y[i - 1]
     return y
 
@@ -61,10 +61,10 @@ def order_flow_imbalance(
     bid_px: np.ndarray,
     ask_px: np.ndarray,
 ) -> np.ndarray:
-    bid_sz = np.asarray(bid_sz, dtype=np.float64)
-    ask_sz = np.asarray(ask_sz, dtype=np.float64)
-    bid_px = np.asarray(bid_px, dtype=np.float64)
-    ask_px = np.asarray(ask_px, dtype=np.float64)
+    bid_sz = np.array(bid_sz, dtype=np.float64)
+    ask_sz = np.array(ask_sz, dtype=np.float64)
+    bid_px = np.array(bid_px, dtype=np.float64)
+    ask_px = np.array(ask_px, dtype=np.float64)
     n = bid_sz.size
     ofi = np.zeros(n, dtype=np.float64)
     if n == 0:
@@ -97,10 +97,10 @@ def microprice(
     bid_sz: np.ndarray,
     ask_sz: np.ndarray,
 ) -> np.ndarray:
-    bid_px = np.asarray(bid_px, dtype=np.float64)
-    ask_px = np.asarray(ask_px, dtype=np.float64)
-    bid_sz = np.asarray(bid_sz, dtype=np.float64)
-    ask_sz = np.asarray(ask_sz, dtype=np.float64)
+    bid_px = np.array(bid_px, dtype=np.float64)
+    ask_px = np.array(ask_px, dtype=np.float64)
+    bid_sz = np.array(bid_sz, dtype=np.float64)
+    ask_sz = np.array(ask_sz, dtype=np.float64)
     den = bid_sz + ask_sz
     den = np.where(den == 0, np.nan, den)
     return (ask_px * bid_sz + bid_px * ask_sz) / den
@@ -116,8 +116,8 @@ def reservation_quote(
     kappa: float,
     fee: float,
 ) -> dict[str, np.ndarray]:
-    mid = np.asarray(mid, dtype=np.float64)
-    inventory = np.clip(np.asarray(inventory, dtype=np.float64), -q_max, q_max)
+    mid = np.array(mid, dtype=np.float64)
+    inventory = np.clip(np.array(inventory, dtype=np.float64), -q_max, q_max)
     if kappa <= 0:
         raise ValueError("kappa must be > 0")
     var_term = 0.5 * gamma * sigma**2 * horizon
@@ -131,7 +131,8 @@ def reservation_quote(
     crossed = bid > ask
     bid = np.where(crossed, mid, bid)
     ask = np.where(crossed, mid, ask)
-    d_out = np.full_like(mid, d, dtype=np.float64)
+    d_out = np.zeros(len(mid))
+    d_out[:] = d
     return {
         "reservation": r,
         "bid": bid,
