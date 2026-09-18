@@ -32,9 +32,9 @@ A parallel IC/VP posting (*AI/ML Modeller – Global Markets*, London / SG / HK)
 
 ## 2. The franchise, in one page
 
-A typical UK-centred universal bank: UK consumer and corporate, wealth/private bank, a global Investment Bank, and sometimes a specialist US consumer bank. Group technology usually talks “pace with purpose” on GenAI: pilots with measurable outcomes, then scale, inside a control framework. A **GenAI Centre of Excellence** often exists at group level. Markets at several houses already has a **production FX desk assistant** used to help colleagues initiate trades.
+**A leading IB.** Markets at a house like this already often has a **production FX desk assistant** used to help colleagues initiate trades. GenAI is usually: pilots with measurable outcomes, then scale, inside a control framework.
 
-**Recent UK IB Markets mix (the pattern, not a ticker):**
+**Recent Markets mix at a leading IB (the pattern, not a ticker):**
 
 - Global Markets is still “the house that Fixed Income built.”
 - **Equities is the growth lean** — often approaching ~30% of Markets revenue in a strong print, with a sharp quarterly jump when cash and prime fire.
@@ -63,7 +63,7 @@ The **e-trading platform** is the cross-asset electronic surface (Equities, FICC
 
 **APAC electronic footprint (important geographically):**
 
-- **eFX hubs**: New York, London, Tokyo, plus a **Singapore pricing/trading engine** at several UK IBs (MAS FX hub strategy) — often a fourth global FX hub. Local co-lo, lower latency, NDF algos.
+- **eFX hubs**: New York, London, Tokyo, plus a **Singapore pricing/trading engine** at a leading IB (MAS FX hub strategy) — often a fourth global FX hub. Local co-lo, lower latency, NDF algos.
 - **Equities algos and Smart Order Router**: hosted in **Hong Kong and Japan** private DCs; HK is co-located with the primary exchange. Direct feeds for HK and Japan; vendor feeds for other APAC exchanges.
 
 So a HK AI Director “starting with FX” is **not** sitting on top of the Singapore matching engine. You sit in **centralised Markets Quant** in HK: the **APAC technical authority** who partners with London GM AI/ML, Singapore eFX **engineering**, and HK/Tokyo desks. Say that — then stop short of pretending you are the engine owner. The seat is explicit: not a software-engineer hire; HFT is optional.
@@ -85,7 +85,7 @@ Reporting lines for an HK AI seat are rarely published. Treat these as **seats**
 
 **Implication:** first allies are **eFX + eSales** (PnL, desk assistant already in production at several houses) and **HK Equities/Prime quants** (APAC growth). Sequence: **FX proof of concept**, then scale. Do not pick a fight between FX and Equities. Do not staff this as an engineering org.
 
-Behavioural language that plays at a UK IB without sounding like a poster:
+Behavioural language that plays at a leading IB without sounding like a poster:
 
 - Risk and controls, change and transformation, business acumen, strategic thinking, technology.
 - People-leader craft: listen, energise, align across the enterprise, develop others.
@@ -108,7 +108,7 @@ APAC-specific market facts the desk will assume you know:
 - **CNH vs CNY**, USDCNH as the offshore deliverable, NDFs for KRW, TWD, INR, IDR, PHP.
 - Fixings (WMR, local fixes) as **benchmark risk**, not a toy.
 - Tokyo/HK/SG session structure; JPY and AUD as G10 in Asia hours; CNH/KRW vol around US-China and local events.
-- **Last look**, internalization, markouts (50ms / 1s / 10s), and the optics of those in a UK bank.
+- **Last look**, internalization, markouts (50ms / 1s / 10s), and the optics of those at a leading IB.
 - HK as **relationship and equities/prime hub**; Singapore as **eFX engine hub**.
 
 ## 6. What the three quant tribes need from you
@@ -168,7 +168,7 @@ Hire **less** than six until a desk is using an artefact. Empty seats beat a tou
 
 ## 7. Controls: you will be asked
 
-A UK IB is **PRA-regulated**. HK is an **HKMA authorised** presence. Markets models sit in **model-risk** even when they are “just a pricer”.
+A leading IB is **PRA-regulated**. HK is an **HKMA authorised** presence. Markets models sit in **model-risk** even when they are “just a pricer”.
 
 **PRA SS1/23** (model risk as a risk in its own right): identification and tiering; governance and SMF accountability; development/implementation/use; independent validation; ongoing monitoring. Explicitly includes **AI/ML**.
 
@@ -201,12 +201,12 @@ Do not name-drop papers unless you can discuss them. Do read at least:
 
 A tight script you can adapt:
 
-> The bank is investing in a **centralised Markets Quant** AI/ML function. I would be the APAC **Director and senior technical authority** in Hong Kong: a hybrid team of **4–6**, **hands-on** on the first models, **competent at coding and modern GenAI** — not a software-engineering hire, and HFT only if a desk later needs it. The sequence is **FX proof of concept first**, then scale, with a mandate that is deliberately **broad**: quantitative modelling **and agentic/GenAI**. I would land one FX slice the desk can kill (forecasting or skew, measured in markout **and** fill rate) **and** an APAC desk-assistant tool path that never invents a price, under PRA/HKMA tiering. Then I clone the rails for Equities/Prime so APAC Markets has a local Quant AI engine, not a London slideshow.
+> A leading IB is investing in a **centralised Markets Quant** AI/ML function. I would be the APAC **Director and senior technical authority** in Hong Kong: a hybrid team of **4–6**, **hands-on** on the first models, **competent at coding and modern GenAI** — not a software-engineering hire, and HFT only if a desk later needs it. The sequence is **FX proof of concept first**, then scale, with a mandate that is deliberately **broad**: quantitative modelling **and agentic/GenAI**. I would land one FX slice the desk can kill (forecasting or skew, measured in markout **and** fill rate) **and** an APAC desk-assistant tool path that never invents a price, under PRA/HKMA tiering. Then I clone the rails for Equities/Prime so APAC Markets has a local Quant AI engine, not a London slideshow.
 
 ## 10. Sources (public)
 
 - Typical GM AI/ML Director and modeller postings (London / SG / HK), 2025–2026.
-- UK IB H1 / Q2 2026 results pattern (GM mix, Equities, Asia, Prime) — read the house you are sitting.
+- H1 / Q2 2026 results pattern at a leading IB (GM mix, Equities, Asia, Prime) — read the house you are sitting.
 - Public FX platform pages: streaming, RFQ, own-book vs mixed-venue, desk assistants.
 - APAC electronic footprint: Singapore FX engines (MAS hub), HK/Japan equities co-lo.
 - PRA SS1/23; HKMA 2019 AI principles and 2024 GenAI consumer-protection circular.

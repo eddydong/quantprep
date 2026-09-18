@@ -16,7 +16,7 @@ Behavioural: risk and controls, change, business acumen. People-leader: listen, 
 
 ## Numbers
 
-Recent UK IB prints: GM still FICC-heavy; Equities the growth lean (often ~30% of Markets in a strong half, sharp quarterly jumps). Asia tilt via Prime, top-100 clients.
+Recent prints at a leading IB: GM still FICC-heavy; Equities the growth lean (often ~30% of Markets in a strong half, sharp quarterly jumps). Asia tilt via Prime, top-100 clients.
 
 ## Geography
 

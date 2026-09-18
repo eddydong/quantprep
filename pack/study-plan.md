@@ -75,7 +75,7 @@ The typical seat: competent at coding, **not** a software-engineer interview.
 
 ## Question bank you should have a 90-second answer for
 
-- Why the bank, why GM, why HK, why now?
+- Why a leading IB, why GM, why HK, why now?
 - Why FX first if Equities is the growth story?
 - How do you measure success in six months? In eighteen?
 - Walk me through a pricing model you would **not** put on the pricing engine.

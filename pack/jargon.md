@@ -31,7 +31,7 @@ Your job in the interview is not to *be* the trader. It is to build ML that this
 
 ---
 
-## 1. The bank, the franchise, the people
+## 1. A leading IB, the franchise, the people
 
 | Term | Plain English | Why it is in the pack |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ Your job in the interview is not to *be* the trader. It is to build ML that this
 | **Global Markets (GM)** | Sales and trading: prices, liquidity, hedging, financing for institutions. | The organisation you serve. |
 | **Franchise** | The client relationships and the flow they send the bank, not a McDonald’s. “Protect the franchise” = do not chase 0.1 bp of trading profit if you lose the client. | Project round: fill rate vs markout is a franchise trade-off. |
 | **FICC** | **F**ixed **I**ncome, **C**urrencies, **C**ommodities — bonds, rates, FX, credit, etc. | H1 2026 still the larger GM slice. |
-| **Equities** | Stocks, equity derivatives, electronic cash trading, parts of prime. | The growth story in recent UK IB prints. |
+| **Equities** | Stocks, equity derivatives, electronic cash trading, parts of prime. | The growth story in recent prints at a leading IB. |
 | **Macro** | Rates + FX (and sometimes commodities) as one family. | FX sits in Macro. |
 | **Credit** | Corporate bonds and credit derivatives. | Part of GM; not the first 90-day use case. |
 | **Prime / Prime Services / QPS** | Financing and services for hedge funds: borrow stock, leverage, clearing, low-latency access. **QPS** = quantitative prime services. | HK has a Prime quant bench; APAC growth is partly here. |

@@ -8,7 +8,7 @@ Use this when they ask *how you would land*, in a fit conversation, or in the op
 
 ## What “started well” means
 
-The bank is building **GM AI/ML as a greenfield** inside **centralised Markets Quant**. The HK Director is the APAC **senior technical authority**: FX **PoC** first, then scale, with a mandate that is **quant modelling + GenAI/agentic**. You translate desk pain into **tiered** models existing QR/QD/traders will **use**. You work **with** engineering. You do not replace the pricing engine or HK Equities Java, and you do not staff an SE org.
+A leading IB is building **GM AI/ML as a greenfield** inside **centralised Markets Quant**. The HK Director is the APAC **senior technical authority**: FX **PoC** first, then scale, with a mandate that is **quant modelling + GenAI/agentic**. You translate desk pain into **tiered** models existing QR/QD/traders will **use**. You work **with** engineering. You do not replace the pricing engine or HK Equities Java, and you do not staff an SE org.
 
 In 90 days the Global Head of GM AI/ML and the APAC Head of Markets will ask: **what did we turn on, who uses it, and what did it do to PnL and risk?**
 
