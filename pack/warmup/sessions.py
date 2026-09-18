@@ -32,24 +32,26 @@ SESSIONS: list[dict[str, str]] = [
         "title": "Numbers and a mid",
         "goal": "Names, arithmetic, a bid/ask.",
         "lesson": """
-Python stores a value under a **name**. The line `bid = 7.7800` means: remember `7.7800` as `bid`. That is **assignment**. One `=` is not “equals”; it is “put this in that name.”
-
-A dealer’s quote is two numbers: **bid** (they buy) and **ask** (they sell). The **mid** is the average. The **spread** is ask minus bid.
+Python stores a value under a **name**. `qty = 2.0` means: remember `2.0` as `qty`. That is **assignment**. One `=` is not “equals”; it is “put this in that name.”
 
 Arithmetic:
 
 - `+` add, `-` subtract, `*` multiply, `/` divide
-- Parentheses `( )` change order: `(bid + ask) / 2` adds first, then divides
-- `#` starts a **comment**. Python ignores the rest of that line. Comments are notes for you.
+- Parentheses `( )` change order: `(a + b) / 2` adds first, then divides
+- `#` starts a **comment**. Python ignores the rest of that line.
 
 ```
-mid = (bid + ask) / 2
-spread = ask - bid
+qty = 2.0
+px = 7.78
+notional = qty * px
+half = (qty + 0.0) / 2
 ```
 
-You do not declare types. `7.7800` is already a decimal (a **float**).
+You do not declare types. `7.78` is already a decimal (a **float**).
 
-The editor already has `bid` and `ask`. Assign `mid` and `spread` underneath.
+A dealer’s quote is two numbers: **bid** (they buy) and **ask** (they sell). The **mid** is the average of those two. The **spread** is how far apart they sit: ask minus bid.
+
+The editor already has `bid` and `ask`. Assign `mid` and `spread`.
 """,
         "starter": """# A dealer shows these prices.
 bid = 7.7800
@@ -71,29 +73,24 @@ spread = ask - bid
         "title": "Strings and a pair",
         "goal": "Text, joining, an f-string.",
         "lesson": """
-**Strings** are text. Write them in quotes: `"USDCNH"` or `'USDCNH'` — both fine, pick one style and stay with it.
+**Strings** are text. Write them in quotes: `"eFX"` or `'eFX'` — both fine, pick one style and stay with it.
 
-`len("USDCNH")` is 6: `len` counts characters. A **function call** is a name followed by parentheses. `len` is built in; you will write your own functions later.
+`len("eFX")` is 3: `len` counts characters. A **function call** is a name followed by parentheses. `len` is built in; you will write your own functions later.
 
-Join text with `+` (both sides must be strings). A number is not a string until you wrap it:
-
-```
-pair = "USDCNH"
-mid = 7.7802
-line = pair + " mid=" + str(mid)
-```
-
-`str(mid)` turns the number into text. The other way: `float("7.78")` turns text into a number. `"7.78" + 1` is an error.
+Join text with `+` (both sides must be strings). A number is not a string until you wrap it with `str(...)`. The other way: `float("7.78")` turns text into a number. `"7.78" + 1` is an error.
 
 An **f-string** is a shorter way to drop a value into text. Put `f` before the quotes, then `{name}` inside:
 
 ```
-line = f"{pair} mid={mid}"
+desk = "eFX"
+n = 3
+msg = f"{desk} has {n} makers"
+# same idea with +: desk + " has " + str(n) + " makers"
 ```
 
-Python replaces `{pair}` with the value of `pair`, and `{mid}` with the value of `mid`.
+Python replaces `{desk}` with the value of `desk`.
 
-Build `line` so it contains the pair name and the mid (an f-string or `+` both pass).
+The editor has a currency **pair** and a **mid**. Build `line` so it contains both the pair name and the mid.
 """,
         "starter": """pair = "USDCNH"
 bid = 7.7800
@@ -120,17 +117,16 @@ line = f"{pair} mid={mid}"
         "lesson": """
 Some values are not numbers or text. **`True`** and **`False`** are **booleans** — yes or no.
 
-A **comparison** produces a boolean:
+A **comparison** produces a boolean. Read `==` as “is equal to” (two equals). One `=` still means assignment.
 
 ```
-bid < ask       # True if bid is smaller — a healthy market
-bid > ask       # True if bid is larger — crossed, a bug
-bid == ask      # True if they are exactly equal
+spread = 0.0004
+wide = spread > 0.01      # False — this spread is not wide
+tight = spread <= 0.0005  # True
+same = spread == 0.0004   # True
 ```
 
-Read `==` as “is equal to.” Two equals. One `=` still means assignment, and does not compare.
-
-The other comparisons: `<=` less or equal, `>=` greater or equal, `!=` not equal.
+The other comparisons: `<` less, `>` greater, `<=` less or equal, `>=` greater or equal, `!=` not equal.
 
 Combine booleans:
 
@@ -138,12 +134,7 @@ Combine booleans:
 - `or` — True if at least one side is True
 - `not` — flips True to False and False to True
 
-```
-healthy = bid < ask
-crossed = bid > ask
-```
-
-Set `healthy` and `crossed` from the quote in the editor.
+A healthy quote has bid **below** ask. A **crossed** quote has bid **above** ask (a bug). Set `healthy` and `crossed` from the bid and ask in the editor.
 """,
         "starter": """bid = 7.7800
 ask = 7.7804
@@ -168,34 +159,32 @@ crossed = bid > ask
 A **list** holds several values in order, in square brackets, separated by commas:
 
 ```
-mids = [7.7800, 7.7802, 7.7798]
+sizes = [2.0, 1.0, 4.0]
 ```
 
-`len(mids)` is 3 — `len` counts items, not characters, when the input is a list.
+`len(sizes)` is 3 — `len` counts items, not characters, when the input is a list.
 
 Each item has a **position** (an **index**). Counting starts at **zero**, not one:
 
 ```
-index:    0        1        2
-value:  7.7800   7.7802   7.7798
+index:   0     1     2
+value:  2.0   1.0   4.0
 ```
 
-- `mids[0]` is the first item
-- `mids[1]` is the second
-- `mids[-1]` is the last item (`-1` always means “from the end”)
+- `sizes[0]` is the first item
+- `sizes[1]` is the second
+- `sizes[-1]` is the last item (`-1` always means “from the end”)
 
 `[]` is an empty list: no items yet. `.append(value)` adds one item at the end:
 
 ```
-rets = []
-rets.append(0.01)
+seen = []
+seen.append(2.0)
 ```
 
 The dot means “use this list’s append.” Later you will see more **methods** — names after a dot that do work on that object.
 
-In markets, the last print is “now”; earlier items are history.
-
-Set `n` to the length of `mids`, and `last` to the last mid.
+In markets, the last print is “now”; earlier items are history. The editor has `mids`. Set `n` to how many there are, and `last` to the last mid.
 """,
         "starter": """mids = [7.7800, 7.7802, 7.7798, 7.7810]
 
@@ -218,24 +207,20 @@ last = mids[-1]
 A list is “item 0, item 1, item 2.” A **dict** (dictionary) is “this **name** maps to this **value**.” Curly braces, a colon between key and value, commas between pairs:
 
 ```
-quote = {"bid": 7.7800, "ask": 7.7804, "bid_sz": 5.0}
+fill = {"px": 100.0, "sz": 2.0}
 ```
 
-Keys here are strings. Read one field with square brackets, same idea as a list, but you use the key instead of a position:
-
-```
-quote["bid"]
-```
+Keys here are strings. Read one field with square brackets, same idea as a list, but you use the key instead of a position: `fill["px"]` is `100.0`.
 
 Write a field the same way — including a **new** key that was not there at the start:
 
 ```
-quote["mid"] = (quote["bid"] + quote["ask"]) / 2
+fill["notional"] = fill["px"] * fill["sz"]
 ```
 
-After that line, `quote["mid"]` exists. This is how one tick looks in Python before you put many ticks in a table.
+After that line, `fill["notional"]` exists.
 
-Add `mid` into `quote`: the average of its bid and ask.
+The editor has a `quote` dict with bid and ask. Add a `mid` key: the average of those two fields.
 """,
         "starter": """quote = {
     "bid": 7.7800,
@@ -264,39 +249,33 @@ quote["mid"] = (quote["bid"] + quote["ask"]) / 2
         "lesson": """
 A **for** loop repeats a block. The next line must be indented **four spaces**. That indent is syntax: it is how Python knows what belongs in the loop.
 
-Walk every mid, one at a time. Here `x` is a **new name** that takes each value in turn:
+Walk every value. Here `x` is a **new name** that takes each item in turn:
 
 ```
-for x in mids:
+pxs = [10.0, 10.5, 9.5]
+for x in pxs:
     last = x
 ```
 
-After the loop, `last` is the last mid. That form does not give you the **position**. For a return you need two positions: yesterday and today.
+After the loop, `last` is `9.5`. That form does not give you the **position**. When you need yesterday *and* today, you need indices.
 
 **`range`** builds a sequence of integers.
 
-- `range(4)` is 0, 1, 2, 3. It **starts at 0** and **stops before 4**. The number you pass is the count of values, and is *not* itself included.
-- `range(len(mids))` is every valid index of `mids`. If there are 4 mids, that is 0, 1, 2, 3.
-- `range(start, stop)` starts at `start` and still **stops before** `stop`. So `range(1, 4)` is 1, 2, 3.
+- `range(4)` is 0, 1, 2, 3. It **starts at 0** and **stops before 4**. The number you pass is *not* itself included.
+- `range(len(pxs))` is every valid index. Three prices → 0, 1, 2.
+- `range(start, stop)` starts at `start` and still **stops before** `stop`. `range(1, 4)` is 1, 2, 3.
 
-A **simple return** from bar `i-1` to bar `i` is:
-
-```
-ret = mids[i] / mids[i - 1] - 1
-```
-
-There is no previous bar at index 0, so the loop must start at 1. `append` (session 4) collects each return:
+Index 0 has no previous bar, so a loop that compares to yesterday starts at 1. `append` (session 4) collects results. Dollar change:
 
 ```
-rets = []
-for i in range(1, len(mids)):
-    ret = mids[i] / mids[i - 1] - 1
-    rets.append(ret)
+deltas = []
+for i in range(1, len(pxs)):
+    change = pxs[i] - pxs[i - 1]
+    deltas.append(change)
+# deltas is [0.5, -1.0]
 ```
 
-Read that as: “for each index i from 1 up to, but not including, the length of mids…”
-
-Four mids give **three** returns. Fill `rets` that way.
+A **simple return** is not the dollar change. It is today’s mid **divided by** yesterday’s mid, **minus 1**. Four mids give **three** returns. Fill `rets` for the `mids` in the editor.
 """,
         "starter": """mids = [100.0, 101.0, 100.0, 102.0]
 rets = []
@@ -320,27 +299,27 @@ for i in range(1, len(mids)):
 A **function** is a named recipe you can run more than once. You **define** it with `def`, then **call** it with parentheses.
 
 ```
-def mid(bid, ask):
-    return (bid + ask) / 2
+def notional(qty, px):
+    return qty * px
 ```
 
 What each piece is:
 
 - `def` starts the definition
-- `mid` is the name you will call
-- `(bid, ask)` are **parameters** — placeholders. They are not the live quote yet. They get values when you call the function
+- `notional` is the name you will call
+- `(qty, px)` are **parameters** — placeholders. They get values when you call the function
 - the next lines are indented four spaces: the **body**
 - `return` hands a value back to whoever called it. After `return`, the function stops
 
 Call it by passing **arguments** in the same order as the parameters:
 
 ```
-m = mid(7.7800, 7.7804)    # bid is 7.7800, ask is 7.7804, m is 7.7802
+n = notional(2.0, 7.78)    # qty is 2.0, px is 7.78, n is 15.56
 ```
 
 If you leave out `return`, the function hands back **`None`**: Python’s “no value.” `None` is not 0 and not False; it is empty.
 
-Write two functions: `mid(bid, ask)` and `spread(bid, ask)` (`ask - bid`). The checks will call them with numbers of their own — they must work for any bid and ask, not only one quote.
+Write two functions the checks can call with *any* numbers: `mid(bid, ask)` is the average of the two prices; `spread(bid, ask)` is ask minus bid.
 """,
         "starter": """def mid(bid, ask):
     return None
@@ -369,31 +348,20 @@ def spread(bid, ask):
         "lesson": """
 **if** runs a block only when a boolean is True. **elif** is “else if”: try this only when the previous tests failed. **else** runs when none of them matched. Indent the body four spaces, same rule as `for` and `def`.
 
-```
-if inventory > 0:
-    action = "sell"
-elif inventory < 0:
-    action = "buy"
-else:
-    action = "flat"
-```
-
-Only one of those three branches runs. You can also write two separate `if`s and a final `return`; do not leave a path that returns nothing.
-
-Put the decision **inside a function** (the previous session) so the checks can try several inventories:
+Only one branch runs. You can also write two separate `if`s and a final `return`; do not leave a path that returns nothing.
 
 ```
-def side(inventory):
-    if inventory > 0:
-        return "sell"
-    if inventory < 0:
-        return "buy"
-    return "flat"
+def width_label(spread):
+    if spread > 0.01:
+        return "wide"
+    if spread < 0.0001:
+        return "tight"
+    return "ok"
 ```
 
-Positive inventory is a long — you want to sell. Negative is a short — you want to buy. Zero is flat.
+`width_label(0.02)` is `"wide"`. `width_label(0.00005)` is `"tight"`. `width_label(0.0004)` is `"ok"`.
 
-Write `side(inventory)` returning `"sell"`, `"buy"`, or `"flat"`.
+Positive **inventory** is a long — you want to **sell**. Negative is a short — you want to **buy**. Zero is **flat**. Put that decision in `side(inventory)` so the checks can try several inventories. Return `"sell"`, `"buy"`, or `"flat"`.
 """,
         "starter": """def side(inventory):
     return "todo"
@@ -416,26 +384,21 @@ Write `side(inventory)` returning `"sell"`, `"buy"`, or `"flat"`.
         "title": "Indexing: lookback, not lookahead",
         "goal": "Slices. History is behind you.",
         "lesson": """
-`mids[i]` is one item. A **slice** is several items: `mids[a:b]`.
+`sizes[i]` is one item. A **slice** is several items: `sizes[a:b]`.
 
-Same exclusive-end rule as `range`: it starts at index `a` and **stops before** `b`. `mids[1:3]` is index 1 and 2, not 3.
-
-You may omit a side:
-
-- `mids[:2]` — from the start, stop before 2
-- `mids[2:]` — from 2 through the **end**
-- `mids[-3:]` — the last three items (from 3-before-the-end through the end)
-
-At decision time, “now” is the last index. You may use `mids[-n:]` (includes now). You must **not** use a future bar: there is no `mids[i+1]` when `i` is now.
+Same exclusive-end rule as `range`: it starts at index `a` and **stops before** `b`.
 
 ```
-def lookback(mids, n):
-    return mids[-n:]
+sizes = [2.0, 1.0, 4.0, 3.0, 8.0]
+sizes[1:3]   # [1.0, 4.0]  — index 1 and 2, not 3
+sizes[:2]    # [2.0, 1.0]  — from the start, stop before 2
+sizes[2:]    # [4.0, 3.0, 8.0] — from 2 through the end
+sizes[-2:]   # [3.0, 8.0]  — the last two
 ```
 
-If `n` equals `len(mids)`, `mids[-n:]` is the whole list.
+At decision time, “now” is the last index. History is **behind** you. You must **not** pull a future bar: there is no `sizes[i+1]` when `i` is now. If `n` equals the length of the list, a “last n” slice is the whole list.
 
-Write `lookback(mids, n)` returning the last `n` mids, including the current last print.
+Write `lookback(mids, n)` returning the last `n` mids, **including** the current last print.
 """,
         "starter": """def lookback(mids, n):
     return []
@@ -457,29 +420,26 @@ Write `lookback(mids, n)` returning the last `n` mids, including the current las
 A real log is a **list of dicts** — one dict per timestamp:
 
 ```
-book = [
-    {"bid": 1.0, "ask": 1.1},
-    {"bid": 1.0, "ask": 1.2},
+fills = [
+    {"px": 1.0, "sz": 2.0},
+    {"px": 1.1, "sz": 0.5},
 ]
 ```
 
-`book[0]` is the first dict. `book[0]["ask"]` is that quote’s ask. To collect every ask, start an empty list and `append` inside a `for` (sessions 4–6):
+`fills[0]` is the first dict. `fills[0]["sz"]` is that fill’s size. To collect one field from every row, start an empty list and `append` inside a `for` (sessions 4–6):
 
 ```
-def asks_of(book):
-    asks = []
-    for q in book:
-        asks.append(q["ask"])
-    return asks
+def sizes_of(fills):
+    out = []
+    for f in fills:
+        out.append(f["sz"])
+    return out
+# sizes_of(fills) is [2.0, 0.5]
 ```
 
-Each round, `q` is one dict. You may later see this one-liner, which means the same loop:
+Each round, `f` is one dict. You may later see this one-liner, which means the same loop: `[f["sz"] for f in fills]`. That is a **list comprehension**. Either form is legal.
 
-```
-asks = [q["ask"] for q in book]
-```
-
-That is a **list comprehension**. Either form passes. Write `asks_of(book)` returning every ask, in order.
+The editor wants **asks**, not sizes. Write `asks_of(book)` returning every `ask`, in order.
 """,
         "starter": """def asks_of(book):
     return []
@@ -508,20 +468,22 @@ import numpy as np
 
 This page already has numpy. You still write the import.
 
-**NumPy** stores a grid of numbers of the same type. `np.array([100.0, 101.0, 100.0])` turns a list into a 1-D **array** (a time series). Indexing and slicing work like lists: `mids[0]`, `mids[-1]`, `mids[1:]`, `mids[:-1]`.
+**NumPy** stores a grid of numbers of the same type. `np.array([2.0, 1.0, 4.0])` turns a list into a 1-D **array** (a time series). Indexing and slicing work like lists: `a[0]`, `a[-1]`, `a[1:]`, `a[:-1]`.
 
 The gain: arithmetic applies to **every** element at once. No Python `for` required.
 
 ```
-mids = np.array([100.0, 101.0, 100.0])
-rets = mids[1:] / mids[:-1] - 1
+asks = np.array([1.10, 1.12, 1.09])
+bids = np.array([1.00, 1.01, 1.00])
+wides = asks - bids
+# wides is [0.10, 0.11, 0.09]
 ```
 
-`mids[1:]` is every print except the first. `mids[:-1]` is every print except the last. Same length, paired: today’s mid over yesterday’s mid, minus 1. That is the session-6 return path, vectorised.
+`a[1:]` is every item except the first. `a[:-1]` is every item except the last. Same length, paired in order.
 
-A 2-D array is a table (rows = time, columns = features). A 3-D array is already the shape of a tiny **tensor** (batch × time × features) that deep nets eat. You do not need those shapes in this session.
+A 2-D array is a table (rows = time, columns = features). A 3-D array is already the shape of a tiny **tensor** (batch × time × features) that deep nets eat. You do not need those shapes here.
 
-Set `rets` from `mids` that way. Four mids → three returns.
+Simple returns are today’s mid over yesterday’s, minus 1 — the session-6 idea, now without a loop. Set `rets` from the `mids` array in the editor. Four mids → three returns.
 """,
         "starter": """import numpy as np
 
@@ -545,32 +507,28 @@ rets = mids[1:] / mids[:-1] - 1
         "title": "Causal EWMA",
         "goal": "Write into an array. Never look ahead.",
         "lesson": """
-An **EWMA** (exponentially weighted moving average) is a smoother. Today’s smoother is a blend of the new tick and yesterday’s smoother. `*` multiplies (session 1):
+You can **write** into an array slot: `y[i] = ...`. `np.zeros(n)` is `n` zeros to fill. `np.array(x, dtype=float)` copies `x` as decimals (`dtype=float` means “use floats,” not integers). `len(x)` still works.
+
+A **causal** running total uses only the past and now — never `x[i+1]`. Seed `y[0]`, then loop from 1:
 
 ```
-y[0] = x[0]
-y[t] = alpha * x[t] + (1 - alpha) * y[t - 1]
-```
-
-Example: `x = [1.0, 2.0]`, `alpha = 0.5`. Then `y[0] = 1.0` and `y[1] = 0.5 * 2.0 + 0.5 * 1.0 = 1.5`.
-
-**Causal** means `y[t]` uses only `x[0]` … `x[t]`. If you use `x[t+1]`, you leak the future — the same crime as a leaky backtest.
-
-Arrays are writable. `np.zeros(n)` is an array of `n` zeros you then fill. `np.array(x, dtype=float)` copies `x` as decimals (`dtype=float` means “use floats,” not integers). `len(x)` still works.
-
-```
-def ewma(x, alpha):
+def running_sum(x):
     x = np.array(x, dtype=float)
     y = np.zeros(len(x))
     y[0] = x[0]
     for i in range(1, len(x)):
-        y[i] = alpha * x[i] + (1 - alpha) * y[i - 1]
+        y[i] = y[i - 1] + x[i]
     return y
+# running_sum([1.0, 2.0, 3.0]) is [1.0, 3.0, 6.0]
 ```
 
-That is the session-6 `range(1, len(...))` pattern, writing into `y[i]` instead of `append`.
+If you used `x[i+1]` here, you would leak the future — the same crime as a leaky backtest.
 
-Write `ewma(x, alpha)` returning an array the same length as `x`.
+An **EWMA** (exponentially weighted moving average) is the same causal shape, but today is a **blend**, not a sum. Today’s smoother is `alpha` times the new tick, plus `(1 - alpha)` times yesterday’s smoother. Seed with `y[0] = x[0]`.
+
+Example by hand: `x = [1.0, 2.0]`, `alpha = 0.5` → `y[0] = 1.0`, `y[1] = 0.5 * 2.0 + 0.5 * 1.0 = 1.5`.
+
+Write `ewma(x, alpha)` returning an array the same length as `x`. Changing the last tick must not change earlier `y`.
 """,
         "starter": """import numpy as np
 
@@ -614,19 +572,19 @@ import pandas as pd
 A **Series** is one column with labels (often timestamps). A **DataFrame** is several columns — next sessions.
 
 ```
-close = pd.Series([100.0, 101.5, 99.0, 102.0])
+sz = pd.Series([2.0, 1.0, 4.0, 3.0])
 ```
 
 A **method** is a function attached to an object, with a dot, like `list.append`. pandas uses two ways to pick a row:
 
-- `.iloc[i]` — by **position**. `0` is first, `-1` is last. Same idea as `mids[-1]`
+- `.iloc[i]` — by **position**. `0` is first, `-1` is last. Same idea as `sizes[-1]`
 - `.loc[label]` — by the **index label**. Mixing `.loc` and `.iloc` is a classic leak
 
 ```
-last = close.iloc[-1]
+first = sz.iloc[0]    # 2.0
 ```
 
-Set `last` to the last close using `.iloc`.
+The editor has a `close` series. Set `last` to the last close using `.iloc`.
 """,
         "starter": """import pandas as pd
 
@@ -652,16 +610,11 @@ last = close.iloc[-1]
 
 `.shift(-1)` pulls **tomorrow** onto today. That is a **label**, not a feature. Train on it as if it were known and the model is cheating.
 
-**Chaining:** `close.pct_change().shift(1)` means: first take returns, then lag those returns by one bar. Read left to right. Each method returns a Series, so the next method can run on it.
+**Chaining:** `a.b().c()` means do `b`, then `c` on the result. Read left to right.
 
-```
-def lagged_ret(close):
-    return close.pct_change().shift(1)
-```
+On closes `[100, 110, 132]`, `.pct_change()` is missing, +10%, +20%. Lagging that series by one bar puts **yesterday’s return** on today’s row, so the last value becomes +10%, not +20%. Early rows stay NaN.
 
-On closes `[100, 110, 132]`: returns are “missing, +10%, +20%.” After `shift(1)` the last value is **+10%** (yesterday’s return), not +20%. Early rows stay NaN.
-
-Write `lagged_ret(close)`: simple return lagged by one bar (a feature).
+Write `lagged_ret(close)`: the simple return, then lagged one bar — a feature, not a label.
 """,
         "starter": """import pandas as pd
 
@@ -695,25 +648,23 @@ def lagged_ret(close):
 A **DataFrame** is a table. Build one from a dict whose values are columns (lists of the same length):
 
 ```
-df = pd.DataFrame({
-    "bid": [100.0, 100.5, 101.0],
-    "ask": [100.2, 100.7, 101.2],
+fills = pd.DataFrame({
+    "px": [100.0, 101.0, 99.0],
+    "sz": [2.0, 1.0, 4.0],
 })
 ```
 
-`df["bid"]` is a Series — one column. Adding a column looks like adding a dict key (session 5):
+`fills["px"]` is a Series — one column. Adding a column looks like adding a dict key (session 5):
 
 ```
-df["mid"] = (df["bid"] + df["ask"]) / 2
-df["spread"] = df["ask"] - df["bid"]
-df["ret_lag"] = df["mid"].pct_change().shift(1)
+fills["notional"] = fills["px"] * fills["sz"]
 ```
 
-pandas does that arithmetic **row by row**. `ret_lag` is the session-14 feature: a return you were allowed to know.
+pandas does that arithmetic **row by row**.
 
 A model wants one row per decision time, columns = features known at that time. Never put the thing you are predicting in those feature columns unless you are building a **label** on purpose, and name it as such.
 
-Add `mid`, `spread`, and `ret_lag` to `df`.
+The editor has `df` with `bid` and `ask`. Add three columns: `mid` (average of bid and ask), `spread` (ask minus bid), and `ret_lag` (the session-14 feature: lagged simple return of `mid`).
 """,
         "starter": """import pandas as pd
 
@@ -744,7 +695,7 @@ df["ret_lag"] = df["mid"].pct_change().shift(1)
         "title": "Masks: Asia hours",
         "goal": "Boolean arrays. & not and.",
         "lesson": """
-Compare an **array** to a number and you get an array of True/False — one per row. That is a **mask**. Use it to keep a session: `mids[asia]` is only the rows where `asia` is True.
+Compare an **array** to a number and you get an array of True/False — one per row. That is a **mask**. Use it to keep rows: `spreads[wide]` is only the rows where `wide` is True.
 
 On ordinary booleans you used `and` / `or` / `not` (session 3). Those do **not** work element-by-element on arrays. For arrays:
 
@@ -755,18 +706,12 @@ On ordinary booleans you used `and` / `or` / `not` (session 3). Those do **not**
 You need parentheses around each comparison, because `&` binds tighter than `>=`:
 
 ```
-asia = (hour >= 0) & (hour < 8)
+spreads = np.array([0.0002, 0.02, 0.005])
+band = (spreads >= 0.001) & (spreads < 0.01)
+# band is [False, False, True]
 ```
 
-`>=` is “greater or equal” (session 3). Hour `8` is London, not Tokyo, so it must be False. Hour `0` and `7` are True.
-
-```
-def asia_mask(hour):
-    hour = np.array(hour)
-    return (hour >= 0) & (hour < 8)
-```
-
-Write `asia_mask(hour)` returning a boolean array: True when `0 <= hour < 8`.
+Tokyo morning is hour 0, 1, …, 7. Hour 8 is London, not Tokyo. Write `asia_mask(hour)` returning a boolean array: True when the hour is in that Tokyo window, False otherwise.
 """,
         "starter": """import numpy as np
 
@@ -796,38 +741,24 @@ def asia_mask(hour):
         "lesson": """
 A **linear model** predicts `y ≈ X w`. NumPy solves for `w` with least squares. This is the same idea as a one-layer net without an activation.
 
-A **2-D array** is a list of rows. Each inner list is one row:
+A **2-D array** is a list of rows. Each inner list is one row. Column 0 is often an **intercept** (all ones). Column 1 is a feature.
 
 ```
-X_train = np.array([
+X = np.array([
     [1.0, 0.0],
     [1.0, 1.0],
     [1.0, 2.0],
 ])
+y = np.array([1.0, 3.0, 5.0])
+w = np.linalg.lstsq(X, y, rcond=None)[0]
+fit = X @ w
 ```
 
-Here column 0 is an **intercept** (all ones). Column 1 is the feature. `y_train` is one number per row.
+`np.linalg.lstsq` returns several results; `[0]` keeps the weights. `rcond=None` is a setting it expects — copy it. `@` is **matrix multiply**.
 
-`np.linalg.lstsq(X, y, rcond=None)` fits `w`. It returns several results; we need the **first**. `[0]` after a call picks item 0 (session 4):
+That snippet fits and scores the **same** `X` (in-sample). Shipping a model means: fit on **train**, predict on **test**. Returning `y_train` is cheating.
 
-```
-w = np.linalg.lstsq(X_train, y_train, rcond=None)[0]
-```
-
-`rcond=None` is a setting lstsq expects — copy it.
-
-`@` is **matrix multiply**: `X_test @ w` is the prediction on new rows. Fit on train, predict on **test**. Returning `y_train` is cheating.
-
-```
-def fit_predict(X_train, y_train, X_test):
-    X_train = np.array(X_train, dtype=float)
-    y_train = np.array(y_train, dtype=float)
-    X_test = np.array(X_test, dtype=float)
-    w = np.linalg.lstsq(X_train, y_train, rcond=None)[0]
-    return X_test @ w
-```
-
-Write that function. The checks use a line `y = 2 * x1` and ask you to predict at new `x1`.
+Write `fit_predict(X_train, y_train, X_test)`: learn `w` from train, return `X_test @ w`. The checks use a line `y = 2 * x1` and ask for predictions at new `x1`.
 """,
         "starter": """import numpy as np
 
@@ -866,25 +797,23 @@ def fit_predict(X_train, y_train, X_test):
         "lesson": """
 In images you shuffle rows. In markets you **do not**. Tomorrow is not allowed in today’s training fold.
 
-`int(n * 0.7)` multiplies, then **`int(...)`** drops the decimal toward zero. `int(10 * 0.7)` is `int(7.0)` which is 7. That cut is the first test index: train is `0 .. cut-1`, test is `cut .. n-1`.
-
-`range` built integers we looped over. **`np.arange`** is the numpy version: it returns an **array**. `np.arange(0, 7)` is `0,1,2,3,4,5,6`. `np.arange(7, 10)` is `7,8,9`. Same exclusive-end rule.
+`int(...)` drops the decimal toward zero: `int(3.9)` is 3. **`np.arange`** is numpy’s `range`: it returns an **array**. `np.arange(0, 4)` is `0,1,2,3`. Same exclusive-end rule.
 
 A function can **return two values**. Write them with a comma. The caller unpacks with a comma too:
 
 ```
-def time_split(n, train_frac):
-    cut = int(n * train_frac)
-    train = np.arange(0, cut)
-    test = np.arange(cut, n)
-    return train, test
+def head_tail(n, k):
+    head = np.arange(0, k)
+    tail = np.arange(k, n)
+    return head, tail
 
-tr, te = time_split(10, 0.7)
+a, b = head_tail(10, 4)
+# a is 0..3, b is 4..9
 ```
 
 Walk-forward is this idea with more folds. Purged CV (the coding mock) adds a gap so label windows do not overlap the cut.
 
-Write `time_split(n, train_frac)` returning `(train_idx, test_idx)`. Every train index must be `<` every test index.
+Write `time_split(n, train_frac)`: cut at `int(n * train_frac)`, train indices before the cut, test indices from the cut to `n`. Every train index must be `<` every test index.
 """,
         "starter": """import numpy as np
 
@@ -913,27 +842,16 @@ def time_split(n, train_frac):
         "title": "Metrics that lie",
         "goal": "** power, np.mean, np.sign.",
         "lesson": """
-**MSE** (mean squared error) for regression: average of squared gaps. `**` is **power**: `3 ** 2` is 9. So `(pred - y) ** 2` squares each gap.
-
-`np.mean(a)` is the average of array `a`. `float(...)` turns the result into an ordinary Python number (numpy likes its own numeric types).
+`**` is **power**: `3 ** 2` is 9. `np.mean(a)` is the average of array `a`. `float(...)` turns the result into an ordinary Python number.
 
 ```
-def mse(pred, y):
-    pred = np.array(pred, dtype=float)
-    y = np.array(y, dtype=float)
-    return float(np.mean((pred - y) ** 2))
+err = np.array([0.0, 2.0, -2.0])
+mean_sq = float(np.mean(err ** 2))   # (0 + 4 + 4) / 3
 ```
 
-**Hit-rate:** how often the **sign** of the prediction matches the sign of `y`. `np.sign(3)` is `1.0`, `np.sign(-2)` is `-1.0`, `np.sign(0)` is `0.0`. Comparing two arrays with `==` is element-wise (session 16): a boolean array. Then `np.mean` treats True as 1 and False as 0, so the mean is the fraction of hits.
+`np.sign(3)` is `1.0`, `np.sign(-2)` is `-1.0`, `np.sign(0)` is `0.0`. Comparing two arrays with `==` is element-wise (session 16). `np.mean` treats True as 1 and False as 0, so the mean of a boolean array is a fraction.
 
-```
-def hit_rate(pred, y):
-    pred = np.array(pred, dtype=float)
-    y = np.array(y, dtype=float)
-    return float(np.mean(np.sign(pred) == np.sign(y)))
-```
-
-Both numbers can look great while a trading rule loses money: they ignore size, spread, and fill. A toxicity model with a pretty **AUC** can still bleed markout vs fill. Implement both so you can refuse to ship on either alone.
+**MSE** is the mean squared gap between a prediction and `y`. **Hit-rate** is how often `sign(pred)` matches `sign(y)`. Both can look great while a trading rule loses money: they ignore size, spread, and fill. A toxicity model with a pretty **AUC** can still bleed markout vs fill.
 
 Write `mse(pred, y)` and `hit_rate(pred, y)`.
 """,
@@ -973,49 +891,22 @@ def hit_rate(pred, y):
         "title": "A tiny pipeline",
         "goal": "Glue: features, split, fit, test MSE.",
         "lesson": """
-This is the skeleton of every later model, including a net. Type it from the recipe — do not shuffle time.
+Glue what you already wrote. Do not shuffle time. A neural net is the same skeleton with `pred = f(X, weights)` instead of `X @ w` — leakage rules do not change because the model got deeper.
 
-**1. Returns.** Same vectorised path as session 11. `ret[0]` stays 0 because there is no previous mid.
+**Align feature and label.** Five toy returns `[r0, r1, r2, r3, r4]`. At the row whose label is `r3` (the next return), the feature you were allowed to know is `r2` (the previous return). So the feature series is `r1,r2,r3` and the label series is `r2,r3,r4` if you also need a lag at the start — equivalently, drop the first two: labels `ret[2:]`, features `ret[1:-1]`. They must be the same length.
 
-```
-mids = np.array(mids, dtype=float)
-ret = np.zeros(len(mids))
-ret[1:] = mids[1:] / mids[:-1] - 1.0
-```
-
-**2. Feature and label.** At time `t` the feature is the **previous** return; the label is the **next** return. Align them by dropping the first two rows:
+**Intercept.** `np.ones(n)` is `n` ones. `np.column_stack([a, b])` glues columns:
 
 ```
-y = ret[2:]       # next return (label)
-x1 = ret[1:-1]    # previous return (feature)
+a = np.array([1.0, 1.0, 1.0])
+b = np.array([0.1, -0.2, 0.0])
+X = np.column_stack([a, b])
+# 3 rows, 2 columns
 ```
 
-**3. Intercept.** `np.ones(n)` is `n` ones. `np.column_stack([a, b])` glues columns side by side into a 2-D `X`:
+**Split, fit, score.** Cut at 70% of rows (`int(n * 0.7)`). Fit `w` on the earlier block only. Report **train** MSE and **test** MSE (session 19). Test MSE is the claim; train MSE is debugging.
 
-```
-X = np.column_stack([np.ones(len(x1)), x1])
-```
-
-**4. Time split.** Session 18. `len(X)` is the number of rows (`X.shape[0]` is the same idea: `.shape` is rows then columns).
-
-```
-cut = int(len(X) * 0.7)
-X_train, X_test = X[:cut], X[cut:]
-y_train, y_test = y[:cut], y[cut:]
-```
-
-**5. Fit on train only. Score both.** Session 17 and 19:
-
-```
-w = np.linalg.lstsq(X_train, y_train, rcond=None)[0]
-train_mse = float(np.mean((X_train @ w - y_train) ** 2))
-test_mse = float(np.mean((X_test @ w - y_test) ** 2))
-return {"train_mse": train_mse, "test_mse": test_mse}
-```
-
-A neural net is the same pipeline with `pred = f(X, weights)` instead of `X @ w`. The leakage rules do not change because the model got deeper.
-
-Write `pipeline(mids)` returning that dict. In-sample MSE is for debugging, not for claiming skill.
+Write `pipeline(mids)` returning `{"train_mse": ..., "test_mse": ...}`. Use lag-1 return as the one feature, next return as `y`, intercept column, 70% time split, `np.linalg.lstsq`.
 """,
         "starter": """import numpy as np
 
